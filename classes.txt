@@ -1,0 +1,28 @@
+Class Structure - autoplay
+--------------------------
+
+class Note:
+	- byte pitch <0-126>
+	- byte volume (velocity)
+	- byte duration
+	- byte timing
+	- bit pause
+	
+map<string, Note*> Notes; /// bv:  Notes["A4"] = Note(pitch=69)
+	
+class Sequence:
+	- unsigned int bpm
+	- unsigned int ppq
+	- drum_channel=10
+	- change_bpm(new_bpm)
+	- stream(Note n, channel c):
+		for all known channels d <= c ordered incremently
+			send stop of last note on channel d
+		end
+		clear all known channels
+		add a known channel c
+		send start of n in channel c
+		
+MARKOV? (Rhythm)
+(Brownian Motion)?
+(http://legacy.spa.aalto.fi/dafx08/papers/dafx08_02.pdf ? => rhythm)
