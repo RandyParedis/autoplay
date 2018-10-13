@@ -4,13 +4,16 @@
 // 'probe' function by Gary Scavone, 2003-2012.
 //
 
-#include <RtMidi.h>
+#include <rtmidi/RtMidi.h>
 
 #include <iostream>
 #include <cstdlib>
 #include <map>
 #include <pthread.h>
 #include <unistd.h>
+#include "midi/Note.h"
+
+// #include <trng/src/uniform_dist.hpp>
 
 #define SLEEP( milliseconds ) usleep( (unsigned long) (milliseconds * 1000.0) )
 
@@ -77,94 +80,104 @@ int probe()
 
 int main()
 {
-    probe();
+    //trng::uniform01_dist<> u;
+    /*probe();
     RtMidiOut *midiout = new RtMidiOut();
     std::vector<unsigned char> message;
     // Check available ports.
     unsigned int nPorts = midiout->getPortCount();
     if ( nPorts == 0 ) {
         std::cout << "No ports available!\n";
-        goto cleanup;
+    } else {
+        // Open first available port.
+        midiout->openPort( 1 );
+
+        // Program change: 192, 5 (Channel 0, Program 5)
+        message.push_back( 192 );
+        message.push_back( 5 ); //< Instrument
+        midiout->sendMessage( &message );
+
+        SLEEP( 500 );
+
+        message[0] = 0xF1; // MIDI Time Code Quarter Frame
+        message[1] = 60;
+        midiout->sendMessage( &message );
+
+        SLEEP( 500 );
+
+        // Control Change: 176, 7, 100 (volume)
+        message[0] = 176;
+        message[1] = 7;
+        message.push_back( 100 );
+        midiout->sendMessage( &message );
+
+        std::vector<std::pair<uint8_t, unsigned int>> pitches = {
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("F4"), 500},
+                {midi::Note::pitch("G4"), 500},
+                {midi::Note::pitch("G4"), 500},
+                {midi::Note::pitch("F4"), 500},
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("D4"), 500},
+                {midi::Note::pitch("C4"), 500},
+                {midi::Note::pitch("C4"), 500},
+                {midi::Note::pitch("D4"), 500},
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("E4"), 750},
+                {midi::Note::pitch("D4"), 250},
+                {midi::Note::pitch("D4"), 1000},
+
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("F4"), 500},
+                {midi::Note::pitch("G4"), 500},
+                {midi::Note::pitch("G4"), 500},
+                {midi::Note::pitch("F4"), 500},
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("D4"), 500},
+                {midi::Note::pitch("C4"), 500},
+                {midi::Note::pitch("C4"), 500},
+                {midi::Note::pitch("D4"), 500},
+                {midi::Note::pitch("E4"), 500},
+                {midi::Note::pitch("D4"), 750},
+                {midi::Note::pitch("C4"), 250},
+                {midi::Note::pitch("C4"), 1000}
+        };
+
+        // Note On: 144, 64, 90
+        for(auto& p: pitches) {
+            message[0] = 144;
+            message[1] = p.first;
+            message[2] = 90;
+            midiout->sendMessage( &message );
+            SLEEP( p.second );
+            message[0] = 128;
+            message[1] = p.first;
+            message[2] = 40;
+            midiout->sendMessage( &message );
+        }
+
+        SLEEP( 500 );
+
+        // Control Change: 176, 7, 40
+        message[0] = 176;
+        message[1] = 7;
+        message[2] = 40;
+        midiout->sendMessage( &message );
+
+        SLEEP( 500 );
+
+        // Sysex: 240, 67, 4, 3, 2, 247
+        message[0] = 240;
+        message[1] = 67;
+        message[2] = 4;
+        message.push_back( 3 );
+        message.push_back( 2 );
+        message.push_back( 247 );
+        midiout->sendMessage( &message );
     }
-    // Open first available port.
-    midiout->openPort( 1 );
 
-    // Program change: 192, 5
-    message.push_back( 192 );
-    message.push_back( 5 );
-    midiout->sendMessage( &message );
-
-    SLEEP( 500 );
-
-    message[0] = 0xF1;
-    message[1] = 60;
-    midiout->sendMessage( &message );
-
-    // Control Change: 176, 7, 100 (volume)
-    message[0] = 176;
-    message[1] = 7;
-    message.push_back( 100 );
-    midiout->sendMessage( &message );
-
-    // Note On: 144, 64, 90
-    message[0] = 144;
-    message[1] = 64;
-    message[2] = 90;
-    midiout->sendMessage( &message );
-
-    SLEEP( 500 );
-
-    // Note Off: 128, 64, 40
-    message[0] = 128;
-    message[1] = 64;
-    message[2] = 40;
-    midiout->sendMessage( &message );
-
-    SLEEP( 500 );
-
-    // Control Change: 176, 7, 40
-    message[0] = 176;
-    message[1] = 7;
-    message[2] = 40;
-    midiout->sendMessage( &message );
-
-    SLEEP( 500 );
-
-    // Sysex: 240, 67, 4, 3, 2, 247
-    message[0] = 240;
-    message[1] = 67;
-    message[2] = 4;
-    message.push_back( 3 );
-    message.push_back( 2 );
-    message.push_back( 247 );
-    midiout->sendMessage( &message );
-
-
-    // // Send out a series of MIDI messages.
-    // // Program change: 192, 5
-    // message.push_back( 192 );
-    // message.push_back( 5 );
-    // midiout->sendMessage( &message );
-    // // Control Change: 176, 7, 100 (volume)
-    // message[0] = 176;
-    // message[1] = 7;
-    // message.push_back( 100 );
-    // midiout->sendMessage( &message );
-    // // Note On: 144, 64, 90
-    // message[0] = 144; // 1001 0000  <- Note On | Channel 1
-    // message[1] = 64;  // 0100 0000  <- E4 (64)
-    // message[2] = 90;  // 0101 1010  <- Velocity of 90
-    // midiout->sendMessage( &message );
-    // SLEEP( 500 ); // Platform-dependent ... see example in tests directory.
-    // // Note Off: 128, 64, 40
-    // message[0] = 128; // 1000 0000  <- Note Off | Channel 1
-    // message[1] = 64;  // 0100 0000  <- E4 (64)
-    // message[2] = 40;  // 0010 1000  <- Velocity of 40 (Not commonly used)
-    // midiout->sendMessage( &message );
-
-
-    // Clean up
-    cleanup:
     delete midiout;
-    return 0;
+    return 0;*/
 }
