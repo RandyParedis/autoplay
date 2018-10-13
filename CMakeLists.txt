@@ -9,3 +9,4 @@ add_subdirectory(dependencies)
 add_subdirectory(main)
 
 target_include_directories(autoplay PUBLIC dependencies)
+target_include_directories(autoplay PUBLIC dependencies/trng)

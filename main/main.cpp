@@ -13,7 +13,9 @@
 #include <unistd.h>
 #include "midi/Note.h"
 
-// #include <trng/src/uniform_dist.hpp>
+#include <trng/mrg2.hpp>
+#include <trng/uniform01_dist.hpp>
+#include <trng/src/uniform_int_dist.hpp>
 
 #define SLEEP( milliseconds ) usleep( (unsigned long) (milliseconds * 1000.0) )
 
@@ -80,7 +82,10 @@ int probe()
 
 int main()
 {
-    //trng::uniform01_dist<> u;
+    trng::mrg2 engine;
+    engine.seed(10);
+    trng::uniform_int_dist U(14, 82);
+    std::cout << U(engine) << std::endl;
     /*probe();
     RtMidiOut *midiout = new RtMidiOut();
     std::vector<unsigned char> message;
