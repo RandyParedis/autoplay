@@ -4,3 +4,4 @@
 [submodule "dependencies/trng"]
     path = dependencies/trng
     url = https://github.com/rabauke/trng4.git
+	ignore = untracked
