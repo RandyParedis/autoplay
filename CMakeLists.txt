@@ -9,6 +9,6 @@ find_package(Boost REQUIRED)
 
 add_subdirectory(main)
 
-target_include_directories(autoplay PUBLIC dependencies)
 target_include_directories(autoplay PUBLIC /opt/trng/include)
+target_include_directories(autoplay PUBLIC dependencies)
 target_include_directories(autoplay PUBLIC ${Boost_INCLUDE_DIRS})

@@ -1,7 +1,8 @@
 set(autoplay_SRC
         main.cpp
         midi/Note.cpp
-        midi/Note.h)
+        midi/Note.h
+        util/Randomizer.h)
 
 add_executable(autoplay ${autoplay_SRC})
 

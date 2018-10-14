@@ -88,19 +88,10 @@ install:
 
   #-------- TRNG
   - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      cd dependencies/trng
-      autoreconf --force --install
-      sudo ./configure --prefix=/opt/trng
-      sudo make && sudo make install
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      cd dependencies/trng
-      autoreconf
-      ./configure --prefix=/opt/trng
-      make && make install
-    fi
+    cd dependencies/trng
+    autoreconf --force --install
+    sudo ./configure --prefix=/opt/trng
+    sudo make && sudo make install
 
 script:
   - make all #&& make test
