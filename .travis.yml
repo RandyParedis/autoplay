@@ -1,4 +1,5 @@
 language: cpp
+dist: trusty
 
 addons:
   apt:
@@ -10,7 +11,7 @@ addons:
       - libc++abi-dev
       - autotools-dev
       - autoconf
-      - libtool-bin
+      - libtool
 
 branches:
   only:
@@ -66,7 +67,7 @@ before_install:
   - export CXX="$CXX_NAME"
 
 install:
-    #--------- Boost
+  #--------- Boost
   - |
     export BOOST_ROOT=$HOME/deps/boost_1_66_0
     export BOOST_NO_SYSTEM_PATHS=ON
@@ -85,13 +86,20 @@ install:
     sudo rm -f /usr/local/lib/libboost*.dylib*
     sudo ln -s $BOOST_ROOT/lib/*.{so,dylib}* /usr/local/lib
 
-    #-------- TRNG
+  #-------- TRNG
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       cd dependencies
       autoreconf
-      sudo CXX=$CXX_NAME ./configure --prefix=/opt/trng
+      sudo ./configure --prefix=/opt/trng
       sudo make && sudo make install
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      cd dependencies
+      autoreconf
+      ./configure --prefix=/opt/trng
+      make && make install
     fi
 
 script:

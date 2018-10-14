@@ -15,9 +15,9 @@
 
 #include <trng/mrg2.hpp>
 #include <trng/uniform01_dist.hpp>
-#include <trng/src/uniform_int_dist.hpp>
+#include <trng/uniform_int_dist.hpp>
 
-#define SLEEP( milliseconds ) usleep( (unsigned long) (milliseconds * 1000.0) )
+#define SLEEP( milliseconds ) usleep( (unsigned long) ((milliseconds) * 1000.0) )
 
 int probe()
 {
