@@ -90,7 +90,7 @@ install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       cd dependencies/trng
-      autoreconf
+      autoreconf --force --install
       sudo ./configure --prefix=/opt/trng
       sudo make && sudo make install
     fi
