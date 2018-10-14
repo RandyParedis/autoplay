@@ -77,7 +77,7 @@ For a detailed description, please read the `trng.pdf` in the `trng/doc` folder 
 1. Install and Update the submodule
 2. Make sure `autoconf`, `automake` and `libtool` are installed. This can be done
 with `sudo apt-get install autotools-dev autoconf libtool-bin`.
-3. Run `autoreconf` to make sure everything works as desired.
+3. Run `autoreconf` on the `trng` folder to make sure everything works as desired.
 4. Configure `trng` in the `opt` directory with your preferred compiler (e.g. GNU C++ 7)
 using the following command: `sudo CXX=g++-7 ./configure --prefix=/opt/trng`.
 5. Run `sudo make` and `sudo make install`.
@@ -92,4 +92,5 @@ using the following command: `sudo CXX=g++-7 ./configure --prefix=/opt/trng`.
 | 13-10-2018 | Added `TRNG` as a pseudo-random number generator.
 | 14-10-2018 | Added `Boost` and started the concept of the `RPG`.
 | 14-10-2018 | Did some research on different music generation algorithms
+| 14-10-2018 | Started adding `Travis CI`
 

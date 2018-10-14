@@ -1,0 +1,98 @@
+language: cpp
+
+addons:
+  apt:
+    update: true
+    sources: &default_sources
+      - ubuntu-toolchain-r-test
+    packages: &default_packages
+      - libc++-dev
+      - libc++abi-dev
+      - autotools-dev
+      - autoconf
+      - libtool-bin
+
+branches:
+  only:
+    - master
+
+matrix:
+  include:
+
+    - os: linux
+      compiler: gcc
+      env: CXX_NAME='g++-6' TRAVIS_BUILD_DOCS=true
+      addons: {apt: { packages: [*default_packages, g++-6], sources: [*default_sources]}}
+
+    - os: linux
+      compiler: gcc
+      env: CXX_NAME='g++-6' CMAKE_BUILD_TYPE=Debug
+      addons: {apt: { packages: [*default_packages, g++-6], sources: [*default_sources]}}
+
+    - os: linux
+      compiler: gcc
+      env: CXX_NAME='g++-7'
+      addons: {apt: { packages: [*default_packages, g++-7], sources: [*default_sources]}}
+
+    - os: linux
+      compiler: clang
+      env: CXX_NAME='clang++-6.0'
+      addons: {apt: { packages: [*default_packages, clang-6.0], sources: [*default_sources, llvm-toolchain-trusty-6.0]}}
+
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: CXX_NAME='c++'
+
+    - os: osx
+      osx_image: xcode9.2
+      compiler: clang
+      env: CXX_NAME='c++'
+
+    - os: osx
+      osx_image: xcode9.3
+      compiler: clang
+      env: CXX_NAME='clang++'
+
+before_install:
+  # Check commit matches expected commit (because of Travis bug)
+  - if [[ "$TRAVIS_COMMIT" != "$(git rev-parse HEAD)" ]]; then echo "Commit doesn't match expected $TRAVIS_COMMIT"; fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$CXX_NAME" == "clang++" ]]; then
+      brew install --with-clang llvm@6
+      brew link --force --overwrite llvm@6
+    fi
+  # This is required to override Travis's definitions of CC and CXX that lead to old Ubuntu-packaged compilers
+  - export CXX="$CXX_NAME"
+
+install:
+    #--------- Boost
+  - |
+    export BOOST_ROOT=$HOME/deps/boost_1_66_0
+    export BOOST_NO_SYSTEM_PATHS=ON
+    if [[ -z "$(ls -A $BOOST_ROOT)" ]]; then
+      cd /tmp/
+      wget https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz -q
+      tar xf boost_1_66_0.tar.gz > /dev/null 2>&1
+      cd boost_1_66_0/
+      ./bootstrap.sh --prefix=$BOOST_ROOT --with-libraries=chrono,date_time,filesystem,iostreams,locale,regex,system,thread
+      ./b2 -q -a -j2 -d0 --disable-filesystem2 cxxflags="-v -std=c++11" threading=multi install
+      cd $TRAVIS_BUILD_DIR;
+    else
+      echo "Already have boost cache"
+    fi
+    export LD_LIBRARY_PATH=$BOOST_ROOT/lib:$LD_LIBRARY_PATH
+    sudo rm -f /usr/local/lib/libboost*.dylib*
+    sudo ln -s $BOOST_ROOT/lib/*.{so,dylib}* /usr/local/lib
+
+    #-------- TRNG
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      cd dependencies
+      autoreconf
+      sudo CXX=$CXX_NAME ./configure --prefix=/opt/trng
+      sudo make && sudo make install
+    fi
+
+script:
+  - make all #&& make test
