@@ -72,6 +72,9 @@ before_install:
   # This is required to override Travis's definitions of CC and CXX that lead to old Ubuntu-packaged compilers
   - export CXX="$CXX_NAME"
   - |
+    ls
+    pwd
+    echo $TRAVIS_BUILD_DIR
     cd $HOME/deps/
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo apt-get -qq update
