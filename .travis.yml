@@ -84,7 +84,6 @@ before_install:
     sudo cmake ..
     sudo make
     sudo cp -a ../include/gtest /usr/local/include
-    ls
     sudo cp -a *.a /usr/local/lib/
 
 install:
