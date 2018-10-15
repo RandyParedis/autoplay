@@ -112,6 +112,12 @@ install:
     sudo ./configure --prefix=$HOME/deps/trng
     sudo make && sudo make install
 
+  #------- RtMidi Deps
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get install -y alsa-base alsa-oss
+    fi
+
 script:
   - |
     cd $TRAVIS_BUILD_DIR

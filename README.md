@@ -23,6 +23,10 @@ removed later on.
 To install this dependency, you have to install and update the submodules of this repo.
 The necessary files will be linked automatically during compilation.
 
+###### Dependencies
+RtMidi itself comes with a few dependencies, as can be found
+[here](https://www.music.mcgill.ca/~gary/rtmidi/index.html#compiling).
+
 #### Boost
 Boost is definitely a powerful library that can handle a lot of different things. In the
 scope of this project, `Boost` is used for easy `JSON` and `XML` parsing and generation.
