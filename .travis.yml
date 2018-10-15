@@ -27,7 +27,7 @@ matrix:
 
     - os: linux
       compiler: gcc
-      env: CXX_NAME='g++-6' TRAVIS_BUILD_DOCS=true
+      env: CXX_NAME='g++-6'
       addons: {apt: { packages: [*default_packages, g++-6], sources: [*default_sources]}}
 
     - os: linux
@@ -72,9 +72,6 @@ before_install:
   # This is required to override Travis's definitions of CC and CXX that lead to old Ubuntu-packaged compilers
   - export CXX="$CXX_NAME"
   - |
-    ls
-    pwd
-    echo $TRAVIS_BUILD_DIR
     cd $HOME/deps/
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo apt-get -qq update
@@ -110,7 +107,7 @@ install:
 
   #-------- TRNG
   - |
-    cd $HOME/dependencies/trng
+    cd $TRAVIS_BUILD_DIR/dependencies/trng
     autoreconf --force --install
     sudo ./configure --prefix=$HOME/deps/trng
     sudo make && sudo make install
