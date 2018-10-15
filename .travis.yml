@@ -81,9 +81,10 @@ before_install:
     sudo tar xf release-1.8.0.tar.gz
     cd googletest-release-1.8.0/googletest
     sudo mkdir bld; cd bld
-    sudo cmake -DBUILD_SHARED_LIBS=ON ..
+    sudo cmake ..
     sudo make
     sudo cp -a ../include/gtest /usr/local/include
+    ls
     sudo cp -a *.a /usr/local/lib/
 
 install:
