@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 set(PROJECT_NAME autoplay)
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 -D__LINUX_ALSA__")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 ")
 
 if(UNIX)
     string(APPEND ${CMAKE_CXX_FLAGS} "-D__LINUX_ALSA__")
