@@ -113,4 +113,5 @@ install:
     sudo make && sudo make install
 
 script:
+  - cd $TRAVIS_BUILD_DIR
   - make all && make tests
