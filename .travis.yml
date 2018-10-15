@@ -42,7 +42,7 @@ matrix:
 
     - os: linux
       compiler: clang
-      env: CXX_NAME='clang++-6.0'
+      env: CXX_NAME='clang++-6.0' CC_NAME='clang-6.0'
       addons: {apt: { packages: [*default_packages, clang-6.0], sources: [*default_sources, llvm-toolchain-trusty-6.0]}}
 
     - os: osx
