@@ -114,6 +114,33 @@ scope of this project, `Boost` is used for easy `JSON` and `XML` parsing and gen
 
 You must have `Boost` installed on your system for this to work.
 
+#### Google Test
+The Google Testing Framework is a useful tool for writing and testing unit tests.
+Of course randomization is difficult to test, but a series of algorithms can be
+tested anyways.
+
+You must have `gtest` installed.
+
+###### GTest Installation (Ubuntu 18.04 LTS)
+```
+sudo apt-get install libgtest-dev cmake
+cd /usr/src/gtest
+sudo cmake CMakeLists.txt
+sudo make
+sudo cp *.a /usr/lib
+```
+
+###### GTest Installation (Mac OSX)
+```
+sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+sudo tar xf release-1.7.0.tar.gz
+cd googletest-release-1.7.0
+sudo cmake -DBUILD_SHARED_LIBS=ON .
+sudo make
+sudo cp -a include/gtest /usr/include
+sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+```
+
 #### TRNG (Tina's Random Number Generator)
 Due to the random nature of the results of `autoplay`, `trng` was added. This library will
 handle all random actions that happen during the music generation.
@@ -122,7 +149,7 @@ After painstakingly trying to install `trng` similarly to how `RtMidi` was insta
 the decision was made to keep it as a submodule, but describe how to install the library
 into the `opt` folder.
 
-##### Installation (Ubuntu 18.04 LTS)
+###### TRNG Installation (Ubuntu 18.04 LTS)
 For a detailed description, please read the `trng.pdf` in the `trng/doc` folder (page 96).
 1. Install and Update the submodule
 2. Make sure `autoconf`, `automake` and `libtool` are installed. This can be done
@@ -144,4 +171,5 @@ using the following command: `sudo CXX=g++-7 ./configure --prefix=/opt/trng`.
 | 14-10-2018 | Did some research on different music generation algorithms
 | 14-10-2018 | Added `Travis CI`
 | 14-10-2018 | Created the `Randomizer` class to handle all randomization without the need to keep on using the same code over and over again.
+| 15-10-2018 | Added `gtest`.
 

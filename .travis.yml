@@ -68,19 +68,22 @@ before_install:
       brew install --with-clang llvm@6
       brew link --force --overwrite llvm@6
     fi
+
   # This is required to override Travis's definitions of CC and CXX that lead to old Ubuntu-packaged compilers
   - export CXX="$CXX_NAME"
-  - sudo apt-get -qq update
-  # Install GTest on Travis
-  - sudo apt-get install -y libgtest-dev cmake
-  - cd $HOME/deps/
-  - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
-  - sudo tar xf release-1.7.0.tar.gz
-  - cd googletest-release-1.7.0
-  - sudo cmake -DBUILD_SHARED_LIBS=ON .
-  - sudo make
-  - sudo cp -a include/gtest /usr/include
-  - sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+  - |
+    cd $HOME/deps/
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get -qq update
+      sudo apt-get install -y libgtest-dev cmake
+    fi
+    sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+    sudo tar xf release-1.7.0.tar.gz
+    cd googletest-release-1.7.0
+    sudo cmake -DBUILD_SHARED_LIBS=ON .
+    sudo make
+    sudo cp -a include/gtest /usr/include
+    sudo cp -a libgtest_main.so libgtest.so /usr/lib/
 
 install:
   #--------- Boost
@@ -104,10 +107,10 @@ install:
 
   #-------- TRNG
   - |
-    cd dependencies/trng
+    cd $HOME/dependencies/trng
     autoreconf --force --install
     sudo ./configure --prefix=$HOME/deps/trng
     sudo make && sudo make install
 
 script:
-  - make all && make test
+  - make all && make tests
