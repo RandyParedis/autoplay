@@ -1,4 +1,6 @@
 # autoplay
+[![Build Status](https://travis-ci.com/RandyParedis/autoplay.svg?token=JpPMZMYvvgwpSMxJCpEi&branch=master)](https://travis-ci.com/RandyParedis/autoplay)
+
 `autoplay` is a simple c++ implementation of a combination of some music composition
 algorithms. The target of this project is to create music software that can
 automatically generate good melodies in a lovely rhythm with a gentle dynamic.

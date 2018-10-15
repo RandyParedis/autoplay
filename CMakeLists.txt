@@ -4,11 +4,17 @@ project(${PROJECT_NAME})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 -D__LINUX_ALSA__")
 
-add_subdirectory(dependencies)
+set(DEPENDENCY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
+
+add_subdirectory(${DEPENDENCY_DIR})
 find_package(Boost REQUIRED)
 
 add_subdirectory(main)
 
 target_include_directories(autoplay PUBLIC /opt/trng/include)
-target_include_directories(autoplay PUBLIC dependencies)
+target_include_directories(autoplay PUBLIC ${DEPENDENCY_DIR})
 target_include_directories(autoplay PUBLIC ${Boost_INCLUDE_DIRS})
+
+add_subdirectory(test)
+
+add_test(NAME gtester COMMAND tests)

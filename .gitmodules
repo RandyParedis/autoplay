@@ -1,6 +1,7 @@
 [submodule "dependencies/rtmidi"]
     path = dependencies/rtmidi
     url = https://github.com/thestk/rtmidi.git
+    ignore = untracked
 [submodule "dependencies/trng"]
     path = dependencies/trng
     url = https://github.com/rabauke/trng4.git

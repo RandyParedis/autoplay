@@ -12,6 +12,8 @@ addons:
       - autotools-dev
       - autoconf
       - libtool
+      - libgtest-dev
+      - cmake
       
 branches:
   only:
@@ -93,5 +95,12 @@ install:
     sudo ./configure --prefix=/opt/trng
     sudo make && sudo make install
 
+  #-------- GTest
+  - |
+    cd /usr/src/gtest
+    sudo cmake CMakeLists.txt
+    sudo make
+    sudo cp *.a /usr/lib
+
 script:
-  - make all #&& make test
+  - make all && make test
