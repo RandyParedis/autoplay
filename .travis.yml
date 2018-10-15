@@ -1,6 +1,11 @@
 language: cpp
 dist: trusty
 
+cache:
+  directories:
+    - $HOME/.ccache
+    - $HOME/deps
+
 addons:
   apt:
     update: true
@@ -12,8 +17,6 @@ addons:
       - autotools-dev
       - autoconf
       - libtool
-      - libgtest-dev
-      - cmake
       
 branches:
   only:
@@ -67,6 +70,17 @@ before_install:
     fi
   # This is required to override Travis's definitions of CC and CXX that lead to old Ubuntu-packaged compilers
   - export CXX="$CXX_NAME"
+  - sudo apt-get -qq update
+  # Install GTest on Travis
+  - sudo apt-get install -y libgtest-dev cmake
+  - cd $HOME/deps/
+  - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+  - sudo tar xf release-1.7.0.tar.gz
+  - cd googletest-release-1.7.0
+  - sudo cmake -DBUILD_SHARED_LIBS=ON .
+  - sudo make
+  - sudo cp -a include/gtest /usr/include
+  - sudo cp -a libgtest_main.so libgtest.so /usr/lib/
 
 install:
   #--------- Boost
@@ -92,15 +106,8 @@ install:
   - |
     cd dependencies/trng
     autoreconf --force --install
-    sudo ./configure --prefix=/opt/trng
+    sudo ./configure --prefix=$HOME/deps/trng
     sudo make && sudo make install
-
-  #-------- GTest
-  - |
-    cd /usr/src/gtest
-    sudo cmake CMakeLists.txt
-    sudo make
-    sudo cp *.a /usr/lib
 
 script:
   - make all && make test
