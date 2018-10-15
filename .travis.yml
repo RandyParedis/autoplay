@@ -71,6 +71,7 @@ before_install:
 
   # This is required to override Travis's definitions of CC and CXX that lead to old Ubuntu-packaged compilers
   - export CXX="$CXX_NAME"
+  - export CC="$CC_NAME"
   - |
     cd $HOME/deps/
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
