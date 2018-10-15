@@ -5,8 +5,8 @@
 #ifndef AUTOPLAY_RANDOMIZER_H
 #define AUTOPLAY_RANDOMIZER_H
 
-#include <trng/uniform_dist.hpp>
-#include <trng/uniform_int_dist.hpp>
+#include <trng/src/uniform_dist.hpp>
+#include <trng/src/uniform_int_dist.hpp>
 #include <functional>
 #include <algorithm>
 #include <random>
