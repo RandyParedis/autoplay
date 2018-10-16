@@ -8,7 +8,7 @@ cache:
 
 addons:
   apt:
-    update: true
+    update: false
     sources: &default_sources
       - ubuntu-toolchain-r-test
     packages: &default_packages
@@ -123,6 +123,8 @@ install:
 script:
   - |
     cd $TRAVIS_BUILD_DIR
+    ls $HOME/deps/trng
+    ls $HOME/deps/trng/lib
     mkdir build; cd build
     cmake -DTRNG_LOCATION=$HOME/deps/trng ..
     make all && make tests
