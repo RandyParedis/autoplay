@@ -10,16 +10,16 @@ elseif(APPLE)
     string(APPEND ${CMAKE_CXX_FLAGS} "-D__MACOSX_CORE__")
 endif()
 
-set(TRNG_LOCATION /opt/trng CACHE FILEPATH "")
-
 set(DEPENDENCY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
 
 add_subdirectory(${DEPENDENCY_DIR})
 find_package(Boost REQUIRED)
 
+set(TRNG_LOCATION /opt/trng CACHE FILEPATH "")
+message(STATUS "TRNG Location: ${TRNG_LOCATION}")
+
 add_subdirectory(main)
 
-message(STATUS "TRNG Location: ${TRNG_LOCATION}")
 target_include_directories(autoplay PUBLIC ${TRNG_LOCATION}/include)
 target_include_directories(autoplay PUBLIC ${TRNG_LOCATION}/lib)
 target_include_directories(autoplay PUBLIC ${DEPENDENCY_DIR})
