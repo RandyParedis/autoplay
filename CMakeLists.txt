@@ -19,8 +19,9 @@ find_package(Boost REQUIRED)
 
 add_subdirectory(main)
 
-message(STATUS "TRNG Location: ${TRNG_LOCATION}/include")
+message(STATUS "TRNG Location: ${TRNG_LOCATION}")
 target_include_directories(autoplay PUBLIC ${TRNG_LOCATION}/include)
+target_include_directories(autoplay PUBLIC ${TRNG_LOCATION})
 target_include_directories(autoplay PUBLIC ${DEPENDENCY_DIR})
 target_include_directories(autoplay PUBLIC ${Boost_INCLUDE_DIRS})
 
