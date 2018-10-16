@@ -124,6 +124,6 @@ script:
   - |
     cd $TRAVIS_BUILD_DIR
     mkdir build; cd build
-    cmake ..
+    cmake -DTRNG_LOC=$HOME/deps/trng ..
     make all
     make tests

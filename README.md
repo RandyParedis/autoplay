@@ -78,6 +78,9 @@ with `sudo apt-get install autotools-dev autoconf libtool-bin`.
 using the following command: `sudo CXX=g++-7 ./configure --prefix=/opt/trng`.
 5. Run `sudo make` and `sudo make install`.
 
+If you don't want to use `/opt/trng` as the folder for `trng`, you can do so, but must
+compile `cmake` of this project with the flag `-DTRNG_LOC` set to the directory you chose.
+
 **TODO:** Add scripts for this, so it will work easily on travis and possibly other OS.
 
 ## Progress Log
