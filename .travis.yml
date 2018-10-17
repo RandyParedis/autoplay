@@ -122,7 +122,6 @@ install:
 
 script:
   - |
-    ls $HOME/deps/trng/lib
     cd $TRAVIS_BUILD_DIR
     mkdir build; cd build
     cmake -DTRNG_LOCATION=$HOME/deps/trng ..
