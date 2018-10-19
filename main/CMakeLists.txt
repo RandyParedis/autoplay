@@ -1,7 +1,10 @@
 set(autoplay_SRC
         midi/Note.cpp
         midi/Note.h
-        util/Randomizer.h)
+        util/Randomizer.h
+        util/FileHandler.cpp
+        util/FileHandler.h
+)
 
 add_library(autoplay ${autoplay_SRC})
 
