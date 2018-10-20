@@ -1,6 +1,6 @@
 set(autoplay_SRC
-        midi/Note.cpp
-        midi/Note.h
+        music/Note.cpp
+        music/Note.h
         util/Randomizer.h
         util/FileHandler.cpp
         util/FileHandler.h

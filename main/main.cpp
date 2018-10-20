@@ -11,7 +11,7 @@
 #include <map>
 #include <pthread.h>
 #include <unistd.h>
-#include "midi/Note.h"
+#include "music/Note.h"
 #include "util/Randomizer.h"
 
 #include <trng/mrg2.hpp>
@@ -115,37 +115,37 @@ int main()
         midiout->sendMessage( &message );
 
         std::vector<std::pair<uint8_t, unsigned int>> pitches = {
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("F4"), 500},
-                {midi::Note::pitch("G4"), 500},
-                {midi::Note::pitch("G4"), 500},
-                {midi::Note::pitch("F4"), 500},
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("D4"), 500},
-                {midi::Note::pitch("C4"), 500},
-                {midi::Note::pitch("C4"), 500},
-                {midi::Note::pitch("D4"), 500},
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("E4"), 750},
-                {midi::Note::pitch("D4"), 250},
-                {midi::Note::pitch("D4"), 1000},
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("F4"), 500},
+                {music::Note::pitch("G4"), 500},
+                {music::Note::pitch("G4"), 500},
+                {music::Note::pitch("F4"), 500},
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("D4"), 500},
+                {music::Note::pitch("C4"), 500},
+                {music::Note::pitch("C4"), 500},
+                {music::Note::pitch("D4"), 500},
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("E4"), 750},
+                {music::Note::pitch("D4"), 250},
+                {music::Note::pitch("D4"), 1000},
 
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("F4"), 500},
-                {midi::Note::pitch("G4"), 500},
-                {midi::Note::pitch("G4"), 500},
-                {midi::Note::pitch("F4"), 500},
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("D4"), 500},
-                {midi::Note::pitch("C4"), 500},
-                {midi::Note::pitch("C4"), 500},
-                {midi::Note::pitch("D4"), 500},
-                {midi::Note::pitch("E4"), 500},
-                {midi::Note::pitch("D4"), 750},
-                {midi::Note::pitch("C4"), 250},
-                {midi::Note::pitch("C4"), 1000}
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("F4"), 500},
+                {music::Note::pitch("G4"), 500},
+                {music::Note::pitch("G4"), 500},
+                {music::Note::pitch("F4"), 500},
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("D4"), 500},
+                {music::Note::pitch("C4"), 500},
+                {music::Note::pitch("C4"), 500},
+                {music::Note::pitch("D4"), 500},
+                {music::Note::pitch("E4"), 500},
+                {music::Note::pitch("D4"), 750},
+                {music::Note::pitch("C4"), 250},
+                {music::Note::pitch("C4"), 1000}
         };
 
         // Note On: 144, 64, 90

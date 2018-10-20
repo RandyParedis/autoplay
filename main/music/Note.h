@@ -11,7 +11,7 @@
 #include <cassert>
 #include <vector>
 
-namespace midi {
+namespace music {
     /**
      * The Note class is a class that holds all information on any note that's played.
      */
@@ -23,6 +23,9 @@ namespace midi {
         enum class Semitone {
             NONE, FLAT, SHARP
         };
+
+        static const uint8_t DEFAULT_ON;  ///< Default Note 'on' velocity
+        static const uint8_t DEFAULT_OFF; ///< Default Note 'off' velocity
 
     public:
         /**
@@ -41,7 +44,7 @@ namespace midi {
          *       will have release velocity of 40.
          */
         Note(uint8_t pitch, unsigned int duration):
-                Note(pitch, 90, 40, duration) {}
+                Note(pitch, DEFAULT_ON, DEFAULT_OFF, duration) {}
 
         /**
          * Constructor for playing a Note at constant strike velocity.
@@ -63,19 +66,45 @@ namespace midi {
                 m_pitch(pitch), m_velocity_on(velocity_on), m_velocity_off(velocity_off), m_duration(duration),
                 m_pause(false) {
             assert(pitch <= 127);
+            assert(velocity_on <= 127);
+            assert(velocity_off <= 127);
         }
+
+        /**
+         * Returns the duration of the Note.
+         * @return The duration of the Note.
+         */
+        inline unsigned int getDuration() const { return m_duration; }
+
+        /**
+         * Returns the pitch of the Note.
+         * @return The pitch of the Note.
+         */
+        inline uint8_t getPitch() const { return m_pitch; }
+
+        /**
+         * Returns the 'on' velocity of the Note.
+         * @return The 'on' velocity of the Note.
+         */
+        inline uint8_t getVelocityOn() const { return m_velocity_on; }
+
+        /**
+         * Returns the 'off' velocity of the Note.
+         * @return The 'off' velocity of the Note.
+         */
+        inline uint8_t getVelocityOff() const { return m_velocity_off; }
 
         /**
          * Checks whether the Note is a pause.
          * @return True if it's a pause.
          */
-        inline bool isPause() { return m_pause; };
+        inline bool isPause() const { return m_pause; };
 
         /**
          * Checks whether the Note is not a pause.
          * @return True if it isn't a pause.
          */
-        inline bool isNote() { return !m_pause; };
+        inline bool isNote() const { return !m_pause; };
 
         /**
          * Returns the MIDI message of the Note.
@@ -129,6 +158,21 @@ namespace midi {
          */
         static uint8_t pitch(float hertz);
 
+        /**
+         * Given a pitch value, get the representation of the pitch
+         * @param p     The pitch value
+         * @param alter The alteration of the representation.
+         * @return The string representation of the value
+         */
+        static std::string pitchRepr(const uint8_t& p, Semitone& alter);
+
+        /**
+         * Split a pitch representation into the step and the octave
+         * @param pitch The pitch value
+         * @return  A pair in the form of <step, octave> of the given pitch
+         */
+        static std::pair<char, int> splitPitch(const std::string& pitch);
+
     private:
         uint8_t m_pitch;          ///< The note that is played, in the range of [0, 127]
         uint8_t m_velocity_on;    ///< The speed at which the Note must be struck.
@@ -136,6 +180,57 @@ namespace midi {
         unsigned int m_duration;  ///< How long it takes for the Note to be played.
 
         bool m_pause;             ///< Whether the current Note is in fact a pause.
+
+    public:
+        /**
+         * Checks if two Notes are equal on all fronts
+         * @param rhs The other Note to check
+         * @return true if they are equal
+         */
+        bool operator==(const Note& rhs) const;
+
+        /**
+         * Checks if two Notes differ from one another
+         * @param rhs The other Note to check
+         * @return true if there is at least one difference between the Notes.
+         */
+        bool operator!=(const Note& rhs) const;
+
+        /**
+         * Checks if a Note is larger than or equal to this Note.
+         * This means more specifically: if the pitch, duration, velocity_on or velocity_off
+         * of this Note is smaller than or equal to that of the rhs, whilst all other fields are equal.
+         * @param rhs The other Note to check
+         * @return true if there is a field that is smaller than or equal to the field of rhs
+         */
+        bool operator<=(const Note& rhs) const;
+
+        /**
+         * Checks if a Note is smaller than or equal to this Note.
+         * This means more specifically: if the pitch, duration, velocity_on or velocity_off
+         * of this Note is larger than or equal to that of the rhs, whilst all other fields are equal.
+         * @param rhs The other Note to check
+         * @return true if there is a field that is larger than or equal to the field of rhs
+         */
+        bool operator>=(const Note& rhs) const;
+
+        /**
+         * Checks if a Note is larger than this Note.
+         * This means more specifically: if the pitch, duration, velocity_on or velocity_off
+         * of this Note is smaller than that of the rhs, whilst all other fields are equal.
+         * @param rhs The other Note to check
+         * @return true if there is a field that is smaller than the field of rhs
+         */
+        bool operator<(const Note& rhs) const;
+
+        /**
+         * Checks if a Note is smaller than this Note.
+         * This means more specifically: if the pitch, duration, velocity_on or velocity_off
+         * of this Note is larger than that of the rhs, whilst all other fields are equal.
+         * @param rhs The other Note to check
+         * @return true if there is a field that is larger than the field of rhs
+         */
+        bool operator>(const Note& rhs) const;
     };
 }
 
