@@ -1,6 +1,6 @@
 
 set(test_SRC
-        main.cpp music/NoteTest.cpp)
+        main.cpp music/NoteTest.cpp music/MeasureTest.cpp)
 
 find_package(GTest REQUIRED)
 

@@ -13,6 +13,20 @@ namespace music {
     const uint8_t Note::DEFAULT_ON = 90;
     const uint8_t Note::DEFAULT_OFF = 40;
 
+    void Note::link(music::Note &n) {
+        m_links.emplace_back(std::make_shared<Note>(n));
+        n.m_links.emplace_back(std::make_shared<Note>(*this));
+    }
+
+    bool Note::isLinkedTo(const music::Note &n) {
+        for(const std::shared_ptr<Note>& pn: this->getLinks()) {
+            if(*pn == n) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     std::vector<unsigned char> Note::getMessage(uint8_t channel, bool note_on) {
         // There are but 16 channels
         assert(channel < 16);

@@ -19,7 +19,7 @@ TEST(NoteStandard, PauseCreation) {
 
 TEST(NoteStandard, NoteDefaultVelocityCreation) {
     unsigned int dur = 12;
-    uint8_t pitch = 69; // A9
+    uint8_t pitch = 69; // A4
 
     music::Note n{pitch, dur};
     EXPECT_EQ(n.getDuration(), dur);
@@ -32,7 +32,7 @@ TEST(NoteStandard, NoteDefaultVelocityCreation) {
 
 TEST(NoteStandard, NoteConstantVelocityCreation) {
     unsigned int dur = 12;
-    uint8_t pitch = 69; // A9
+    uint8_t pitch = 69; // A4
     uint8_t vel = 50;
 
     music::Note n{pitch, vel, dur};
@@ -46,7 +46,7 @@ TEST(NoteStandard, NoteConstantVelocityCreation) {
 
 TEST(NoteStandard, NoteNormalCreation) {
     unsigned int dur = 12;
-    uint8_t pitch = 69; // A9
+    uint8_t pitch = 69; // A4
     uint8_t vel_on = 63;
     uint8_t vel_off = 75;
 
@@ -70,9 +70,40 @@ TEST(NoteStandard, NoteNormalCreation) {
     EXPECT_DEATH(music::Note m(pitch, vel_on, vel_off, dur), "");
 }
 
+TEST(NoteStandard, NoteSetters) {
+    unsigned int dur = 12;
+    uint8_t pitch = 69; // A4
+    uint8_t vel_on = 63;
+    uint8_t vel_off = 75;
+
+    music::Note n{pitch, vel_on, vel_off, dur};
+    n.setDuration(8);
+    EXPECT_EQ(n.getDuration(), 8);
+    n.setPitch(60); // C4
+    EXPECT_EQ(n.getPitch(), 60);
+    n.setVelocityOn(music::Note::DEFAULT_ON);
+    EXPECT_EQ(n.getVelocityOn(), music::Note::DEFAULT_ON);
+    n.setVelocityOff(music::Note::DEFAULT_OFF);
+    EXPECT_EQ(n.getVelocityOff(), music::Note::DEFAULT_OFF);
+
+    EXPECT_DEATH(n.setPitch(128), "");
+    EXPECT_DEATH(n.setVelocityOn(128), "");
+    EXPECT_DEATH(n.setVelocityOff(128), "");
+
+    music::Note m{n};
+    EXPECT_EQ(m, n);
+    m.setDuration(5);
+    EXPECT_NE(m, n);
+
+    n.link(m);
+
+    EXPECT_TRUE(n.isLinkedTo(m));
+    EXPECT_TRUE(m.isLinkedTo(n));
+}
+
 TEST(NoteMessages, OnMessage) {
     unsigned int dur = 12;
-    uint8_t pitch = 69; // A9
+    uint8_t pitch = 69; // A4
     uint8_t vel_on = music::Note::DEFAULT_ON;
     uint8_t vel_off = music::Note::DEFAULT_OFF;
 
@@ -88,7 +119,7 @@ TEST(NoteMessages, OnMessage) {
 
 TEST(NoteMessages, OffMessage) {
     unsigned int dur = 12;
-    uint8_t pitch = 69; // A9
+    uint8_t pitch = 69; // A4
     uint8_t vel_on = music::Note::DEFAULT_ON;
     uint8_t vel_off = music::Note::DEFAULT_OFF;
 
@@ -104,7 +135,7 @@ TEST(NoteMessages, OffMessage) {
 
 TEST(NoteMessages, ChannelMessage) {
     unsigned int dur = 12;
-    uint8_t pitch = 69; // A9
+    uint8_t pitch = 69; // A4
     uint8_t vel = music::Note::DEFAULT_ON;
     uint8_t channel = 5;
 

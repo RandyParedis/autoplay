@@ -4,7 +4,9 @@ set(autoplay_SRC
         util/Randomizer.h
         util/FileHandler.cpp
         util/FileHandler.h
-)
+        music/Measure.cpp
+        music/Measure.h
+        music/Clef.h)
 
 add_library(autoplay ${autoplay_SRC})
 

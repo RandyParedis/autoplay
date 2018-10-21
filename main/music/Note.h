@@ -10,12 +10,13 @@
 #include <string>
 #include <cassert>
 #include <vector>
+#include <memory>
 
 namespace music {
     /**
      * The Note class is a class that holds all information on any note that's played.
      */
-    class Note {
+class Note: public std::enable_shared_from_this<Note> {
     public:
         /**
          * The Semitone enum is used to pinpoint a specific pitch shift for a named Note
@@ -64,11 +65,43 @@ namespace music {
          */
         Note(uint8_t pitch, uint8_t velocity_on, uint8_t velocity_off, unsigned int duration):
                 m_pitch(pitch), m_velocity_on(velocity_on), m_velocity_off(velocity_off), m_duration(duration),
-                m_pause(false) {
+                m_pause(false), m_links() {
             assert(pitch <= 127);
             assert(velocity_on <= 127);
             assert(velocity_off <= 127);
         }
+
+        /**
+         * Copy constructor
+         * @param n The Note to copy
+         */
+        explicit Note(const Note& n) {
+            m_pitch = n.m_pitch;
+            m_velocity_on = n.m_velocity_on;
+            m_velocity_off = n.m_velocity_off;
+            m_duration = n.m_duration;
+            m_pause = n.m_pause;
+            m_links = n.m_links;
+        }
+
+        /**
+         * Links a Note to this Note and the other way around.
+         * @param n The Note to link/tie
+         */
+        void link(Note& n);
+
+        /**
+         * Get all the links of the current Note
+         * @return A vector of shared pointers of all links
+         */
+        inline std::vector<std::shared_ptr<Note>> getLinks() const { return m_links; }
+
+        /**
+         * Check if two Notes are linked
+         * @param n the Note to check
+         * @return true if they are linked, false otherwise
+         */
+        bool isLinkedTo(const Note& n);
 
         /**
          * Returns the duration of the Note.
@@ -77,10 +110,22 @@ namespace music {
         inline unsigned int getDuration() const { return m_duration; }
 
         /**
+         * Sets a new duration for the Note
+         * @param d The new duration
+         */
+        inline void setDuration(const unsigned int& d) { m_duration = d; }
+
+        /**
          * Returns the pitch of the Note.
          * @return The pitch of the Note.
          */
         inline uint8_t getPitch() const { return m_pitch; }
+
+        /**
+         * Sets the new pitch for the Note
+         * @param p the new pitch
+         */
+        inline void setPitch(const uint8_t& p) { assert(p <= 127); m_pitch = p; }
 
         /**
          * Returns the 'on' velocity of the Note.
@@ -89,10 +134,22 @@ namespace music {
         inline uint8_t getVelocityOn() const { return m_velocity_on; }
 
         /**
+         * Set the new strike velocity of the Note
+         * @param v the new strike velocity
+         */
+        inline void setVelocityOn(const uint8_t& v) { assert(v <= 127); m_velocity_on = v; }
+
+        /**
          * Returns the 'off' velocity of the Note.
          * @return The 'off' velocity of the Note.
          */
         inline uint8_t getVelocityOff() const { return m_velocity_off; }
+
+        /**
+         * Set the new release velocity of the Note
+         * @param v the new release velocity
+         */
+        inline void setVelocityOff(const uint8_t& v) { assert(v <= 127); m_velocity_off = v; }
 
         /**
          * Checks whether the Note is a pause.
@@ -180,6 +237,8 @@ namespace music {
         unsigned int m_duration;  ///< How long it takes for the Note to be played.
 
         bool m_pause;             ///< Whether the current Note is in fact a pause.
+
+        std::vector<std::shared_ptr<Note>> m_links; ///< A list of links/beams of this Note
 
     public:
         /**

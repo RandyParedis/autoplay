@@ -96,4 +96,5 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 14-10-2018 | Created the `Randomizer` class to handle all randomization without the need to keep on using the same code over and over again.
 | 15-10-2018 | Added `gtest`.
 | 20-10-2018 | Added tests for `Note` class.
+| 21-10-2018 | Added `Clef` and `Measure` class and added tests for the latter.
 
