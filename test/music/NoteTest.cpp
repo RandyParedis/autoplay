@@ -150,6 +150,7 @@ TEST(NoteMessages, ChannelMessage) {
 
 TEST(NoteConversions, PitchStringConversion) {
     EXPECT_EQ(music::Note::pitch("A4"), 69);
+    EXPECT_EQ(music::Note::pitch("Bb4"), 70);
     EXPECT_EQ(music::Note::pitch("C-1"), 0);
     EXPECT_EQ(music::Note::pitch("D4", music::Note::Semitone::SHARP), 63);
 }
@@ -173,6 +174,13 @@ TEST(NoteConversions, PitchReprConversion) {
 
     res = music::Note::pitchRepr(music::Note::pitch(440), s);
     EXPECT_STREQ(res.c_str(), "A4");
+
+    EXPECT_STREQ(music::Note::pitchRepr(70).c_str(), "Bb4");
+
+    auto p = music::Note::splitPitch("Bb4", s);
+    EXPECT_EQ(p.first, 'B');
+    EXPECT_EQ(p.second, 4);
+    EXPECT_EQ(s, music::Note::Semitone::FLAT);
 }
 
 TEST(NoteComparisons, NoteComparisons) {

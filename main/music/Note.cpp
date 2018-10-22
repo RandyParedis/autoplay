@@ -67,12 +67,14 @@ namespace music {
         return this->getMessage(channel, false);
     }
 
-    uint8_t Note::pitch(const std::string &name, Note::Semitone s) {
+    uint8_t Note::pitch(const std::string &name, const Note::Semitone& s) {
         // Note range is C-1 to G9
         assert(name.length() == 2 || (name.length() == 3 && name[1] == '-'));
         std::vector<char>   notes {'C', 'D', 'E', 'F', 'G', 'A', 'B'};
         std::vector<uint8_t> next { 2,   2,   1,   2,   2,   2,   1 };
-        std::pair<char, int> sp = splitPitch(name);
+        Note::Semitone q;
+        std::pair<char, int> sp = splitPitch(name, q);
+        assert(q == Note::Semitone::NONE);
         auto it = std::find(notes.begin(), notes.end(), sp.first);
         assert(it != notes.end());
 
@@ -99,6 +101,18 @@ namespace music {
         }
 
         return pitch;
+    }
+
+    uint8_t Note::pitch(const std::string &name) {
+        assert(name.length() > 1);
+        if(name[1] == 'b' or name[1] == '#') {
+            std::stringstream ss;
+            ss << name[0];
+            ss << name.substr(2);
+            return pitch(ss.str(), name[1] == 'b' ? Note::Semitone::FLAT : Note::Semitone::SHARP);
+        } else {
+            return pitch(name, Note::Semitone::NONE);
+        }
     }
 
     uint8_t Note::pitch(float hertz) {
@@ -146,13 +160,38 @@ namespace music {
         return ss.str();
     }
 
-    std::pair<char, int> Note::splitPitch(const std::string &name) {
-        assert(name.length() == 2 || (name.length() == 3 && name[1] == '-'));
+    std::string Note::pitchRepr(const uint8_t &p) {
+        Semitone s;
+        std::string repr = pitchRepr(p, s);
+        std::stringstream ss;
+        ss << repr[0];
+        if(s == Semitone::SHARP) {
+            ss << '#';
+        } else if(s == Semitone::FLAT) {
+            ss << 'b';
+        }
+        ss << repr.substr(1);
+        return ss.str();
+    }
+
+    std::pair<char, int> Note::splitPitch(const std::string &name, Semitone& alter) {
+        assert(name.length() > 1);
         std::vector<char> notes {'C', 'D', 'E', 'F', 'G', 'A', 'B'};
         auto it = std::find(notes.begin(), notes.end(), name[0]);
         assert(it != notes.end());
         char step = *it;
-        int pitch = std::stoi(name.substr(1));
+        int pitch;
+        if(name[1] == 'b' or name[1] == '#') {
+            pitch = std::stoi(name.substr(2));
+            if(name[1] == 'b') {
+                alter = Semitone::FLAT;
+            } else {
+                alter = Semitone ::SHARP;
+            }
+        } else {
+            alter = Semitone::NONE;
+            pitch = std::stoi(name.substr(1));
+        }
         assert(pitch < 10);
         return {step, pitch};
     }

@@ -75,7 +75,7 @@ class Note: public std::enable_shared_from_this<Note> {
          * Copy constructor
          * @param n The Note to copy
          */
-        explicit Note(const Note& n) {
+        Note(const Note& n) {
             m_pitch = n.m_pitch;
             m_velocity_on = n.m_velocity_on;
             m_velocity_off = n.m_velocity_off;
@@ -191,7 +191,18 @@ class Note: public std::enable_shared_from_this<Note> {
          * @param s     The optional Semitone associated with the name.
          * @return A MIDI representation of the given pitched name.
          */
-        static uint8_t pitch(const std::string& name, Semitone s = Semitone::NONE);
+        static uint8_t pitch(const std::string& name, const Semitone& s);
+
+        /**
+         * Get the specific pitch value, given a name and an optional Semitone.
+         * @param name  The string value of a pitch, e.g. A4 (440 Hz; pitch = 69)
+         *
+         * @note You can use 'b' for flats and '#' for sharps,
+         *       e.g. A#4 means A sharp on fourth octave (pitch = 70)
+         *
+         * @return A MIDI representation of the given pitched name.
+         */
+        static uint8_t pitch(const std::string& name);
 
         /**
          * Get the specific pitch value, given a frequency. When no pitch is found,
@@ -224,11 +235,18 @@ class Note: public std::enable_shared_from_this<Note> {
         static std::string pitchRepr(const uint8_t& p, Semitone& alter);
 
         /**
+         * Given a pitch value, get the representation of the pitch
+         * @param p     The pitch value
+         * @return The string representation of the value
+         */
+        static std::string pitchRepr(const uint8_t& p);
+
+        /**
          * Split a pitch representation into the step and the octave
          * @param pitch The pitch value
          * @return  A pair in the form of <step, octave> of the given pitch
          */
-        static std::pair<char, int> splitPitch(const std::string& pitch);
+        static std::pair<char, int> splitPitch(const std::string& pitch, Semitone& alter);
 
     private:
         uint8_t m_pitch;          ///< The note that is played, in the range of [0, 127]

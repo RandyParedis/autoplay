@@ -81,10 +81,10 @@ int probe()
 
 int main()
 {
-    trng::mrg2 engine;
-    engine.seed(10);
-    std::cout << Randomizer::pick_uniform(engine, 0.0f, 100.0f) << std::endl;
-    /*probe();
+    // trng::mrg2 engine;
+    // engine.seed(10);
+    // std::cout << Randomizer::pick_uniform(engine, 0.0f, 100.0f) << std::endl;
+    probe();
     RtMidiOut *midiout = new RtMidiOut();
     std::vector<unsigned char> message;
     // Check available ports.
@@ -182,5 +182,5 @@ int main()
     }
 
     delete midiout;
-    return 0;*/
+    return 0;
 }
