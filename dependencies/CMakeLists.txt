@@ -13,3 +13,6 @@ elseif(UNIX)
     target_link_libraries(rtmidi ${ALSA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
+# Set the zupply library
+
+add_library(zupply zupply/src/zupply.cpp zupply/src/zupply.hpp)

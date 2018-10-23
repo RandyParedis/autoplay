@@ -6,3 +6,6 @@
     path = dependencies/trng
     url = https://github.com/rabauke/trng4.git
 	ignore = untracked
+[submodule "dependencies/zupply"]
+    path = dependencies/zupply
+    url = https://github.com/zhreshold/zupply.git
