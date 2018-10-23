@@ -9,3 +9,4 @@
 [submodule "dependencies/zupply"]
     path = dependencies/zupply
     url = https://github.com/zhreshold/zupply.git
+    ignore = untracked
