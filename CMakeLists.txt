@@ -5,10 +5,9 @@ project(${PROJECT_NAME})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 ")
 
 if(UNIX)
-    string(APPEND CMAKE_CXX_FLAGS "-D__LINUX_ALSA__")
-endif()
-if(APPLE)
-    string(APPEND CMAKE_CXX_FLAGS "-D__MACOSX_CORE__")
+    string(APPEND CMAKE_CXX_FLAGS "-D__LINUX_ALSA__ ")
+elseif(APPLE)
+    string(APPEND CMAKE_CXX_FLAGS "-D__MACOSX_CORE__ ")
 endif()
 
 set(DEPENDENCY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
