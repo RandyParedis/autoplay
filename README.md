@@ -8,6 +8,10 @@ automatically generate good melodies in a lovely rhythm with a gentle dynamic.
 For more information on how this project works, please take a look at the `docs` folder.
 I'm sure you'll find what you're looking for there.
 
+## Functionality
+The current functionality is almost nonexistant. It nowadays only plays the
+_Ode to Joy_ from Beethoven.
+
 ## Installation
 The installation of the project is rather simple. Just clone this repository and compile
 via `cmake`. That's all there is to it. Oh, don't forget to clone the dependencies (
@@ -97,4 +101,5 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 15-10-2018 | Added `gtest`.
 | 20-10-2018 | Added tests for `Note` class.
 | 21-10-2018 | Added `Clef` and `Measure` class and added tests for the latter.
+| 23-10-2018 | Added `zupply` for logging.
 
