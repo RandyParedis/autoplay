@@ -3,7 +3,8 @@
 
 `autoplay` is a simple `C++` library of a combination of some music composition
 algorithms. The target of this project is to create music software that can
-automatically generate good melodies in a lovely rhythm with a gentle dynamic.
+automatically generate good melodies in a lovely rhythm with a gentle dynamic,
+using advanced programming techniques.
 
 For more information on how this project works, please take a look at the `docs` folder.
 I'm sure you'll find what you're looking for there.
