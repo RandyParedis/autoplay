@@ -6,6 +6,7 @@
 #define AUTOPLAY_INSTRUMENT_H
 
 #include <string>
+#include <vector>
 
 namespace music {
     class Instrument {
