@@ -6,7 +6,9 @@ set(autoplay_SRC
         util/FileHandler.h
         music/Measure.cpp
         music/Measure.h
-        music/Clef.h)
+        music/Clef.h
+        music/Instrument.h
+        music/Instrument.cpp)
 
 add_library(autoplay ${autoplay_SRC})
 

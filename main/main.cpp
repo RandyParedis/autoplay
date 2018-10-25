@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include "music/Note.h"
 #include "util/Randomizer.h"
+#include "music/Instrument.h"
 
 #include <trng/mrg2.hpp>
 
@@ -95,9 +96,10 @@ int main()
         // Open first available port.
         midiout->openPort( 1 );
 
+        music::Instrument instrument = music::instruments::hapsichord;
         // Program change: 192, 5 (Channel 0, Program 5)
         message.push_back( 192 );
-        message.push_back( 5 ); //< Instrument
+        message.push_back( instrument.getUnpitched() - 1 ); //< Instrument
         midiout->sendMessage( &message );
 
         SLEEP( 500 );
@@ -118,34 +120,34 @@ int main()
                 {music::Note::pitch("E4"), 500},
                 {music::Note::pitch("E4"), 500},
                 {music::Note::pitch("F4"), 500},
-                {music::Note::pitch("G4"), 500},
-                {music::Note::pitch("G4"), 500},
-                {music::Note::pitch("F4"), 500},
-                {music::Note::pitch("E4"), 500},
-                {music::Note::pitch("D4"), 500},
-                {music::Note::pitch("C4"), 500},
-                {music::Note::pitch("C4"), 500},
-                {music::Note::pitch("D4"), 500},
-                {music::Note::pitch("E4"), 500},
-                {music::Note::pitch("E4"), 750},
-                {music::Note::pitch("D4"), 250},
-                {music::Note::pitch("D4"), 1000},
-
-                {music::Note::pitch("E4"), 500},
-                {music::Note::pitch("E4"), 500},
-                {music::Note::pitch("F4"), 500},
-                {music::Note::pitch("G4"), 500},
-                {music::Note::pitch("G4"), 500},
-                {music::Note::pitch("F4"), 500},
-                {music::Note::pitch("E4"), 500},
-                {music::Note::pitch("D4"), 500},
-                {music::Note::pitch("C4"), 500},
-                {music::Note::pitch("C4"), 500},
-                {music::Note::pitch("D4"), 500},
-                {music::Note::pitch("E4"), 500},
-                {music::Note::pitch("D4"), 750},
-                {music::Note::pitch("C4"), 250},
-                {music::Note::pitch("C4"), 1000}
+                // {music::Note::pitch("G4"), 500},
+                // {music::Note::pitch("G4"), 500},
+                // {music::Note::pitch("F4"), 500},
+                // {music::Note::pitch("E4"), 500},
+                // {music::Note::pitch("D4"), 500},
+                // {music::Note::pitch("C4"), 500},
+                // {music::Note::pitch("C4"), 500},
+                // {music::Note::pitch("D4"), 500},
+                // {music::Note::pitch("E4"), 500},
+                // {music::Note::pitch("E4"), 750},
+                // {music::Note::pitch("D4"), 250},
+                // {music::Note::pitch("D4"), 1000},
+                //
+                // {music::Note::pitch("E4"), 500},
+                // {music::Note::pitch("E4"), 500},
+                // {music::Note::pitch("F4"), 500},
+                // {music::Note::pitch("G4"), 500},
+                // {music::Note::pitch("G4"), 500},
+                // {music::Note::pitch("F4"), 500},
+                // {music::Note::pitch("E4"), 500},
+                // {music::Note::pitch("D4"), 500},
+                // {music::Note::pitch("C4"), 500},
+                // {music::Note::pitch("C4"), 500},
+                // {music::Note::pitch("D4"), 500},
+                // {music::Note::pitch("E4"), 500},
+                // {music::Note::pitch("D4"), 750},
+                // {music::Note::pitch("C4"), 250},
+                // {music::Note::pitch("C4"), 1000}
         };
 
         // Note On: 144, 64, 90
