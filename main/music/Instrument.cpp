@@ -7,7 +7,7 @@
 namespace music {
     namespace instruments {
         Instrument* findByName(const std::string& name) {
-            for(const auto* instrument: all) {
+            for(auto* instrument: all) {
                 if(instrument->getName() == name) {
                     return instrument;
                 }
