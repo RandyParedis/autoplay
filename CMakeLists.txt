@@ -24,7 +24,7 @@ add_subdirectory(${DEPENDENCY_DIR})
 find_package(Boost REQUIRED)
 
 set(TRNG_LOCATION /opt/trng CACHE FILEPATH "")
-message(STATUS "TRNG Location: ${TRNG_LOCATION}")
+message(STATUS "TRNG location: ${TRNG_LOCATION}")
 
 add_subdirectory(main)
 

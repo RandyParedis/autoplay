@@ -16,3 +16,4 @@ endif()
 # Set the zupply library
 
 add_library(zupply zupply/src/zupply.cpp zupply/src/zupply.hpp)
+set_target_properties(zupply PROPERTIES CMAKE_CXX_FLAGS "-std=c++11")

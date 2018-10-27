@@ -25,7 +25,7 @@ message(STATUS "Autoplay version: ${AUTOPLAY_VERSION}")
 add_executable(autoplayer main.cpp)
 
 
-target_link_libraries(autoplayer autoplay rtmidi zupply "${TRNG_LOCATION}/lib/libtrng4.a" ${Boost_LIBRARIES})
+target_link_libraries(autoplayer autoplay rtmidi zupply "${TRNG_LOCATION}/lib/libtrng4.a" ${Boost_LIBRARIES} atomic)
 
 install(TARGETS autoplayer DESTINATION ${BIN_INSTALL_LOCATION})
 
