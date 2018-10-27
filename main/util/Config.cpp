@@ -6,6 +6,37 @@
 #include "Config.h"
 #include "FileHandler.h"
 
+#include <boost/foreach.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+/**
+ * Merge two ptrees together
+ * @param pt        The root container
+ * @param updates   The ptree containing updates
+ *
+ * @note    The good enough solution has two limitations:
+ *          - the tree can only be two layers (e.g. "first.number", but not "first.again.number")
+ *          - values can only be stored in leaf nodes.
+ *
+ * @copyright https://stackoverflow.com/questions/8154107/how-do-i-merge-update-a-boostproperty-treeptree/8175833
+ */
+void merge(pt::ptree& pt, const pt::ptree& updates)
+{
+    BOOST_FOREACH(auto& update, updates) {
+        if(update.second.empty()) {
+            if(!update.first.empty()) { // list
+                pt.put(update.first, updates.get<std::string>(update.first));
+            }
+        } else {
+            if(update.second.back().first.empty()) { // if list
+                pt.put_child(update.first, update.second);
+            } else {
+                merge(pt.get_child(update.first), update.second);
+            }
+        }
+    }
+}
+
 Config::Config(int argc, char **argv) {
     // Setup System Logger
     zz::log::LogConfig::instance().set_format("[%datetime][%level]\t%msg");
@@ -38,9 +69,8 @@ Config::Config(int argc, char **argv) {
     if(!filename.empty()) {
         FileHandler fh;
         fh.readJSON(filename);
-        auto pt = fh.getRoot();
-        // TODO: merge ptrees
-        // m_ptree.put("verbose", pt->get<bool>("verbose"));
+        auto mpt = *fh.getRoot();
+        merge(m_ptree, mpt);
     }
 
     if(m_ptree.count("verbose") == 1 && !verbose) {
