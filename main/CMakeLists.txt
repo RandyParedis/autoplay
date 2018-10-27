@@ -25,7 +25,10 @@ message(STATUS "Autoplay version: ${AUTOPLAY_VERSION}")
 add_executable(autoplayer main.cpp)
 
 
-target_link_libraries(autoplayer autoplay rtmidi zupply "${TRNG_LOCATION}/lib/libtrng4.a" ${Boost_LIBRARIES} atomic)
+target_link_libraries(autoplayer autoplay rtmidi zupply "${TRNG_LOCATION}/lib/libtrng4.a" ${Boost_LIBRARIES})
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND NOT APPLE)
+    target_link_libraries(autoplayer atomic)
+endif()
 
 install(TARGETS autoplayer DESTINATION ${BIN_INSTALL_LOCATION})
 
