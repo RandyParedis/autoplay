@@ -98,8 +98,9 @@ namespace music {
             for(uint8_t i = 0; i < score.parts.size(); ++i) {
                 auto part = score.parts.at(i);
                 auto* instrument = part->getInstrument();
-                unsigned char f = (char)0xc0 + (unsigned char)i;
-                msg = { f, instrument->getUnpitched() - 1 };
+                unsigned char m1 = (char)0xc0 + (unsigned char)i;
+                auto m2 = (unsigned char)(instrument->getUnpitched() - 1);
+                msg = { m1, m2 };
                 midiout->sendMessage(&msg);
                 logger->debug("\tSet Instrument ") << instrument->getName() << " to Channel " << (int)i;
 
