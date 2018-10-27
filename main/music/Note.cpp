@@ -27,7 +27,7 @@ namespace music {
         return false;
     }
 
-    std::vector<unsigned char> Note::getMessage(uint8_t channel, bool note_on) {
+    std::vector<unsigned char> Note::getMessage(uint8_t channel, bool note_on) const {
         // There are but 16 channels
         assert(channel < 16);
 
@@ -59,11 +59,11 @@ namespace music {
         return {no, this->m_pitch, vel};
     }
 
-    std::vector<unsigned char> Note::getOnMessage(uint8_t channel) {
+    std::vector<unsigned char> Note::getOnMessage(uint8_t channel) const {
         return this->getMessage(channel, true);
     }
 
-    std::vector<unsigned char> Note::getOffMessage(uint8_t channel) {
+    std::vector<unsigned char> Note::getOffMessage(uint8_t channel) const {
         return this->getMessage(channel, false);
     }
 

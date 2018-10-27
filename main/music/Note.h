@@ -169,21 +169,21 @@ class Note: public std::enable_shared_from_this<Note> {
          * @param note_on   When true, the 'note on' message will be returned.
          * @return The MIDI message of the Note.
          */
-        std::vector<unsigned char> getMessage(uint8_t channel = 0, bool note_on = true);
+        std::vector<unsigned char> getMessage(uint8_t channel = 0, bool note_on = true) const;
 
         /**
          * Returns the MIDI message of the Note, in its 'note on' event.
          * @param channel   The channel on which the Note is played. This is in the range of [0, 15]
          * @return The MIDI message of the Note.
          */
-        std::vector<unsigned char> getOnMessage(uint8_t channel = 0);
+        std::vector<unsigned char> getOnMessage(uint8_t channel = 0) const;
 
         /**
          * Returns the MIDI message of the Note, in its 'note off' event.
          * @param channel   The channel on which the Note is played. This is in the range of [0, 15]
          * @return The MIDI message of the Note.
          */
-        std::vector<unsigned char> getOffMessage(uint8_t channel = 0);
+        std::vector<unsigned char> getOffMessage(uint8_t channel = 0) const;
 
         /**
          * Get the specific pitch value, given a name and an optional Semitone.

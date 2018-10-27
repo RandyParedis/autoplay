@@ -50,9 +50,9 @@ namespace music {
         return l > m || m == 0;
     }
 
-    std::vector<std::shared_ptr<Measure>> Measure::measurize() const {
+    MeasureList Measure::measurize() const {
         std::shared_ptr<Measure> me = std::make_shared<Measure>(m_clef, m_time, m_divisions, m_staves);
-        std::vector<std::shared_ptr<Measure>> res = {me};
+        MeasureList res = {me};
         if(isOverflowing()) {
             for(const Note& n: m_notes) {
                 std::shared_ptr<Measure> m = res.back();
@@ -103,7 +103,7 @@ namespace music {
         return res;
     }
 
-    std::vector<std::shared_ptr<Measure>> Measure::operator+(const Measure &rhs) {
+    MeasureList Measure::operator+(const Measure &rhs) {
         for(const Note& n: rhs.m_notes) {
             *this += n;
         }

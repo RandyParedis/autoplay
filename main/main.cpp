@@ -5,6 +5,7 @@
 //
 
 #include <rtmidi/RtMidi.h>
+#include <zupply/src/zupply.hpp>
 
 #include <iostream>
 #include <cstdlib>
@@ -14,79 +15,74 @@
 #include "music/Note.h"
 #include "util/Randomizer.h"
 #include "music/Instrument.h"
+#include "music/MIDIPlayer.h"
 
 #include <trng/mrg2.hpp>
 
 #define SLEEP( milliseconds ) usleep( (unsigned long) ((milliseconds) * 1000.0) )
-
-int probe()
-{
-    // Create an api map.
-    std::map<int, std::string> apiMap;
-    apiMap[RtMidi::MACOSX_CORE] = "OS-X CoreMidi";
-    apiMap[RtMidi::WINDOWS_MM] = "Windows MultiMedia";
-    apiMap[RtMidi::UNIX_JACK] = "Jack Client";
-    apiMap[RtMidi::LINUX_ALSA] = "Linux ALSA";
-    apiMap[RtMidi::RTMIDI_DUMMY] = "RtMidi Dummy";
-
-    std::vector< RtMidi::Api > apis;
-    RtMidi :: getCompiledApi( apis );
-
-    std::cout << "\nCompiled APIs:\n";
-    for ( unsigned int i=0; i<apis.size(); i++ )
-        std::cout << "  " << apiMap[ apis[i] ] << std::endl;
-
-    RtMidiIn  *midiin = 0;
-    RtMidiOut *midiout = 0;
-
-    try {
-
-        // RtMidiIn constructor ... exception possible
-        midiin = new RtMidiIn();
-
-        std::cout << "\nCurrent input API: " << apiMap[ midiin->getCurrentApi() ] << std::endl;
-
-        // Check inputs.
-        unsigned int nPorts = midiin->getPortCount();
-        std::cout << "\nThere are " << nPorts << " MIDI input sources available.\n";
-
-        for ( unsigned i=0; i<nPorts; i++ ) {
-            std::string portName = midiin->getPortName(i);
-            std::cout << "  Input Port #" << i+1 << ": " << portName << '\n';
-        }
-
-        // RtMidiOut constructor ... exception possible
-        midiout = new RtMidiOut();
-
-        std::cout << "\nCurrent output API: " << apiMap[ midiout->getCurrentApi() ] << std::endl;
-
-        // Check outputs.
-        nPorts = midiout->getPortCount();
-        std::cout << "\nThere are " << nPorts << " MIDI output ports available.\n";
-
-        for ( unsigned i=0; i<nPorts; i++ ) {
-            std::string portName = midiout->getPortName(i);
-            std::cout << "  Output Port #" << i+1 << ": " << portName << std::endl;
-        }
-        std::cout << std::endl;
-
-    } catch ( RtMidiError &error ) {
-        error.printMessage();
-    }
-
-    delete midiin;
-    delete midiout;
-
-    return 0;
-}
 
 int main()
 {
     // trng::mrg2 engine;
     // engine.seed(10);
     // std::cout << Randomizer::pick_uniform(engine, 0.0f, 100.0f) << std::endl;
-    probe();
-    RtMidiOut *midiout = new RtMidiOut();
+
+    // Create the Logger
+    zz::log::LogConfig::instance().set_format("[%datetime][%level]\t%msg");
+    auto logger = zz::log::get_logger("system_logger");
+    logger->info("Started autoplayer");
+
+    // Probe information
+    std::shared_ptr<music::MIDIPlayer> midiPlayer = music::MIDIPlayer::instance();
+    midiPlayer->probe(logger);
+
+    music::Measure measure(music::Clef::Treble(), {4, 4}, 24);
+    std::vector<uint8_t> pitches = {
+            music::Note::pitch("E4"),
+            music::Note::pitch("E4"),
+            music::Note::pitch("F4"),
+            music::Note::pitch("G4"),
+            music::Note::pitch("G4"),
+            music::Note::pitch("F4"),
+            music::Note::pitch("E4"),
+            music::Note::pitch("D4"),
+            music::Note::pitch("C4"),
+            music::Note::pitch("C4"),
+            music::Note::pitch("D4"),
+            music::Note::pitch("E4"),
+            music::Note::pitch("E4"),
+            music::Note::pitch("D4"),
+            music::Note::pitch("D4"),
+
+            music::Note::pitch("E4"),
+            music::Note::pitch("E4"),
+            music::Note::pitch("F4"),
+            music::Note::pitch("G4"),
+            music::Note::pitch("G4"),
+            music::Note::pitch("F4"),
+            music::Note::pitch("E4"),
+            music::Note::pitch("D4"),
+            music::Note::pitch("C4"),
+            music::Note::pitch("C4"),
+            music::Note::pitch("D4"),
+            music::Note::pitch("E4"),
+            music::Note::pitch("D4"),
+            music::Note::pitch("C4"),
+            music::Note::pitch("C4")
+    };
+    for(const auto& pitch: pitches) {
+        music::Note n{pitch, 24};
+        measure.append(n);
+    }
+    music::Instrument instrument = music::instruments::acoustic_grand_piano;
+    std::shared_ptr<music::Part> part = std::make_shared<music::Part>(&instrument);
+    part->setMeasures(measure);
+    music::Score score;
+    score.parts.emplace_back(part);
+
+    midiPlayer->play(score, logger);
+
+    /*RtMidiOut *midiout = new RtMidiOut();
     std::vector<unsigned char> message;
     // Check available ports.
     unsigned int nPorts = midiout->getPortCount();
@@ -106,7 +102,7 @@ int main()
 
         message[0] = 0xF1; // MIDI Time Code Quarter Frame
         message[1] = 60;
-        midiout->sendMessage( &message );
+        // midiout->sendMessage( &message );
 
         SLEEP( 500 );
 
@@ -184,5 +180,5 @@ int main()
     }
 
     delete midiout;
-    return 0;
+    return 0;*/
 }

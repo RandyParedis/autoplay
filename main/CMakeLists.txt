@@ -8,7 +8,11 @@ set(autoplay_SRC
         music/Measure.h
         music/Clef.h
         music/Instrument.h
-        music/Instrument.cpp)
+        music/Instrument.cpp
+        music/Part.h
+        music/Score.h
+        music/MIDIPlayer.cpp
+        music/MIDIPlayer.h)
 
 add_library(autoplay ${autoplay_SRC})
 

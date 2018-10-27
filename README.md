@@ -104,3 +104,4 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 21-10-2018 | Added `Clef` and `Measure` class and added tests for the latter.
 | 23-10-2018 | Added `zupply` for logging.
 | 24-10-2018 | Started work on `Instrument` class, by using a very basic implementation. Currently, only piano instruments are implemented in the `music::instruments` namespace, but this is enough for the current working version.<br>Also added a `music::instruments::findByName(const std::string&)` function to find an instrument by name (precursor to config file support).
+| 27-10-2018 | Added `Part`, `Score` and `MIDIPlayer` classes.

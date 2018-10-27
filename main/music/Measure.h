@@ -12,6 +12,10 @@
 #include "Note.h"
 
 namespace music {
+    class Measure;
+
+    typedef std::vector<std::shared_ptr<Measure>> MeasureList;
+
     /**
      * The measure class helps handling groups of Note objects in a valid way
      */
@@ -130,14 +134,14 @@ namespace music {
          * e.g. if isOverflowing() returns true.
          * @return A vector of shared pointers to Measures
          */
-        std::vector<std::shared_ptr<Measure>> measurize() const;
+        MeasureList measurize() const;
 
         /**
          * Add two Measures together, with respect to their respective time and duration attributes
          * @param rhs   The Measure to add to the end of this Measure
          * @return A list of the two Measures added (with respect to overflowing Measures)
          */
-        std::vector<std::shared_ptr<Measure>> operator+(const Measure& rhs);
+        MeasureList operator+(const Measure& rhs);
 
         /**
          * Add a Note to this Measure
@@ -157,6 +161,18 @@ namespace music {
          * @param n The Note to append.
          */
         inline void append(const Note& n) { *this += n; }
+
+        /**
+         * Get the last Note of the Measure
+         * @return The back of the m_notes vector
+         */
+        inline Note back() const { return m_notes.back(); }
+
+        /**
+         * Fetches all Notes from this Measure
+         * @return A vector, containing all Notes.
+         */
+        inline std::vector<Note> getNotes() const { return m_notes; }
 
     private:
         uint8_t m_staves;                       ///< The amount of staves for the measure (defaults to 1)
