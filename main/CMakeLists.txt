@@ -12,10 +12,24 @@ set(autoplay_SRC
         music/Part.h
         music/Score.h
         music/MIDIPlayer.cpp
-        music/MIDIPlayer.h)
+        music/MIDIPlayer.h
+        util/Config.cpp
+        util/Config.h)
 
 add_library(autoplay ${autoplay_SRC})
 
+configure_file(version_config.h.in ${CMAKE_BINARY_DIR}/generated/version_config.h)
+target_include_directories(autoplay PUBLIC ${CMAKE_BINARY_DIR}/generated/)
+message(STATUS "Autoplay version: ${AUTOPLAY_VERSION}")
+
 add_executable(autoplayer main.cpp)
 
+
 target_link_libraries(autoplayer autoplay rtmidi zupply "${TRNG_LOCATION}/lib/libtrng4.a" ${Boost_LIBRARIES})
+
+install(TARGETS autoplayer DESTINATION ${BIN_INSTALL_LOCATION})
+
+# Copy config files to ${CONFIG_INSTALL_LOCATION}
+file(GLOB DEPLOY_FILES "config/*")
+INSTALL( FILES ${DEPLOY_FILES} DESTINATION ${CONFIG_INSTALL_LOCATION} )
+unset(DEPLOY_FILES)

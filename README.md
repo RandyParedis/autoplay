@@ -13,6 +13,11 @@ I'm sure you'll find what you're looking for there.
 The current functionality is almost nonexistant. It nowadays only plays the
 _Ode to Joy_ from Beethoven.
 
+## Execution
+To execute `autoplay`, one simply has to execute the executable `autoplayer`.
+This will allow the user to add certain flags and fetch some options. For more
+info, please execute `autoplayer` with the flag `-h` or `--help`.
+
 ## Installation
 The installation of the project is rather simple. Just clone this repository and compile
 via `cmake`. That's all there is to it. Oh, don't forget to clone the dependencies (
@@ -105,3 +110,4 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 23-10-2018 | Added `zupply` for logging.
 | 24-10-2018 | Started work on `Instrument` class, by using a very basic implementation. Currently, only piano instruments are implemented in the `music::instruments` namespace, but this is enough for the current working version.<br>Also added a `music::instruments::findByName(const std::string&)` function to find an instrument by name (precursor to config file support).
 | 27-10-2018 | Added `Part`, `Score` and `MIDIPlayer` classes.
+| 27-10-2018 | Added `Config` class.

@@ -88,7 +88,7 @@ namespace music {
         } else {
             // Open output port
             midiout->openPort(1);
-            logger->debug("\tPort 1 with name ") << midiout->getPortName(1) << " has been opened.";
+            logger->debug("\tPort 1 with name '") << midiout->getPortName(1) << "' has been opened.";
 
             // Set all Instruments
             assert(score.parts.size() <= 16);
@@ -98,7 +98,8 @@ namespace music {
             for(uint8_t i = 0; i < score.parts.size(); ++i) {
                 auto part = score.parts.at(i);
                 auto* instrument = part->getInstrument();
-                msg = { 0xc0 + i, instrument->getUnpitched() - 1 };
+                unsigned char f = (char)0xc0 + (unsigned char)i;
+                msg = { f, instrument->getUnpitched() - 1 };
                 midiout->sendMessage(&msg);
                 logger->debug("\tSet Instrument ") << instrument->getName() << " to Channel " << (int)i;
 
@@ -150,12 +151,12 @@ namespace music {
                 }
                 auto ptcnt = note_list.size();
                 auto d = note_list.back().size();
-                // logger->debug("Playing ") << ptcnt << " Part(s) of size " << d;
+                logger->trace("Playing ") << ptcnt << " Part(s) of size " << d;
                 for(unsigned int i = 0; i < d; ++i) {
                     for(unsigned int j = 0; j < ptcnt; ++j) {
                         msg = note_list.at(j).at(i);
                         if(!msg.empty()) {
-                            // logger->debug("\tSending message w/ pitch ") << (int)msg.at(1) << " on channel " << j;
+                            logger->trace("\tSending message w/ pitch ") << (int)msg.at(1) << " on channel " << j;
                             midiout->sendMessage(&msg);
                         }
                     }

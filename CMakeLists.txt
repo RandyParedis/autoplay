@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 set(PROJECT_NAME autoplay)
+set(AUTOPLAY_VERSION "0.1.0")
 project(${PROJECT_NAME})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 ")
+add_definitions(-DAUTOPLAY_VERSION=${AUTOPLAY_VERSION})
 
 if(APPLE)
     string(APPEND CMAKE_CXX_FLAGS "-D__MACOSX_CORE__ ")
@@ -13,6 +15,10 @@ elseif(UNIX)
 endif()
 
 set(DEPENDENCY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
+
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/installed)
+set(BIN_INSTALL_LOCATION     bin)
+set(CONFIG_INSTALL_LOCATION  config)
 
 add_subdirectory(${DEPENDENCY_DIR})
 find_package(Boost REQUIRED)
