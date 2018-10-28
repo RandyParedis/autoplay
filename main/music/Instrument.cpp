@@ -6,8 +6,8 @@
 
 namespace music {
     namespace instruments {
-        Instrument* findByName(const std::string& name) {
-            for(auto* instrument: all) {
+        std::shared_ptr<Instrument> findByName(const std::string& name) {
+            for(auto& instrument: all) {
                 if(instrument->getName() == name) {
                     return instrument;
                 }

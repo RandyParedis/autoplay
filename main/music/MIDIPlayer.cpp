@@ -18,7 +18,7 @@ namespace music {
         return instance;
     }
 
-    void MIDIPlayer::probe(zz::log::LoggerPtr &logger) const {
+    void MIDIPlayer::probe(const Config& config) const {
         // Create an api map.
         std::map<int, std::string> apiMap;
         apiMap[RtMidi::MACOSX_CORE] = "OS-X CoreMidi";
@@ -30,6 +30,7 @@ namespace music {
         std::vector<RtMidi::Api> apis;
         RtMidi::getCompiledApi(apis);
 
+        auto logger = config.getLogger();
         logger->debug("The following APIs were found:");
 
         for(const auto& a: apis) {
@@ -75,7 +76,8 @@ namespace music {
         delete midiout;
     }
 
-    void MIDIPlayer::play(const Score& score, zz::log::LoggerPtr &logger) const {
+    void MIDIPlayer::play(const Score& score, const Config& config) const {
+        auto logger = config.getLogger();
         logger->debug("Setting up RtMidi Output");
 
         // Create output variable
@@ -97,7 +99,7 @@ namespace music {
             unsigned int duration = 0; // total duration (counted in measures)
             for(uint8_t i = 0; i < score.parts.size(); ++i) {
                 auto part = score.parts.at(i);
-                auto* instrument = part->getInstrument();
+                auto instrument = part->getInstrument();
                 unsigned char m1 = (char)0xc0 + (unsigned char)i;
                 auto m2 = (unsigned char)(instrument->getUnpitched() - 1);
                 msg = { m1, m2 };

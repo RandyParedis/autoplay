@@ -5,8 +5,6 @@
 #ifndef AUTOPLAY_VERSION_CONFIG_H
 #define AUTOPLAY_VERSION_CONFIG_H
 
-#define AUTOPLAY_VERSION @AUTOPLAY_VERSION@
-
 #include <string>
 
 std::string getAutoplayVersion() {

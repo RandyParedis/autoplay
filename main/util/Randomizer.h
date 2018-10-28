@@ -11,58 +11,55 @@
 #include <algorithm>
 #include <random>
 
+#include "RNEngine.h"
+
 /**
  * The Randomizer struct is a container of all random/choice functions used
  */
 struct Randomizer {
     /**
      * Choose an integer element uniformly from a range
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param min       The minimum of the range
      * @param max       The maximum of the range
      * @return One randomly selected element in a range
      */
-    template <typename G>
-    static int pick_uniform(G& gen, const int& min, const int& max) {
+    static int pick_uniform(RNEngine& gen, const int& min, const int& max) {
         trng::uniform_int_dist U(min, max);
-        return U(gen);
+        return gen.callOnMe<int>(U);
     }
 
     /**
      * Choose an element uniformly from a range
      * @tparam T        element type
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param min       The minimum of the range
      * @param max       The maximum of the range
      * @return One randomly selected element in a range
      */
-    template <typename T, typename G>
-    static T pick_uniform(G& gen, const T& min, const T& max) {
+    template <typename T>
+    static T pick_uniform(RNEngine& gen, const T& min, const T& max) {
         trng::uniform_dist<T> U(min, max);
-        return U(gen);
+        return gen.callOnMe<T>(U);
     }
 
     /**
      * Choose an element uniformly from the series of elements
      * @tparam T        element type
      * @tparam C        container type
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param elements  container of elements
      * @return One randomly selected element
      */
-    template <template <typename> class C, typename T, typename G>
-    static T pick_uniform(const G& gen, const C<T>& elements) {
+    template <template <typename> class C, typename T>
+    static T pick_uniform(RNEngine& gen, const C<T>& elements) {
         trng::uniform_int_dist U(0, elements.size());
-        return elements.at(U(gen));
+        return elements.at(gen.callOnMe<T>(U));
     }
 
     /**
      * Picks a weighted element from a range.
      * @tparam T        element type
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param min       The minimum of the range
      * @param max       The maximum of the range (exclusive)
@@ -70,15 +67,15 @@ struct Randomizer {
      * @param weight    A weight function that can be used to determine the weight of each element in the range
      * @return One randomly selected element from a range. If none is found, returns the max.
      */
-    template <typename T, typename G>
-    static T pick_weighted(const G& gen, const T& min, const T& max, const T& step,
+    template <typename T>
+    static T pick_weighted(RNEngine& gen, const T& min, const T& max, const T& step,
                            std::function<float (const T&)> weight) {
         float ws = 0.0f;
         for(T i = min; i < max; i += step) {
             ws += weight(i);
         }
-        trng::uniform_dist<float> U(1, ws);
-        float rw = U(gen);
+        trng::uniform_dist<T> U(1, ws);
+        float rw = gen.callOnMe<T>(U);
         for(T i = min; i < max; i += step) {
             rw -= weight(i);
             if(rw <= 0) {
@@ -92,20 +89,19 @@ struct Randomizer {
      * Picks a weighted element from a series of elements.
      * @tparam T        element type
      * @tparam C        container type
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param elements  Container of elements
      * @param weight    A weight function that can be used to determine the weight of each element in the container
      * @return One randomly selected element
      */
-    template <template <typename> class C, typename T, typename G>
-    static T pick_weighted(const G& gen, const C<T>& elements, std::function<float (const T&)> weight) {
+    template <template <typename> class C, typename T>
+    static T pick_weighted(RNEngine& gen, const C<T>& elements, std::function<float (const T&)> weight) {
         float ws = 0.0f;
         for(const auto& w: elements) {
             ws += weight(w);
         }
-        trng::uniform_dist<float> U(1, ws);
-        float rw = U(gen);
+        trng::uniform_dist<T> U(1, ws);
+        float rw = gen.callOnMe<T>(U);
         for(const auto& w: elements) {
             rw -= weight(w);
             if(rw <= 0) {
@@ -117,7 +113,6 @@ struct Randomizer {
 
     /**
      * Picks a weighted element from a range, with a ranged/skewed weight/distribution function.
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param min       The minimum of the range
      * @param max       The maximum of the range (exclusive)
@@ -136,8 +131,7 @@ struct Randomizer {
      *
      * @return One randomly selected element from a range. If none is found, returns the max.
      */
-    template <typename G>
-    static float pick_distributed(const G& gen, const float& min, const float& max, const float& step,
+    static float pick_distributed(RNEngine& gen, const float& min, const float& max, const float& step,
                                   std::function<float (const float&)> dist, float a, float b, bool fix_zero = false) {
         float ws = 0.0f;
         float factor = (b - a)/(max - min);
@@ -151,7 +145,7 @@ struct Randomizer {
             ws += probability(i);
         }
         trng::uniform_dist<float> U(1, ws);
-        float rw = U(gen);
+        auto rw = gen.callOnMe<float>(U);
         for(float i = min; i < max; i += step) {
             rw -= probability(i);
             if(rw <= 0) {
@@ -164,7 +158,6 @@ struct Randomizer {
     /**
      * Picks a weighted element from a series of elements, with a ranged/skewed weight/distribution function.
      * @tparam C        container type
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param elements  Container of elements
      * @param weight    A weight function that can be used to determine the weight of each element in the container
@@ -181,8 +174,8 @@ struct Randomizer {
      *
      * @return One randomly selected element
      */
-    template <template <typename> class C, typename G>
-    static float pick_distributed(const G& gen, const C<float>& elements, std::function<float (const float&)> dist,
+    template <template <typename> class C>
+    static float pick_distributed(RNEngine& gen, const C<float>& elements, std::function<float (const float&)> dist,
                                   float a, float b, bool fix_zero = false) {
         float ws = 0.0f;
         float min = std::min_element(std::begin(elements), std::end(elements));
@@ -198,7 +191,7 @@ struct Randomizer {
             ws += probability(i);
         }
         trng::uniform_dist<float> U(1, ws);
-        float rw = U(gen);
+        auto rw = gen.callOnMe<float>(U);
         for(long i = 0; i < elements.size(); ++i) {
             rw -= probability(i);
             if(rw <= 0) {
@@ -209,9 +202,21 @@ struct Randomizer {
     }
 
     /**
+     * Easy-to-use function that implements the gauss curve we all know and love.
+     * @param x     X-value
+     * @param mu    Mean
+     * @param sigma Standard Derivation
+     * @return The y-value of the normal distribution (distributed with mu and sigma) for a given x.
+     */
+    static float gauss_curve(const float& x, const float& mu=0.0f, const float& sigma=1.0f) {
+        float res = 1.0f / (sigma * std::sqrt(2.0f * (float)M_PI));
+        res *= std::exp(-std::pow(x - mu, 2.0f) / (2.0f * std::pow(sigma, 2.0f)));
+        return res;
+    }
+
+    /**
      * Picks a weighted element from a range, with respect to a standard normal (Gaussian) distribution.
      * Each element has a bigger chance of being chosen if it's in the middle of the range.
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param min       The minimum of the range
      * @param max       The maximum of the range (exclusive)
@@ -224,18 +229,16 @@ struct Randomizer {
      *
      * @return One randomly selected element from range. If none is found, it returns max.
      */
-    template <typename G>
-    static float gaussian(const G& gen, const float& min, const float& max, const float& step,
+    static float gaussian(RNEngine& gen, const float& min, const float& max, const float& step,
                           float a=-3.0f, float b=3.0f, bool fix_zero=false) {
-        std::normal_distribution<float> distribution;
-        return pick_distributed(gen, min, max, step, distribution, a, b, fix_zero);
+        auto dst = [&](const float& f)->float{ return gauss_curve(f); };
+        return pick_distributed(gen, min, max, step, dst, a, b, fix_zero);
     };
 
     /**
      * Picks a weighted element from a container, with respect to a standard normal (Gaussian) distribution.
      * Each element has a bigger chance of being chosen if it's in the middle of the container.
      * @tparam C        container type
-     * @tparam G        generator type
      * @param gen       A random engine generator
      * @param elements  Container of elements
      * @param a         The minimal value of the skewed domain
@@ -246,10 +249,11 @@ struct Randomizer {
      *
      * @return One randomly selected element.
      */
-    template <template <typename> class C, typename G>
-    static float gaussian(const G& gen, const C<float>& elements, float a=-3.0f, float b=3.0f, bool fix_zero=false) {
-        std::normal_distribution<float> distribution;
-        return pick_distributed(gen, elements, distribution, a, b, fix_zero);
+    template <template <typename> class C>
+    static float gaussian(RNEngine& gen, const C<float>& elements, float a=-3.0f, float b=3.0f,
+            bool fix_zero=false) {
+        auto dst = [&](const float& f)->float{ return gauss_curve(f); };
+        return pick_distributed(gen, elements, dst, a, b, fix_zero);
     };
 };
 

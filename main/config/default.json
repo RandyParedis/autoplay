@@ -1,4 +1,9 @@
 {
   "verbose": true,
-  "play": false
+  "play": false,
+  "engine": "lcg64",
+  "seed": 0,
+  "generation": {
+    "pitch": "random-piano"
+  }
 }

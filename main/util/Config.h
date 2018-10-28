@@ -33,19 +33,36 @@ public:
     /**
      * Get the entire ptree
      * @return A pointer to the ptree
+     *
+     * @deprecated Use the conf function instead
      */
+    [[deprecated]]
     inline pt::ptree getPtree() const { return m_ptree; }
 
 public:
     /**
-     * Check if the configuration says 'play' is true
-     * @return True if 'play' is true
+     * Get the specified value from the config pt
+     * @tparam T    The return type
+     * @param path  The name of the config value to get
+     * @return The value of what was gotten
      */
-    bool conf_play() const;
+    template <typename T>
+    T conf(const std::string& path) const;
 private:
     pt::ptree m_ptree; ///< The ptree that holds all
     zz::log::LoggerPtr m_logger; ///< The system logger that's used everywhere
 };
+
+
+template<typename T>
+T Config::conf(const std::string &path) const {
+    try {
+        return m_ptree.get<T>(path);
+    } catch(pt::ptree_error& pte) {
+        m_logger->error("Invalid path for '{}'. Not found in config.", path);
+        return T();
+    }
+}
 
 
 #endif //AUTOPLAY_IOHANDLER_H

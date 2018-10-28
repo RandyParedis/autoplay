@@ -6,8 +6,8 @@
 #define AUTOPLAY_MIDIPLAYER_H
 
 #include <memory>
-#include <zupply/src/zupply.hpp>
 #include "Score.h"
+#include "../util/Config.h"
 
 namespace music {
     /**
@@ -42,19 +42,19 @@ namespace music {
 
         /**
          * Log all output port information.
-         * @param logger The logger to log this info to.
+         * @param config    The Config of the system
          *
          * @note    The implementation of this function is based upon the midiprobe file from RtMidi,
          *          created by Gary Scavone, 2003-2012.
          */
-        void probe(zz::log::LoggerPtr& logger) const;
+        void probe(const Config& config) const;
 
         /**
          * Play a certain Score
          * @param score     The Score to play
-         * @param logger    The logger to log all info to.
+         * @param config    The Config of the system
          */
-        void play(const Score& score, zz::log::LoggerPtr &logger) const;
+        void play(const Score& score, const Config& config) const;
 
     private:
         /**

@@ -98,14 +98,3 @@ Config::Config(int argc, char **argv) {
     m_ptree.put("play", play);
     m_logger->debug("\tPlay: ") << (m_ptree.get<bool>("play") ? "yes" : "no");
 }
-
-bool Config::conf_play() const {
-    if(m_ptree.count("play") == 0) {
-        return false;
-    }
-    if(m_ptree.count("play") == 1) {
-        return m_ptree.get<bool>("play");
-    }
-    m_logger->error("Invalid amount of 'play' attributes!");
-    return false;
-}
