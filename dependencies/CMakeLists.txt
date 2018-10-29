@@ -14,6 +14,6 @@ elseif(UNIX)
 endif()
 
 # Set the zupply library
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" )
 add_library(zupply zupply/src/zupply.cpp zupply/src/zupply.hpp)
-set_target_properties(zupply PROPERTIES CMAKE_CXX_FLAGS "-std=c++11")
+#set_target_properties(zupply PROPERTIES CMAKE_CXX_FLAGS "-std=c++11")

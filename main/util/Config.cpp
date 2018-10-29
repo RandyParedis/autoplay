@@ -45,8 +45,13 @@ Config::Config(int argc, char **argv) {
     // Read default configuration file
     FileHandler fileHandler;
     std::string filename = "../config/default.json";
-    fileHandler.readJSON(filename);
-    m_ptree = *fileHandler.getRoot();
+    try {
+        fileHandler.readConfig(filename);
+        m_ptree = *fileHandler.getRoot();
+    } catch(std::invalid_argument& e) {
+        m_logger->fatal(e.what());
+        exit(EXIT_FAILURE);
+    }
 
     // Set & Parse command line arguments
     zz::cfg::ArgParser parser;
@@ -68,9 +73,13 @@ Config::Config(int argc, char **argv) {
 
     if(!filename.empty()) {
         FileHandler fh;
-        fh.readJSON(filename);
-        auto mpt = *fh.getRoot();
-        merge(m_ptree, mpt);
+        try {
+            fh.readConfig(filename);
+            auto mpt = *fh.getRoot();
+            merge(m_ptree, mpt);
+        } catch(std::invalid_argument& e) {
+            m_logger->error(e.what());
+        }
     }
 
     if(m_ptree.count("verbose") == 1 && !verbose) {

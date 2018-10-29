@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 set(PROJECT_NAME autoplay)
-set(AUTOPLAY_VERSION "0.1.0")
+set(AUTOPLAY_VERSION "0.1.1")
 project(${PROJECT_NAME})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 ")
@@ -37,3 +37,8 @@ target_include_directories(autoplay PUBLIC ${Boost_INCLUDE_DIRS})
 add_subdirectory(test)
 
 add_test(NAME gtester COMMAND tests)
+
+# clang format
+get_target_property(ALL_SOURCES autoplay SOURCES)
+message(STATUS "${ALL_SOURCES}")
+#add_custom_target(format COMMAND clang-format -verbose -i ${autoplay_SRC} main.cpp)

@@ -60,9 +60,19 @@ public:
 
     /**
      * Read an XML file as input
-     * @param filename The filename to read as XML.
+     * @param filename  The filename to read as XML.
+     * @param root      When not empty, it is the root that is stripped.
      */
-    void readXML(std::string& filename);
+    void readXML(std::string& filename, const std::string& root="");
+
+    /**
+     * Read a config file (either using XML, or JSON), depending on the file extension.
+     * For XML files, it is expected to have a root element called 'config'
+     * @param filename The file to read.
+     *
+     * @throws invalid_argument when not XML or JSON as extension.
+     */
+    void readConfig(std::string& filename);
 
     /**
      * Get the ptree that contains the new information

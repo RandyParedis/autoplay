@@ -1,0 +1,9 @@
+<config>
+    <verbose>true</verbose>
+    <play>false</play>
+    <engine>lcg64</engine>
+    <seed>0</seed>
+    <generation>
+        <pitch>random-piano</pitch>
+    </generation>
+</config>
