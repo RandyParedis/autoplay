@@ -2,9 +2,9 @@
 // Created by red on 27/10/18.
 //
 
-#include <version_config.h>
 #include "Config.h"
 #include "FileHandler.h"
+#include <version_config.h>
 
 #include <boost/foreach.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -18,10 +18,10 @@
  *          - the tree can only be two layers (e.g. "first.number", but not "first.again.number")
  *          - values can only be stored in leaf nodes.
  *
- * @copyright https://stackoverflow.com/questions/8154107/how-do-i-merge-update-a-boostproperty-treeptree/8175833
+ * @copyright
+ * https://stackoverflow.com/questions/8154107/how-do-i-merge-update-a-boostproperty-treeptree/8175833
  */
-void merge(pt::ptree& pt, const pt::ptree& updates)
-{
+void merge(pt::ptree& pt, const pt::ptree& updates) {
     BOOST_FOREACH(auto& update, updates) {
         if(update.second.empty()) {
             if(!update.first.empty()) { // list
@@ -37,7 +37,7 @@ void merge(pt::ptree& pt, const pt::ptree& updates)
     }
 }
 
-Config::Config(int argc, char **argv) {
+Config::Config(int argc, char** argv) {
     // Setup System Logger
     zz::log::LogConfig::instance().set_format("[%datetime][%level]\t%msg");
     m_logger = zz::log::get_logger("system_logger");
@@ -65,7 +65,7 @@ Config::Config(int argc, char **argv) {
 
     parser.parse(argc, argv);
 
-    if (parser.count_error() > 0) {
+    if(parser.count_error() > 0) {
         m_logger->fatal() << parser.get_error();
         std::cout << parser.get_help() << std::endl;
         exit(EXIT_FAILURE);
@@ -77,9 +77,7 @@ Config::Config(int argc, char **argv) {
             fh.readConfig(filename);
             auto mpt = *fh.getRoot();
             merge(m_ptree, mpt);
-        } catch(std::invalid_argument& e) {
-            m_logger->error(e.what());
-        }
+        } catch(std::invalid_argument& e) { m_logger->error(e.what()); }
     }
 
     if(m_ptree.count("verbose") == 1 && !verbose) {

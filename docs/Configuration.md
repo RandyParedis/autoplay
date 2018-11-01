@@ -14,10 +14,10 @@ suppresses all others._
 | `-c`, `--config` | A configuration file to load. (Currently, only JSON is supported)
 
 # Config File
-It is also possible to load a config file into `autoplayer`, to allow for further and more
-detailed descriptions of options.
+It is also possible to load a config file into `autoplayer`, to allow for further and
+more detailed descriptions of options. When using an `XML` config file, you must wrap
+all options inside a root element called `config`.
 
-_**Note:** Currently, only JSON files are supported._
 
 The file contains of the following tree structure and fields:
  

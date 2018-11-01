@@ -4,7 +4,7 @@
 
 #include "RNEngine.h"
 
-void RNEngine::operator()(const std::string &type) {
+void RNEngine::operator()(const std::string& type) {
     if(type == "lcg64") {
         m_engine = trng::lcg64{};
     } else if(type == "mrg5") {
@@ -14,7 +14,7 @@ void RNEngine::operator()(const std::string &type) {
     }
 }
 
-void RNEngine::operator()(const std::string &type, unsigned long seed) {
+void RNEngine::operator()(const std::string& type, unsigned long seed) {
     if(type == "lcg64") {
         m_engine = trng::lcg64{seed};
     } else if(type == "mrg5") {
@@ -26,8 +26,8 @@ void RNEngine::operator()(const std::string &type, unsigned long seed) {
 
 void RNEngine::seed(unsigned long seed) {
     switch(m_engine.which()) {
-        case 0: boost::get<trng::lcg64>(m_engine).seed(seed); break;
-        case 1: boost::get<trng::mrg5>(m_engine).seed(seed); break;
-        default: {}
+    case 0: boost::get<trng::lcg64>(m_engine).seed(seed); break;
+    case 1: boost::get<trng::mrg5>(m_engine).seed(seed); break;
+    default: {}
     }
 }

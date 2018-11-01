@@ -2,8 +2,8 @@
 // Created by red on 20/10/18.
 //
 
-#include <gtest/gtest.h>
 #include "../../main/music/Note.h"
+#include <gtest/gtest.h>
 
 TEST(NoteStandard, PauseCreation) {
     unsigned int dur = 12;
@@ -18,8 +18,8 @@ TEST(NoteStandard, PauseCreation) {
 }
 
 TEST(NoteStandard, NoteDefaultVelocityCreation) {
-    unsigned int dur = 12;
-    uint8_t pitch = 69; // A4
+    unsigned int dur   = 12;
+    uint8_t      pitch = 69; // A4
 
     music::Note n{pitch, dur};
     EXPECT_EQ(n.getDuration(), dur);
@@ -31,9 +31,9 @@ TEST(NoteStandard, NoteDefaultVelocityCreation) {
 }
 
 TEST(NoteStandard, NoteConstantVelocityCreation) {
-    unsigned int dur = 12;
-    uint8_t pitch = 69; // A4
-    uint8_t vel = 50;
+    unsigned int dur   = 12;
+    uint8_t      pitch = 69; // A4
+    uint8_t      vel   = 50;
 
     music::Note n{pitch, vel, dur};
     EXPECT_EQ(n.getDuration(), dur);
@@ -45,10 +45,10 @@ TEST(NoteStandard, NoteConstantVelocityCreation) {
 }
 
 TEST(NoteStandard, NoteNormalCreation) {
-    unsigned int dur = 12;
-    uint8_t pitch = 69; // A4
-    uint8_t vel_on = 63;
-    uint8_t vel_off = 75;
+    unsigned int dur     = 12;
+    uint8_t      pitch   = 69; // A4
+    uint8_t      vel_on  = 63;
+    uint8_t      vel_off = 75;
 
     music::Note n{pitch, vel_on, vel_off, dur};
     EXPECT_EQ(n.getDuration(), dur);
@@ -61,20 +61,20 @@ TEST(NoteStandard, NoteNormalCreation) {
     pitch = 128;
     EXPECT_DEATH(music::Note m(pitch, vel_on, vel_off, dur), "");
 
-    pitch = 69;
+    pitch  = 69;
     vel_on = 128;
     EXPECT_DEATH(music::Note m(pitch, vel_on, vel_off, dur), "");
 
-    vel_on = music::Note::DEFAULT_ON;
+    vel_on  = music::Note::DEFAULT_ON;
     vel_off = 128;
     EXPECT_DEATH(music::Note m(pitch, vel_on, vel_off, dur), "");
 }
 
 TEST(NoteStandard, NoteSetters) {
-    unsigned int dur = 12;
-    uint8_t pitch = 69; // A4
-    uint8_t vel_on = 63;
-    uint8_t vel_off = 75;
+    unsigned int dur     = 12;
+    uint8_t      pitch   = 69; // A4
+    uint8_t      vel_on  = 63;
+    uint8_t      vel_off = 75;
 
     music::Note n{pitch, vel_on, vel_off, dur};
     n.setDuration(8);
@@ -102,13 +102,13 @@ TEST(NoteStandard, NoteSetters) {
 }
 
 TEST(NoteMessages, OnMessage) {
-    unsigned int dur = 12;
-    uint8_t pitch = 69; // A4
-    uint8_t vel_on = music::Note::DEFAULT_ON;
-    uint8_t vel_off = music::Note::DEFAULT_OFF;
+    unsigned int dur     = 12;
+    uint8_t      pitch   = 69; // A4
+    uint8_t      vel_on  = music::Note::DEFAULT_ON;
+    uint8_t      vel_off = music::Note::DEFAULT_OFF;
 
-    music::Note n1{pitch, vel_on, vel_off, dur};
-    std::vector<unsigned char> res = { 0x90, pitch, vel_on };
+    music::Note                n1{pitch, vel_on, vel_off, dur};
+    std::vector<unsigned char> res = {0x90, pitch, vel_on};
     EXPECT_EQ(n1.getOnMessage(), n1.getMessage());
     EXPECT_EQ(n1.getOnMessage(), res);
 
@@ -118,13 +118,13 @@ TEST(NoteMessages, OnMessage) {
 }
 
 TEST(NoteMessages, OffMessage) {
-    unsigned int dur = 12;
-    uint8_t pitch = 69; // A4
-    uint8_t vel_on = music::Note::DEFAULT_ON;
-    uint8_t vel_off = music::Note::DEFAULT_OFF;
+    unsigned int dur     = 12;
+    uint8_t      pitch   = 69; // A4
+    uint8_t      vel_on  = music::Note::DEFAULT_ON;
+    uint8_t      vel_off = music::Note::DEFAULT_OFF;
 
-    music::Note n1{pitch, vel_on, vel_off, dur};
-    std::vector<unsigned char> res = { 0x80, pitch, vel_off };
+    music::Note                n1{pitch, vel_on, vel_off, dur};
+    std::vector<unsigned char> res = {0x80, pitch, vel_off};
     EXPECT_EQ(n1.getOffMessage(), n1.getMessage(0, false));
     EXPECT_EQ(n1.getOffMessage(), res);
 
@@ -134,13 +134,13 @@ TEST(NoteMessages, OffMessage) {
 }
 
 TEST(NoteMessages, ChannelMessage) {
-    unsigned int dur = 12;
-    uint8_t pitch = 69; // A4
-    uint8_t vel = music::Note::DEFAULT_ON;
-    uint8_t channel = 5;
+    unsigned int dur     = 12;
+    uint8_t      pitch   = 69; // A4
+    uint8_t      vel     = music::Note::DEFAULT_ON;
+    uint8_t      channel = 5;
 
-    music::Note n{pitch, vel, dur};
-    std::vector<unsigned char> res = { 0x95, pitch, vel };
+    music::Note                n{pitch, vel, dur};
+    std::vector<unsigned char> res = {0x95, pitch, vel};
     EXPECT_EQ(n.getOnMessage(channel), res);
 
     res[0] = 0x85;
@@ -164,7 +164,7 @@ TEST(NoteConversions, PitchHertzConversion) {
 
 TEST(NoteConversions, PitchReprConversion) {
     music::Note::Semitone s;
-    std::string res = music::Note::pitchRepr(69, s);
+    std::string           res = music::Note::pitchRepr(69, s);
     EXPECT_STREQ(res.c_str(), "A4");
     EXPECT_EQ(s, music::Note::Semitone::NONE);
 

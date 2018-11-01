@@ -9,7 +9,8 @@
 #include <trng/lcg64.hpp>
 #include <trng/mrg5.hpp>
 
-class RNEngine {
+class RNEngine
+{
 public:
     /**
      * Set the type of the engine by string
@@ -40,16 +41,15 @@ public:
     template <typename R, typename T>
     R callOnMe(T& t) {
         switch(m_engine.which()) {
-            case 0: return t(boost::get<trng::lcg64>(m_engine));
-            case 1: return t(boost::get<trng::mrg5>(m_engine));
-            default: return R();
+        case 0: return t(boost::get<trng::lcg64>(m_engine));
+        case 1: return t(boost::get<trng::mrg5>(m_engine));
+        default: return R();
         }
     }
 
 private:
-    typedef boost::variant<trng::lcg64, trng::mrg5> engine_type;    ///< The engine set/union
-    engine_type m_engine;   ///< The engine
+    typedef boost::variant<trng::lcg64, trng::mrg5> engine_type; ///< The engine set/union
+    engine_type m_engine;                                        ///< The engine
 };
 
-
-#endif //AUTOPLAY_RNENGINE_H
+#endif // AUTOPLAY_RNENGINE_H

@@ -5,14 +5,14 @@
 #include "Instrument.h"
 
 namespace music {
-    namespace instruments {
-        std::shared_ptr<Instrument> findByName(const std::string& name) {
-            for(auto& instrument: all) {
-                if(instrument->getName() == name) {
-                    return instrument;
-                }
-            }
-            return nullptr;
+namespace instruments {
+std::shared_ptr<Instrument> findByName(const std::string& name) {
+    for(auto& instrument : all) {
+        if(instrument->getName() == name) {
+            return instrument;
         }
     }
+    return nullptr;
+}
+}
 }

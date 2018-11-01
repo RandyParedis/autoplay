@@ -5,17 +5,17 @@
 #ifndef AUTOPLAY_IOHANDLER_H
 #define AUTOPLAY_IOHANDLER_H
 
-#include <zupply/src/zupply.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <zupply/src/zupply.hpp>
 
 /// Short alias for this namespace
 namespace pt = boost::property_tree;
 
-
 /**
  * The IOHandler class contains all functionality about handling in- and output
  */
-class Config {
+class Config
+{
 public:
     /**
      * Default constructor. Should be initialized with command line arguments
@@ -36,8 +36,7 @@ public:
      *
      * @deprecated Use the conf function instead
      */
-    [[deprecated]]
-    inline pt::ptree getPtree() const { return m_ptree; }
+    [[deprecated]] inline pt::ptree getPtree() const { return m_ptree; }
 
 public:
     /**
@@ -48,14 +47,14 @@ public:
      */
     template <typename T>
     T conf(const std::string& path) const;
+
 private:
-    pt::ptree m_ptree; ///< The ptree that holds all
+    pt::ptree          m_ptree;  ///< The ptree that holds all
     zz::log::LoggerPtr m_logger; ///< The system logger that's used everywhere
 };
 
-
-template<typename T>
-T Config::conf(const std::string &path) const {
+template <typename T>
+T Config::conf(const std::string& path) const {
     try {
         return m_ptree.get<T>(path);
     } catch(pt::ptree_error& pte) {
@@ -64,5 +63,4 @@ T Config::conf(const std::string &path) const {
     }
 }
 
-
-#endif //AUTOPLAY_IOHANDLER_H
+#endif // AUTOPLAY_IOHANDLER_H

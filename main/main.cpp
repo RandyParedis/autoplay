@@ -8,6 +8,7 @@
 #include "music/MIDIPlayer.h"
 #include "music/Note.h"
 #include "util/Config.h"
+#include "util/FileHandler.h"
 #include "util/Generator.h"
 #include "util/Randomizer.h"
 #include <trng/lcg64.hpp>
@@ -21,8 +22,7 @@
 
 #define SLEEP(milliseconds) usleep((unsigned long)((milliseconds)*1000.0))
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     // Create the Logger
     Config config{argc, argv};
     auto   logger = config.getLogger();
@@ -38,6 +38,8 @@ int main(int argc, char** argv)
     if(config.conf<bool>("play")) {
         midiPlayer->play(score, config);
     }
+
+    FileHandler::writeMusicXML("test", score);
 
     logger->info("Finished autoplayer");
 }

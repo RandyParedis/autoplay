@@ -2,8 +2,8 @@
 // Created by red on 21/10/18.
 //
 
-#include <gtest/gtest.h>
 #include "../../main/music/Measure.h"
+#include <gtest/gtest.h>
 
 TEST(MeasureStandard, MeasureCreation) {
     music::Measure m{};
@@ -23,7 +23,7 @@ TEST(MeasureStandard, MeasureCreation) {
 }
 
 TEST(MeasureStandard, MeasureGettersSetters) {
-    music::Clef f = music::Clef::Bass();
+    music::Clef    f = music::Clef::Bass();
     music::Measure m{};
 
     m.setClef(f);
@@ -33,13 +33,13 @@ TEST(MeasureStandard, MeasureGettersSetters) {
     std::pair<uint8_t, uint8_t> p{2, 4};
     EXPECT_EQ(m.getTime(), p);
     m.setTime({3, 4});
-    p.first = 3;
+    p.first  = 3;
     p.second = 4;
     EXPECT_EQ(m.getTime(), p);
     m.setCommonTime();
     p.first = 4;
     EXPECT_EQ(m.getTime(), p);
-    p.first = 2;
+    p.first  = 2;
     p.second = 2;
     m.setCutTime();
     EXPECT_EQ(m.getTime(), p);
@@ -56,7 +56,7 @@ TEST(MeasureStandard, MeasureGettersSetters) {
 }
 
 TEST(MeasureStandard, MeasureLength) {
-    music::Clef c = music::Clef::Alto();
+    music::Clef    c = music::Clef::Alto();
     music::Measure m{c, {3, 4}, 24};
 
     EXPECT_EQ(m.max_length(), 72);
@@ -75,7 +75,7 @@ TEST(MeasureStandard, MeasureLength) {
 }
 
 TEST(MeasureStandard, Measurize) {
-    music::Clef c = music::Clef::Alto();
+    music::Clef    c = music::Clef::Alto();
     music::Measure m{c, {3, 4}, 12};
 
     for(uint8_t i = 0; i < 3; ++i) {

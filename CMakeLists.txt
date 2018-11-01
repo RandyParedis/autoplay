@@ -37,8 +37,3 @@ target_include_directories(autoplay PUBLIC ${Boost_INCLUDE_DIRS})
 add_subdirectory(test)
 
 add_test(NAME gtester COMMAND tests)
-
-# clang format
-get_target_property(ALL_SOURCES autoplay SOURCES)
-message(STATUS "${ALL_SOURCES}")
-#add_custom_target(format COMMAND clang-format -verbose -i ${autoplay_SRC} main.cpp)
