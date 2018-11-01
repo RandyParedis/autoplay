@@ -37,6 +37,22 @@ void merge(pt::ptree& pt, const pt::ptree& updates) {
     }
 }
 
+/**
+ * Print the contents of a ptree
+ * @param pt        The ptree to print
+ * @param logger    The logger to print to
+ * @param prepend   A path that must be prepended to all values
+ */
+void print_options(const pt::ptree& pt, zz::log::LoggerPtr& logger, const std::string& prepend = "") {
+    for(const auto& o : pt) {
+        if(o.second.empty()) {
+            logger->debug("\t") << prepend << o.first << ": " << pt.get<std::string>(o.first);
+        } else {
+            print_options(o.second, logger, prepend + o.first + ".");
+        }
+    }
+}
+
 Config::Config(int argc, char** argv) {
     // Setup System Logger
     zz::log::LogConfig::instance().set_format("[%datetime][%level]\t%msg");
@@ -96,12 +112,18 @@ Config::Config(int argc, char** argv) {
         m_logger->set_level_mask(0x3c);
     }
 
-    m_logger->debug("Parsed Options:");
     m_ptree.put("verbose", verbose);
-    m_logger->debug("\tVerbose: ") << (m_ptree.get<bool>("verbose") ? "yes" : "no");
+    m_ptree.put("play", play);
+
+    m_logger->debug("Parsed Options:");
     if(!filename.empty()) {
         m_logger->debug("\tConfig File: ") << filename;
     }
-    m_ptree.put("play", play);
-    m_logger->debug("\tPlay: ") << (m_ptree.get<bool>("play") ? "yes" : "no");
+    print_options(m_ptree, m_logger);
+}
+
+bool Config::isLeaf(const std::string& path) const {
+    auto pt = m_ptree.get_child(path);
+    return pt.empty();
+    // return false;
 }

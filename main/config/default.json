@@ -5,5 +5,8 @@
   "seed": 0,
   "generation": {
     "pitch": "random-piano"
+  },
+  "export": {
+    "filename": "music.xml"
   }
 }

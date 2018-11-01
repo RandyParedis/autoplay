@@ -48,6 +48,13 @@ public:
     template <typename T>
     T conf(const std::string& path) const;
 
+    /**
+     * Check if a ptree element at a certain path is a leaf.
+     * @param path The path to check
+     * @return True if it's a leaf.
+     */
+    bool isLeaf(const std::string& path) const;
+
 private:
     pt::ptree          m_ptree;  ///< The ptree that holds all
     zz::log::LoggerPtr m_logger; ///< The system logger that's used everywhere

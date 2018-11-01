@@ -6,4 +6,7 @@
     <generation>
         <pitch>random-piano</pitch>
     </generation>
+    <export>
+        <filename>music.xml</filename>
+    </export>
 </config>

@@ -39,7 +39,9 @@ int main(int argc, char** argv) {
         midiPlayer->play(score, config);
     }
 
-    FileHandler::writeMusicXML("test", score);
+    if(!config.isLeaf("export")) {
+        FileHandler::writeMusicXML(config.conf<std::string>("export.filename"), score);
+    }
 
     logger->info("Finished autoplayer");
 }
