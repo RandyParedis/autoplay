@@ -5,6 +5,8 @@
 #include "../../main/music/Measure.h"
 #include <gtest/gtest.h>
 
+using namespace autoplay;
+
 TEST(MeasureStandard, MeasureCreation) {
     music::Measure m{};
     EXPECT_FALSE(m.hasAttributes());
@@ -46,10 +48,10 @@ TEST(MeasureStandard, MeasureGettersSetters) {
 
     EXPECT_DEATH(m.setTime(2, 3), "");
 
-    m.setStaves(5);
-    EXPECT_EQ(m.getStaves(), 5);
-    m.setStaves();
-    EXPECT_EQ(m.getStaves(), 1);
+    m.setFifths(5);
+    EXPECT_EQ(m.getFifths(), 5);
+    m.setFifths();
+    EXPECT_EQ(m.getFifths(), 0);
 
     m.setDivisions(4);
     EXPECT_EQ(m.getDivisions(), 4);

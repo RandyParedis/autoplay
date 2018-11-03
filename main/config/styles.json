@@ -1,0 +1,195 @@
+{
+  "types": {
+    "monotonic": "100000000000",
+    "chromatic": "111111111111",
+    "dodecatonic": "111111111111",
+    "diatonic": {
+      "major": "101011010101",
+      "minor": "101101011010"
+    },
+    "whole-tone": "101010101010",
+    "hexatonic": "101010101010",
+    "heptatonic": {
+      "melodic": "101101010101",
+      "harmonic": "101101011001",
+
+      "aeolian": "101101011010",
+      "locrian": "110101101010",
+      "ionian": "101011010101",
+      "dorian": "101101010110",
+      "phrygian": "110101011010",
+      "lydian": "101010110101",
+      "mixolydian": "101011010110"
+    },
+    "octatonic": "101101101101",
+    "diminished": "101101101101",
+    "korsakov": "101101101101"
+  },
+
+  "styles": {
+    "default": {
+      "scale": "chromatic",
+      "root": "C",
+      "chance": 0.9,
+      "fifths": 0
+    },
+
+    "white-keys": {
+      "scale": "diatonic.major",
+      "chance": 0
+    },
+    "black-keys": {
+      "scale": "010100101010",
+      "fifths": -5,
+      "chance": 0
+    },
+
+    "C-major": {
+      "scale": "diatonic.major"
+    },
+    "F-major": {
+      "scale": "diatonic.major",
+      "fifths": -1,
+      "root": "F"
+    },
+    "Bb-major": {
+      "scale": "diatonic.major",
+      "fifths": -2,
+      "root": "Bb"
+    },
+    "Eb-major": {
+      "scale": "diatonic.major",
+      "fifths": -3,
+      "root": "Eb"
+    },
+    "Ab-major": {
+      "scale": "diatonic.major",
+      "fifths": -4,
+      "root": "Ab"
+    },
+    "Db-major": {
+      "scale": "diatonic.major",
+      "fifths": -5,
+      "root": "Db"
+    },
+    "Gb-major": {
+      "scale": "diatonic.major",
+      "fifths": -6,
+      "root": "Gb"
+    },
+    "Cb-major": {
+      "scale": "diatonic.major",
+      "fifths": -7,
+      "root": "Cb"
+    },
+    "G-major": {
+      "scale": "diatonic.major",
+      "fifths": 1,
+      "root": "G"
+    },
+    "D-major": {
+      "scale": "diatonic.major",
+      "fifths": 2,
+      "root": "D"
+    },
+    "A-major": {
+      "scale": "diatonic.major",
+      "fifths": 3,
+      "root": "A"
+    },
+    "E-major": {
+      "scale": "diatonic.major",
+      "fifths": 4,
+      "root": "E"
+    },
+    "B-major": {
+      "scale": "diatonic.major",
+      "fifths": 5,
+      "root": "B"
+    },
+    "F#-major": {
+      "scale": "diatonic.major",
+      "fifths": 6,
+      "root": "F#"
+    },
+    "C#-major": {
+      "scale": "diatonic.major",
+      "fifths": 7,
+      "root": "C#"
+    },
+
+    "A-minor": {
+      "scale": "diatonic.minor"
+    },
+    "D-minor": {
+      "scale": "diatonic.minor",
+      "fifths": -1,
+      "root": "D"
+    },
+    "G-minor": {
+      "scale": "diatonic.minor",
+      "fifths": -2,
+      "root": "G"
+    },
+    "C-minor": {
+      "scale": "diatonic.minor",
+      "fifths": -3,
+      "root": "C"
+    },
+    "F-minor": {
+      "scale": "diatonic.minor",
+      "fifths": -4,
+      "root": "F"
+    },
+    "Bb-minor": {
+      "scale": "diatonic.minor",
+      "fifths": -5,
+      "root": "Bb"
+    },
+    "Eb-minor": {
+      "scale": "diatonic.minor",
+      "fifths": -6,
+      "root": "Eb"
+    },
+    "Ab-minor": {
+      "scale": "diatonic.minor",
+      "fifths": -7,
+      "root": "Ab"
+    },
+    "E-minor": {
+      "scale": "diatonic.minor",
+      "fifths": 1,
+      "root": "E"
+    },
+    "B-minor": {
+      "scale": "diatonic.minor",
+      "fifths": 2,
+      "root": "B"
+    },
+    "F#-minor": {
+      "scale": "diatonic.minor",
+      "fifths": 3,
+      "root": "F#"
+    },
+    "C#-minor": {
+      "scale": "diatonic.minor",
+      "fifths": 4,
+      "root": "C#"
+    },
+    "G#-minor": {
+      "scale": "diatonic.minor",
+      "fifths": 5,
+      "root": "G#"
+    },
+    "D#-minor": {
+      "scale": "diatonic.minor",
+      "fifths": 6,
+      "root": "D#"
+    },
+    "A#-minor": {
+      "scale": "diatonic.minor",
+      "fifths": 7,
+      "root": "A#"
+    }
+  }
+}

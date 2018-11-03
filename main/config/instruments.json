@@ -1,0 +1,42 @@
+{
+  "Acoustic Grand Piano": {
+    "channel": 1,
+    "program": 1,
+    "unpitched": 0
+  },
+  "Bright Acoustic Piano": {
+    "channel": 1,
+    "program": 2,
+    "unpitched": 0
+  },
+  "Electric Grand Piano": {
+    "channel": 1,
+    "program": 3,
+    "unpitched": 0
+  },
+  "Honky-tonk Piano": {
+    "channel": 1,
+    "program": 4,
+    "unpitched": 0
+  },
+  "Electric Piano 1": {
+    "channel": 1,
+    "program": 5,
+    "unpitched": 0
+  },
+  "Electric Piano 2": {
+    "channel": 1,
+    "program": 6,
+    "unpitched": 0
+  },
+  "Hapsichord": {
+    "channel": 1,
+    "program": 7,
+    "unpitched": 0
+  },
+  "Clavinet": {
+    "channel": 1,
+    "program": 8,
+    "unpitched": 0
+  }
+}

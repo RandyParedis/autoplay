@@ -32,8 +32,25 @@ The file contains of the following tree structure and fields:
  specifically: which algorithm will be used for generating the random numbers.<br>This field
  can be any of the following:
     - `lcg64`: Use a linear congruential generator with modulus 2^64
+    - `lcg64_shift`: Use a linear congruential generator with modulus 2^64 with additional
+                     bit-shift transformation.
+    - `mrg2`: Use a multiple recurrence generator based on a linear feed-back shift register
+              sequence over F_{2^31-1} of depth 2.
+    - `mrg3`: Use a multiple recurrence generator based on a linear feed-back shift register
+              sequence over F_{2^31-1} of depth 3.
+    - `mrg4`: Use a multiple recurrence generator based on a linear feed-back shift register
+              sequence over F_{2^31-1} of depth 4.
     - `mrg5`: Use a multiple recurrence generator based on a linear feed-back shift register
-    sequence over F_{2^31-1} of depth 5.
+              sequence over F_{2^31-1} of depth 5.
+    - `mrg5s`: Use a multiple recurrence generator based on a linear feed-back shift register
+               sequence over F_m of depth 5, with `m` being a Sophie-Germain Prime.
+    - `mt19937`: Use a Mersenne twister, generating 32 random bits.
+    - `mt19937_64`: Use a Mersenne twister, generating 64 random bits.
+    - `yarn2`: Use a multiple recursive generator with 2 feedback taps.
+    - `yarn3`: Use a multiple recursive generator with 3 feedback taps.
+    - `yarn4`: Use a multiple recursive generator with 4 feedback taps.
+    - `yarn5`: Use a multiple recursive generator with 5 feedback taps.
+    - `yarn5s`: Use a multiple recursive generator with 5 feedback taps.
  - `seed`: The seed to give the engine. This way, the same seed returns the same music.
  Obviously, when more options are added and more things are being randomized, the same seed
  will yield different results.
@@ -43,6 +60,8 @@ The file contains of the following tree structure and fields:
     - `pitch`: The algorithm to use when creating the pitches. It can be one of the following:
        - `random-piano`: To generate completely random pitches, playable by a keyboard/piano.
        - Anything else will generate completely random pitches within the entire music range.
+ - `style`: Either a style object, or a string representing a style. See the _Styles_ page
+ for more info.
  
 For more info, please take a look at the `main/config/default.json` config file.
 _**Note:** This file will be read and used as (default) input (config) for the program on

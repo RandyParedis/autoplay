@@ -5,6 +5,8 @@
 #include "../../main/music/Note.h"
 #include <gtest/gtest.h>
 
+using namespace autoplay;
+
 TEST(NoteStandard, PauseCreation) {
     unsigned int dur = 12;
 

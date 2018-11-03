@@ -22,25 +22,27 @@
 
 #define SLEEP(milliseconds) usleep((unsigned long)((milliseconds)*1000.0))
 
+using namespace autoplay;
+
 int main(int argc, char** argv) {
     // Create the Logger
-    Config config{argc, argv};
-    auto   logger = config.getLogger();
+    util::Config config{argc, argv};
+    auto         logger = config.getLogger();
     logger->info("Started autoplayer");
 
     // Probe information
     std::shared_ptr<music::MIDIPlayer> midiPlayer = music::MIDIPlayer::instance();
     midiPlayer->probe(config);
 
-    Generator    generator{config};
-    music::Score score = generator.generate();
+    util::Generator generator{config};
+    music::Score    score = generator.generate();
 
     if(config.conf<bool>("play")) {
         midiPlayer->play(score, config);
     }
 
     if(!config.isLeaf("export")) {
-        FileHandler::writeMusicXML(config.conf<std::string>("export.filename"), score);
+        util::FileHandler::writeMusicXML(config.conf<std::string>("export.filename"), score);
     }
 
     logger->info("Finished autoplayer");

@@ -9,121 +9,171 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
-/**
- * Merge two ptrees together
- * @param pt        The root container
- * @param updates   The ptree containing updates
- *
- * @note    The good enough solution has two limitations:
- *          - the tree can only be two layers (e.g. "first.number", but not "first.again.number")
- *          - values can only be stored in leaf nodes.
- *
- * @copyright
- * https://stackoverflow.com/questions/8154107/how-do-i-merge-update-a-boostproperty-treeptree/8175833
- */
-void merge(pt::ptree& pt, const pt::ptree& updates) {
-    BOOST_FOREACH(auto& update, updates) {
-        if(update.second.empty()) {
-            if(!update.first.empty()) { // list
-                pt.put(update.first, updates.get<std::string>(update.first));
+namespace autoplay {
+    namespace util {
+        bool check_binary(const std::string& b) {
+            for(const auto& c : b) {
+                if(c != '0' && c != '1') {
+                    return false;
+                }
             }
-        } else {
-            if(update.second.back().first.empty()) { // if list
-                pt.put_child(update.first, update.second);
-            } else {
-                merge(pt.get_child(update.first), update.second);
+            return true;
+        }
+
+        Config::Config(int argc, char** argv) {
+            // Setup System Logger
+            zz::log::LogConfig::instance().set_format("[%datetime][%level]\t%msg");
+            m_logger = zz::log::get_logger("system_logger");
+
+            // Read default configuration file
+            FileHandler fileHandler;
+            std::string filename = "../config/default.json";
+            try {
+                fileHandler.readConfig(filename);
+                m_ptree = *fileHandler.getRoot();
+            } catch(std::invalid_argument& e) {
+                m_logger->fatal(e.what());
+                exit(EXIT_FAILURE);
+            }
+
+            // Set & Parse command line arguments
+            zz::cfg::ArgParser parser;
+            parser.add_opt_help('h', "help");
+            parser.add_opt_version(-1, "version",
+                                   "autoplay version " + getAutoplayVersion() + "\n\tCreated by Randy Paredis");
+            bool verbose;
+            parser.add_opt_flag('v', "verbose", "how much logging should happen", &verbose);
+            bool play;
+            parser.add_opt_flag('p', "play", "should the music be played life", &play);
+            parser.add_opt_value<std::string>('c', "config", filename, "", "load a config file", "filename");
+
+            parser.parse(argc, argv);
+
+            if(parser.count_error() > 0) {
+                m_logger->fatal() << parser.get_error();
+                std::cout << parser.get_help() << std::endl;
+                exit(EXIT_FAILURE);
+            }
+
+            if(!filename.empty()) {
+                FileHandler fh;
+                try {
+                    fh.readConfig(filename);
+                    auto mpt = *fh.getRoot();
+                    merge(m_ptree, mpt);
+                } catch(std::invalid_argument& e) { m_logger->error(e.what()); }
+            }
+
+            if(m_ptree.count("verbose") == 1 && !verbose) {
+                verbose = m_ptree.get<bool>("verbose");
+            } else if(m_ptree.count("verbose") > 1) {
+                m_logger->error("Invalid amount of 'verbose' attributes found!");
+            }
+
+            if(m_ptree.count("play") == 1 && !play) {
+                play = m_ptree.get<bool>("play");
+            } else if(m_ptree.count("play") > 1) {
+                m_logger->error("Invalid amount of 'play' attributes found!");
+            }
+
+            if(!verbose) {
+                m_logger->set_level_mask(0x3c);
+            }
+
+            m_ptree.put("verbose", verbose);
+            m_ptree.put("play", play);
+
+            loadInstruments("../config/instruments.json");
+            loadStyles("../config/styles.json");
+
+            m_logger->debug("Parsed Options:");
+            if(!filename.empty()) {
+                m_logger->debug("\tConfig File: ") << filename;
+            }
+            print_options(m_ptree, m_logger);
+        }
+
+        bool Config::isLeaf(const std::string& path) const {
+            auto pt = m_ptree.get_child(path);
+            return pt.empty();
+        }
+
+        void Config::loadInstruments(const std::string& filename) {
+            FileHandler fileHandler;
+            try {
+                fileHandler.readConfig(filename);
+                m_instruments = *fileHandler.getRoot();
+                m_logger->debug("Loaded {} instrument(s).", m_instruments.size());
+            } catch(std::invalid_argument& e) {
+                m_logger->fatal(e.what());
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        void Config::loadStyles(const std::string& filename) {
+            FileHandler fileHandler;
+            try {
+                fileHandler.readConfig(filename);
+                m_styles = *fileHandler.getRoot();
+                m_logger->debug("Loaded {} style(s).", m_styles.get_child("styles").size());
+            } catch(std::invalid_argument& e) {
+                m_logger->fatal(e.what());
+                exit(EXIT_FAILURE);
+            }
+
+            // Set current style
+            if(m_ptree.get_child("style").empty()) {
+                auto style_name = m_ptree.get<std::string>("style");
+                if(m_styles.get_child("styles").count(style_name) == 0) {
+                    m_logger->warn("Invalid style '{}'. Using 'default' instead.", style_name);
+                    style_name = "default";
+                }
+                auto sty = m_styles.get_child("styles." + style_name);
+                if(style_name != "default") {
+                    merge(sty, m_styles.get_child("styles.default"));
+                }
+                auto g = sty.get<std::string>("scale", "chromatic");
+                if(!check_binary(g)) {
+                    sty.put("scale", m_styles.get<std::string>("types." + g, "111111111111"));
+                }
+                m_ptree.put_child("style", sty);
+            }
+        }
+
+        std::shared_ptr<music::Instrument> Config::getInstrument(const std::string& name) const {
+            auto channel   = m_instruments.get<int>(name + ".channel", 0);
+            auto program   = m_instruments.get<int>(name + ".program", 0);
+            auto unpitched = m_instruments.get<int>(name + ".unpitched", 0);
+
+            return std::make_shared<music::Instrument>(name, channel, program, unpitched);
+        }
+
+        pt::ptree Config::getStyle(const std::string& name) const { return m_styles.get_child(name); }
+
+        void merge(pt::ptree& pt, const pt::ptree& updates) {
+            BOOST_FOREACH(auto& update, updates) {
+                if(update.second.empty()) {
+                    if(!update.first.empty()) { // list
+                        pt.put(update.first, updates.get<std::string>(update.first));
+                    }
+                } else {
+                    if(update.second.back().first.empty()) { // if list
+                        pt.put_child(update.first, update.second);
+                    } else {
+                        merge(pt.get_child(update.first), update.second);
+                    }
+                }
+            }
+        }
+
+        void print_options(const pt::ptree& pt, zz::log::LoggerPtr& logger, const std::string& prepend) {
+            for(const auto& o : pt) {
+                if(o.second.empty()) {
+                    logger->debug("\t") << prepend << o.first << ": " << pt.get<std::string>(o.first);
+                } else {
+                    print_options(o.second, logger, prepend + o.first + ".");
+                }
             }
         }
     }
-}
-
-/**
- * Print the contents of a ptree
- * @param pt        The ptree to print
- * @param logger    The logger to print to
- * @param prepend   A path that must be prepended to all values
- */
-void print_options(const pt::ptree& pt, zz::log::LoggerPtr& logger, const std::string& prepend = "") {
-    for(const auto& o : pt) {
-        if(o.second.empty()) {
-            logger->debug("\t") << prepend << o.first << ": " << pt.get<std::string>(o.first);
-        } else {
-            print_options(o.second, logger, prepend + o.first + ".");
-        }
-    }
-}
-
-Config::Config(int argc, char** argv) {
-    // Setup System Logger
-    zz::log::LogConfig::instance().set_format("[%datetime][%level]\t%msg");
-    m_logger = zz::log::get_logger("system_logger");
-
-    // Read default configuration file
-    FileHandler fileHandler;
-    std::string filename = "../config/default.json";
-    try {
-        fileHandler.readConfig(filename);
-        m_ptree = *fileHandler.getRoot();
-    } catch(std::invalid_argument& e) {
-        m_logger->fatal(e.what());
-        exit(EXIT_FAILURE);
-    }
-
-    // Set & Parse command line arguments
-    zz::cfg::ArgParser parser;
-    parser.add_opt_help('h', "help");
-    parser.add_opt_version(-1, "version", "autoplay version " + getAutoplayVersion() + "\n\tCreated by Randy Paredis");
-    bool verbose;
-    parser.add_opt_flag('v', "verbose", "how much logging should happen", &verbose);
-    bool play;
-    parser.add_opt_flag('p', "play", "should the music be played life", &play);
-    parser.add_opt_value<std::string>('c', "config", filename, "", "load a config file", "filename");
-
-    parser.parse(argc, argv);
-
-    if(parser.count_error() > 0) {
-        m_logger->fatal() << parser.get_error();
-        std::cout << parser.get_help() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    if(!filename.empty()) {
-        FileHandler fh;
-        try {
-            fh.readConfig(filename);
-            auto mpt = *fh.getRoot();
-            merge(m_ptree, mpt);
-        } catch(std::invalid_argument& e) { m_logger->error(e.what()); }
-    }
-
-    if(m_ptree.count("verbose") == 1 && !verbose) {
-        verbose = m_ptree.get<bool>("verbose");
-    } else if(m_ptree.count("verbose") > 1) {
-        m_logger->error("Invalid amount of 'verbose' attributes found!");
-    }
-
-    if(m_ptree.count("play") == 1 && !play) {
-        play = m_ptree.get<bool>("play");
-    } else if(m_ptree.count("play") > 1) {
-        m_logger->error("Invalid amount of 'play' attributes found!");
-    }
-
-    if(!verbose) {
-        m_logger->set_level_mask(0x3c);
-    }
-
-    m_ptree.put("verbose", verbose);
-    m_ptree.put("play", play);
-
-    m_logger->debug("Parsed Options:");
-    if(!filename.empty()) {
-        m_logger->debug("\tConfig File: ") << filename;
-    }
-    print_options(m_ptree, m_logger);
-}
-
-bool Config::isLeaf(const std::string& path) const {
-    auto pt = m_ptree.get_child(path);
-    return pt.empty();
-    // return false;
 }
