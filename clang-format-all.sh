@@ -66,6 +66,7 @@ for dir in "$@"; do
                   -o -name '*.cpp' \
                   -o -name '*.h' \
                   -o -name '*.hh' \
+                  -o -name '*.h.in' \
                   -o -name '*.hpp'); do
         "${FMT}" -i "${f}"
         echo "${f}"

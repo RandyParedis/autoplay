@@ -112,3 +112,4 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 27-10-2018 | Added `Part`, `Score` and `MIDIPlayer` classes.
 | 27-10-2018 | Added `Config` class.
 | 28-10-2018 | Added pipeline that executes `autoplayer`: It parses arguments, probes output ports, generates the music and plays it.
+| 03-11-2018 | Added modularity for Instruments and Styles. 

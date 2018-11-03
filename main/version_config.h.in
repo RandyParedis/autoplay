@@ -7,8 +7,6 @@
 
 #include <string>
 
-std::string getAutoplayVersion() {
-    return "@AUTOPLAY_VERSION@";
-}
+std::string getAutoplayVersion() { return "@AUTOPLAY_VERSION@"; }
 
-#endif //AUTOPLAY_VERSION_CONFIG_H
+#endif // AUTOPLAY_VERSION_CONFIG_H
