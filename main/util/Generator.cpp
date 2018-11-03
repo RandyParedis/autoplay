@@ -20,7 +20,7 @@ namespace autoplay {
             // Setup default values
             // TODO: Randomize these
             unsigned int length     = 10; // Total amount of measures
-            unsigned int part_count = 1;  // Number of parts
+            unsigned int part_count = 2;  // Number of parts
             uint8_t      divisions  = 24; // Amount of 'ticks' each quarter note takes
             std::pair<uint8_t, uint8_t> time = {4, 4};
 
@@ -35,7 +35,7 @@ namespace autoplay {
                 music::Measure measure{music::Clef::Treble(), time, divisions, m_config.conf<int>("style.fifths")};
 
                 auto instrument = m_config.getInstrument("Acoustic Grand Piano");
-                instrument->setChannel((uint8_t)i);
+                instrument->setChannel((uint8_t)(i + 1));
                 std::shared_ptr<music::Part> part = std::make_shared<music::Part>(instrument);
 
                 for(unsigned int j = 0; j < length * measure.max_length();) {

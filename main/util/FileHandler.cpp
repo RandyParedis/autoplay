@@ -141,8 +141,6 @@ namespace autoplay {
 
                         auto repr = music::Note::splitPitch(music::Note::pitchRepr(note.getPitch()), s);
 
-                        note_tree.put("duration", note.getDuration());
-
                         if(note.isPause()) {
                             note_tree.put("rest", "");
                             continue;
@@ -155,6 +153,7 @@ namespace autoplay {
                             note_tree.put("pitch.alter", -1);
                         }
                         note_tree.put("pitch.octave", repr.second);
+                        note_tree.put("duration", note.getDuration());
 
                         auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
                         if(it != links.end()) {
