@@ -110,21 +110,21 @@ namespace autoplay {
         }
 
         std::vector<uint8_t> Generator::getPitches(uint8_t min, uint8_t max) const {
-            std::vector<uint8_t> ret = {};
-            auto scale = m_config.conf<std::string>("style.scale");
+            std::vector<uint8_t> ret   = {};
+            auto                 scale = m_config.conf<std::string>("style.scale");
             if(scale.length() != 12) {
                 m_config.getLogger()->fatal("Invalid scale '{}'! Impossible to generate pitches.", scale);
                 exit(EXIT_FAILURE);
             }
 
             // Generate pitch sequence
-            auto root = m_config.conf<char>("style.root");
+            auto              root = m_config.conf<char>("style.root");
             std::stringstream ss;
             ss << root << "-1";
-            auto min_root = music::Note::pitch(ss.str());
-            std::string notes = "";
+            auto        min_root = music::Note::pitch(ss.str());
+            std::string notes    = "";
             for(uint8_t i = 0; i < min_root; ++i) {
-                notes.push_back((char)scale.at(scale.length()-1-i));
+                notes.push_back((char)scale.at(scale.length() - 1 - i));
             }
             std::reverse(notes.begin(), notes.end());
             for(uint8_t i = min_root; i < 127; ++i) {
@@ -133,12 +133,16 @@ namespace autoplay {
 
             // Generate pitches
             uint8_t cnt = 0;
-            for(const char& c: notes) {
+            for(const char& c : notes) {
                 ++cnt;
-                if(cnt < min) { continue; }
-                if(cnt > max) { break; }
+                if(cnt < min) {
+                    continue;
+                }
+                if(cnt > max) {
+                    break;
+                }
                 if(c == '1') {
-                    ret.emplace_back(cnt-1);
+                    ret.emplace_back(cnt - 1);
                 }
             }
 
