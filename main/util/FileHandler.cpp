@@ -6,6 +6,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+#include <boost/foreach.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <list>
@@ -27,6 +28,16 @@ namespace autoplay {
             if(!root.empty()) {
                 m_root = m_root.get_child(root);
             }
+            // parse parts into list
+            pt::ptree tmp;
+            BOOST_FOREACH(auto update, m_root.get_child("parts")) {
+                if(update.first == "part") {
+                    tmp.push_back(std::make_pair("", update.second));
+                    // m_root.add_child("parts.", update.second);
+                }
+            }
+            m_root.erase("parts");
+            m_root.add_child("parts", tmp);
         }
 
         void FileHandler::readConfig(const std::string& filename) {

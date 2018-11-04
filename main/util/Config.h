@@ -124,6 +124,7 @@ namespace autoplay {
          * Merge two ptrees together
          * @param pt        The root container
          * @param updates   The ptree containing updates
+         * @param overwrite When true, it will overwrite the ptree with the new values.
          *
          * @note    The good enough solution has two limitations:
          *          - the tree can only be two layers (e.g. "first.number", but not
@@ -133,7 +134,7 @@ namespace autoplay {
          * @copyright
          * https://stackoverflow.com/questions/8154107/how-do-i-merge-update-a-boostproperty-treeptree/8175833
          */
-        void merge(pt::ptree& pt, const pt::ptree& updates);
+        void merge(pt::ptree& pt, const pt::ptree& updates, bool overwrite = false);
 
         /**
          * Print the contents of a ptree

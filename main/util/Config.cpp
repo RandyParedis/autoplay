@@ -8,6 +8,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 namespace autoplay {
     namespace util {
@@ -139,7 +140,7 @@ namespace autoplay {
                 }
                 auto sty = m_styles.get_child("styles." + style_name);
                 if(style_name != "default") {
-                    merge(sty, m_styles.get_child("styles.default"));
+                    merge(sty, m_styles.get_child("styles.default"), true);
                 }
                 auto g = sty.get<std::string>("scale", "chromatic");
                 if(!check_binary(g)) {
@@ -175,11 +176,11 @@ namespace autoplay {
             throw std::invalid_argument("'" + name + "' is not a valid Clef.");
         }
 
-        void merge(pt::ptree& pt, const pt::ptree& updates) {
+        void merge(pt::ptree& pt, const pt::ptree& updates, bool overwrite) {
             BOOST_FOREACH(auto& update, updates) {
                 if(update.second.empty()) {
-                    if(!update.first.empty()) {                             // if leaf
-                        if(pt.get<std::string>(update.first, "").empty()) { // if must add
+                    if(!update.first.empty()) {                                          // if leaf
+                        if(overwrite && pt.get<std::string>(update.first, "").empty()) { // if must add
                             pt.put(update.first, updates.get<std::string>(update.first));
                         }
                     }
@@ -187,7 +188,7 @@ namespace autoplay {
                     if(update.second.back().first.empty()) { // if list
                         pt.put_child(update.first, update.second);
                     } else {
-                        merge(pt.get_child(update.first), update.second);
+                        merge(pt.get_child(update.first), update.second, overwrite);
                     }
                 }
             }

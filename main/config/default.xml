@@ -9,4 +9,15 @@
     <export>
         <filename>music.xml</filename>
     </export>
+    <style>default</style>
+    <parts>
+        <part>
+            <instrument>Acoustic Grand Piano</instrument>
+            <clef>Treble</clef>
+        </part>
+        <part>
+            <instrument>Acoustic Grand Piano</instrument>
+            <clef>Bass</clef>
+        </part>
+    </parts>
 </config>

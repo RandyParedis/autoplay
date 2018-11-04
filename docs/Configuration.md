@@ -63,7 +63,8 @@ The file contains of the following tree structure and fields:
        - Anything else will generate completely random pitches within the entire music range.
  - `style`: Either a style object, or a string representing a style. See the _Styles_ page
  for more info.
- - `parts`: A list of different parts, where each element contains the following sub-tree:
+ - `parts`: A list of different parts, where each element contains the following sub-tree
+ (when using an `XML`-file, each part must be inside a `part` element):
     - `instrument`: A string, containing the MIDI name of an instrument.
     - `clef`: The name of a clef (either `Treble`, `Bass` or `Alto`) as a string.
     - `generation`: This is the same element as the above-mentioned `generation` element, which
