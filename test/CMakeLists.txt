@@ -1,10 +1,14 @@
 
 set(test_SRC
-        main.cpp music/NoteTest.cpp music/MeasureTest.cpp)
+        music/ClefTest.cpp
+        music/InstrumentTest.cpp
+        music/MeasureTest.cpp
+        music/NoteTest.cpp
+        music/PartTest.cpp)
 
 find_package(GTest REQUIRED)
 
-add_executable(tests ${test_SRC})
+add_executable(tests main.cpp ${test_SRC})
 
 target_include_directories(tests PUBLIC ${GTEST_INCLUDE_DIRS})
 

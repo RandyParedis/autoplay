@@ -5,6 +5,7 @@
 #ifndef AUTOPLAY_INSTRUMENT_H
 #define AUTOPLAY_INSTRUMENT_H
 
+#include <cassert>
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,7 +28,9 @@ namespace autoplay {
              * Instrument
              */
             Instrument(std::string name, uint8_t channel, uint8_t program, uint8_t unpitched)
-                : m_name(std::move(name)), m_channel(channel), m_program(program), m_unpitched(unpitched) {}
+                : m_name(std::move(name)), m_channel(channel), m_program(program), m_unpitched(unpitched) {
+                assert(channel < 16);
+            }
 
             /**
              * Gets the name of the Instrument
@@ -63,7 +66,10 @@ namespace autoplay {
              * Sets the channel of the Instrument
              * @param channel New channel to set
              */
-            inline void setChannel(const uint8_t& channel) { m_channel = channel; }
+            inline void setChannel(const uint8_t& channel) {
+                assert(channel < 16);
+                m_channel = channel;
+            }
 
             /**
              * Sets the program of the Instrument

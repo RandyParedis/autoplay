@@ -93,6 +93,15 @@ namespace autoplay {
             print_options(m_ptree, m_logger);
         }
 
+        pt::ptree Config::conf_child(const std::string& path) const {
+            try {
+                return m_ptree.get_child(path);
+            } catch(pt::ptree_error& pte) {
+                m_logger->error("Invalid path for '{}'. Not found in config.", path);
+                return pt::ptree();
+            }
+        }
+
         bool Config::isLeaf(const std::string& path) const {
             auto pt = m_ptree.get_child(path);
             return pt.empty();
@@ -141,6 +150,9 @@ namespace autoplay {
         }
 
         std::shared_ptr<music::Instrument> Config::getInstrument(const std::string& name) const {
+            if(m_instruments.count(name) == 0) {
+                m_logger->warn("Unknown instrument '{}'", name);
+            }
             auto channel   = m_instruments.get<int>(name + ".channel", 0);
             auto program   = m_instruments.get<int>(name + ".program", 0);
             auto unpitched = m_instruments.get<int>(name + ".unpitched", 0);
@@ -150,11 +162,26 @@ namespace autoplay {
 
         pt::ptree Config::getStyle(const std::string& name) const { return m_styles.get_child(name); }
 
+        music::Clef Config::getClef(const std::string& name) const {
+            if(name == "Treble") {
+                return music::Clef::Treble();
+            }
+            if(name == "Bass") {
+                return music::Clef::Bass();
+            }
+            if(name == "Alto") {
+                return music::Clef::Alto();
+            }
+            throw std::invalid_argument("'" + name + "' is not a valid Clef.");
+        }
+
         void merge(pt::ptree& pt, const pt::ptree& updates) {
             BOOST_FOREACH(auto& update, updates) {
                 if(update.second.empty()) {
-                    if(!update.first.empty()) { // list
-                        pt.put(update.first, updates.get<std::string>(update.first));
+                    if(!update.first.empty()) {                             // if leaf
+                        if(pt.get<std::string>(update.first, "").empty()) { // if must add
+                            pt.put(update.first, updates.get<std::string>(update.first));
+                        }
                     }
                 } else {
                     if(update.second.back().first.empty()) { // if list
@@ -175,5 +202,7 @@ namespace autoplay {
                 }
             }
         }
+
+        pt::ptree ptree_at(pt::ptree const& pt, size_t n) { return std::next(pt.find(""), n)->second; }
     }
 }

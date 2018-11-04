@@ -8,6 +8,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <zupply/src/zupply.hpp>
 
+#include "../music/Clef.h"
 #include "../music/Instrument.h"
 
 /// Short alias for this namespace
@@ -53,6 +54,13 @@ namespace autoplay {
             T conf(const std::string& path) const;
 
             /**
+             * Get a child at a given path in the config ptree
+             * @param path  The path to check
+             * @return The child
+             */
+            pt::ptree conf_child(const std::string& path) const;
+
+            /**
              * Check if a ptree element at a certain path is a leaf.
              * @param path The path to check
              * @return True if it's a leaf.
@@ -87,6 +95,13 @@ namespace autoplay {
              * @return A ptree, containing all fields for this style.
              */
             pt::ptree getStyle(const std::string& name) const;
+
+            /**
+             * Fetches the Clef by name.
+             * @param name The name of the Clef. One of 'Treble', 'Bass', 'Alto'.
+             * @return The Clef.
+             */
+            music::Clef getClef(const std::string& name) const;
 
         private:
             pt::ptree          m_ptree;       ///< The ptree that holds all configuration data
@@ -127,6 +142,14 @@ namespace autoplay {
          * @param prepend   A path that must be prepended to all values
          */
         void print_options(const pt::ptree& pt, zz::log::LoggerPtr& logger, const std::string& prepend = "");
+
+        /**
+         * Index a specific element in a ptree array
+         * @param pt    The ptree to check
+         * @param n     The index of the element
+         * @return The ptree at position n in the array of ptree pt
+         */
+        pt::ptree ptree_at(pt::ptree const& pt, size_t n);
     }
 }
 

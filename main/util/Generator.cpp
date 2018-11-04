@@ -19,22 +19,29 @@ namespace autoplay {
         music::Score Generator::generate() {
             // Setup default values
             // TODO: Randomize these
-            unsigned int length     = 10; // Total amount of measures
-            unsigned int part_count = 2;  // Number of parts
-            uint8_t      divisions  = 24; // Amount of 'ticks' each quarter note takes
+            unsigned int  length     = 10; // Total amount of measures
+            auto          parts      = m_config.conf_child("parts");
+            unsigned long part_count = parts.size(); // Number of parts
+            uint8_t       divisions  = 24;           // Amount of 'ticks' each quarter note takes
             std::pair<uint8_t, uint8_t> time = {4, 4};
 
-            // Get Algorithm
-            auto pitch_algo = getPitchAlgorithm();
-
+            // Get Logger
             auto logger = m_config.getLogger();
 
             music::Score score;
             for(unsigned int i = 0; i < part_count; ++i) {
-                // Generate Notes
-                music::Measure measure{music::Clef::Treble(), time, divisions, m_config.conf<int>("style.fifths")};
+                auto pt_part = ptree_at(parts, i);
 
-                auto instrument = m_config.getInstrument("Acoustic Grand Piano");
+                pt::ptree options;
+                options.put("stave", i);
+
+                auto pitch_algo = getPitchAlgorithm(pt_part.get<std::string>("generation.pitch", ""));
+
+                // Generate Notes
+                music::Measure measure{m_config.getClef(pt_part.get<std::string>("clef", "Treble")), time, divisions,
+                                       m_config.conf<int>("style.fifths")};
+
+                auto instrument = m_config.getInstrument(pt_part.get<std::string>("instrument"));
                 instrument->setChannel((uint8_t)(i + 1));
                 std::shared_ptr<music::Part> part = std::make_shared<music::Part>(instrument);
 
@@ -51,7 +58,7 @@ namespace autoplay {
                             conc.emplace_back(n);
                         }
                     }
-                    uint8_t pitch    = pitch_algo(m_rnengine, prev, conc);
+                    uint8_t pitch    = pitch_algo(m_rnengine, prev, conc, options);
                     uint8_t duration = 24;
                     if(j + duration > length * measure.max_length()) {
                         duration = (uint8_t)(length * measure.max_length() - j);
@@ -92,20 +99,35 @@ namespace autoplay {
             return score;
         }
 
-        std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc)>
-        Generator::getPitchAlgorithm() const {
+        std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt)>
+        Generator::getPitchAlgorithm(std::string algo) const {
             // Get algorithm variables
-            auto algorithm = m_config.conf<std::string>("generation.pitch");
+            if(algo.empty()) {
+                algo = m_config.conf<std::string>("generation.pitch");
+            }
 
-            if(algorithm == "random-piano") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc) -> uint8_t {
-                    auto lst = getPitches(21, 108);
-                    return (uint8_t)Randomizer::pick_uniform(gen, lst);
-                };
+            m_config.getLogger()->debug("Using Pitch Algorithm '{}'", algo);
+
+            if(algo == "random-piano") {
+                return
+                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
+                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(21, 108));
+                    };
+            } else if(algo == "contain-stave") {
+                return
+                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
+                        auto stave  = pt.get<int>("stave");
+                        auto clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get<std::string>("clef");
+                        auto clef   = m_config.getClef(clef_n);
+                        auto range  = clef.range();
+
+                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second));
+                    };
             } else {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc) -> uint8_t {
-                    return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 127));
-                };
+                return
+                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
+                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 127));
+                    };
             }
         }
 

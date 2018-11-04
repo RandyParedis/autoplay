@@ -38,5 +38,374 @@
     "channel": 1,
     "program": 8,
     "unpitched": 0
+  },
+
+  "Celesta": {
+    "channel": 1,
+    "program": 9,
+    "unpitched": 0
+  },
+  "Glockenspiel": {
+    "channel": 1,
+    "program": 10,
+    "unpitched": 0
+  },
+  "Music Box": {
+    "channel": 1,
+    "program": 11,
+    "unpitched": 0
+  },
+  "Vibraphone": {
+    "channel": 1,
+    "program": 12,
+    "unpitched": 0
+  },
+  "Marimba": {
+    "channel": 1,
+    "program": 13,
+    "unpitched": 0
+  },
+  "Xylophone": {
+    "channel": 1,
+    "program": 14,
+    "unpitched": 0
+  },
+  "Tubular Bells": {
+    "channel": 1,
+    "program": 15,
+    "unpitched": 0
+  },
+  "Dulcimer": {
+    "channel": 1,
+    "program": 16,
+    "unpitched": 0
+  },
+
+  "Drawbar Organ": {
+    "channel": 1,
+    "program": 17,
+    "unpitched": 0
+  },
+  "Percussive Organ": {
+    "channel": 1,
+    "program": 18,
+    "unpitched": 0
+  },
+  "Rock Organ": {
+    "channel": 1,
+    "program": 19,
+    "unpitched": 0
+  },
+  "Church Organ": {
+    "channel": 1,
+    "program": 20,
+    "unpitched": 0
+  },
+  "Reed Organ": {
+    "channel": 1,
+    "program": 21,
+    "unpitched": 0
+  },
+  "Accordion": {
+    "channel": 1,
+    "program": 22,
+    "unpitched": 0
+  },
+  "Harmonica": {
+    "channel": 1,
+    "program": 23,
+    "unpitched": 0
+  },
+  "Tango Accordion": {
+    "channel": 1,
+    "program": 24,
+    "unpitched": 0
+  },
+
+  "Acoustic Guitar (nylon)": {
+    "channel": 1,
+    "program": 25,
+    "unpitched": 0
+  },
+  "Acoustic Guitar (steel)": {
+    "channel": 1,
+    "program": 26,
+    "unpitched": 0
+  },
+  "Electric Guitar (jazz)": {
+    "channel": 1,
+    "program": 27,
+    "unpitched": 0
+  },
+  "Electric Guitar (clean)": {
+    "channel": 1,
+    "program": 28,
+    "unpitched": 0
+  },
+  "Electric Guitar (muted)": {
+    "channel": 1,
+    "program": 29,
+    "unpitched": 0
+  },
+  "Overdriven Guitar": {
+    "channel": 1,
+    "program": 30,
+    "unpitched": 0
+  },
+  "Distortion Guitar": {
+    "channel": 1,
+    "program": 31,
+    "unpitched": 0
+  },
+  "Guitar Harmonics": {
+    "channel": 1,
+    "program": 32,
+    "unpitched": 0
+  },
+
+  "Acoustic Bass": {
+    "channel": 1,
+    "program": 33,
+    "unpitched": 0
+  },
+  "Electric Bass (finger)": {
+    "channel": 1,
+    "program": 34,
+    "unpitched": 0
+  },
+  "Electric Bass (pick)": {
+    "channel": 1,
+    "program": 35,
+    "unpitched": 0
+  },
+  "Fretless Bass": {
+    "channel": 1,
+    "program": 36,
+    "unpitched": 0
+  },
+  "Slap Bass 1": {
+    "channel": 1,
+    "program": 37,
+    "unpitched": 0
+  },
+  "Slap Bass 2": {
+    "channel": 1,
+    "program": 38,
+    "unpitched": 0
+  },
+  "Synth Bass 1": {
+    "channel": 1,
+    "program": 39,
+    "unpitched": 0
+  },
+  "Synth Bass 2": {
+    "channel": 1,
+    "program": 40,
+    "unpitched": 0
+  },
+
+  "Violin": {
+    "channel": 1,
+    "program": 41,
+    "unpitched": 0
+  },
+  "Viola": {
+    "channel": 1,
+    "program": 42,
+    "unpitched": 0
+  },
+  "Cello": {
+    "channel": 1,
+    "program": 43,
+    "unpitched": 0
+  },
+  "Contrabass": {
+    "channel": 1,
+    "program": 44,
+    "unpitched": 0
+  },
+  "Tremelo Strings": {
+    "channel": 1,
+    "program": 45,
+    "unpitched": 0
+  },
+  "Pizzicato Strings": {
+    "channel": 1,
+    "program": 46,
+    "unpitched": 0
+  },
+  "Orchestral Harp": {
+    "channel": 1,
+    "program": 47,
+    "unpitched": 0
+  },
+  "Timpani": {
+    "channel": 1,
+    "program": 48,
+    "unpitched": 0
+  },
+
+  "String Ensemble 1": {
+    "channel": 1,
+    "program": 49,
+    "unpitched": 0
+  },
+  "String Ensemble 2": {
+    "channel": 1,
+    "program": 50,
+    "unpitched": 0
+  },
+  "Synth Strings 1": {
+    "channel": 1,
+    "program": 51,
+    "unpitched": 0
+  },
+  "Synth Strings 2": {
+    "channel": 1,
+    "program": 52,
+    "unpitched": 0
+  },
+  "Choir Aahs": {
+    "channel": 1,
+    "program": 53,
+    "unpitched": 0
+  },
+  "Voice Oohs": {
+    "channel": 1,
+    "program": 54,
+    "unpitched": 0
+  },
+  "Synth Choir": {
+    "channel": 1,
+    "program": 55,
+    "unpitched": 0
+  },
+  "Orchestra Hit": {
+    "channel": 1,
+    "program": 56,
+    "unpitched": 0
+  },
+
+  "Trumpet": {
+    "channel": 1,
+    "program": 57,
+    "unpitched": 0
+  },
+  "Trombone": {
+    "channel": 1,
+    "program": 58,
+    "unpitched": 0
+  },
+  "Tuba": {
+    "channel": 1,
+    "program": 59,
+    "unpitched": 0
+  },
+  "Muted Trumpet": {
+    "channel": 1,
+    "program": 60,
+    "unpitched": 0
+  },
+  "French Horn": {
+    "channel": 1,
+    "program": 61,
+    "unpitched": 0
+  },
+  "Brass Section": {
+    "channel": 1,
+    "program": 62,
+    "unpitched": 0
+  },
+  "Synth Brass 1": {
+    "channel": 1,
+    "program": 63,
+    "unpitched": 0
+  },
+  "Synth Brass 2": {
+    "channel": 1,
+    "program": 64,
+    "unpitched": 0
+  },
+
+  "Soprano Sax": {
+    "channel": 1,
+    "program": 65,
+    "unpitched": 0
+  },
+  "Alto Sax": {
+    "channel": 1,
+    "program": 66,
+    "unpitched": 0
+  },
+  "Tenor Sax": {
+    "channel": 1,
+    "program": 67,
+    "unpitched": 0
+  },
+  "Baritone Sax": {
+    "channel": 1,
+    "program": 68,
+    "unpitched": 0
+  },
+  "Oboe": {
+    "channel": 1,
+    "program": 69,
+    "unpitched": 0
+  },
+  "English Horn": {
+    "channel": 1,
+    "program": 70,
+    "unpitched": 0
+  },
+  "Bassoon": {
+    "channel": 1,
+    "program": 71,
+    "unpitched": 0
+  },
+  "Clarinet": {
+    "channel": 1,
+    "program": 72,
+    "unpitched": 0
+  },
+
+  "Piccolo": {
+    "channel": 1,
+    "program": 73,
+    "unpitched": 0
+  },
+  "Flute": {
+    "channel": 1,
+    "program": 74,
+    "unpitched": 0
+  },
+  "Recorder": {
+    "channel": 1,
+    "program": 75,
+    "unpitched": 0
+  },
+  "Pan Flute": {
+    "channel": 1,
+    "program": 76,
+    "unpitched": 0
+  },
+  "Blown Bottle": {
+    "channel": 1,
+    "program": 77,
+    "unpitched": 0
+  },
+  "Shakuhachi": {
+    "channel": 1,
+    "program": 78,
+    "unpitched": 0
+  },
+  "Whistle": {
+    "channel": 1,
+    "program": 79,
+    "unpitched": 0
+  },
+  "Ocarina": {
+    "channel": 1,
+    "program": 80,
+    "unpitched": 0
   }
 }

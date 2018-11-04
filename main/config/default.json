@@ -4,10 +4,20 @@
   "engine": "lcg64",
   "seed": 0,
   "generation": {
-    "pitch": "random-piano"
+    "pitch": "contain-stave"
   },
   "export": {
     "filename": "music.xml"
   },
-  "style": "default"
+  "style": "default",
+  "parts": [
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Treble"
+    },
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Bass"
+    }
+  ]
 }

@@ -70,7 +70,7 @@ namespace autoplay {
                 // Add part to part-list
                 pt::ptree plt;
                 plt.put("<xmlattr>.id", "P" + std::to_string(part_idx));
-                plt.put("part-name", "Music");
+                plt.put("part-name", part->getInstrument()->getName());
 
                 // Add part to score-partwise
                 pt::ptree part_tree;

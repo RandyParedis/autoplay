@@ -37,12 +37,14 @@ int main(int argc, char** argv) {
     util::Generator generator{config};
     music::Score    score = generator.generate();
 
-    if(config.conf<bool>("play")) {
-        midiPlayer->play(score, config);
+    if(!config.isLeaf("export")) {
+        auto fname = config.conf<std::string>("export.filename");
+        logger->debug("Exporting Score to '{}'.", fname);
+        util::FileHandler::writeMusicXML(fname, score);
     }
 
-    if(!config.isLeaf("export")) {
-        util::FileHandler::writeMusicXML(config.conf<std::string>("export.filename"), score);
+    if(config.conf<bool>("play")) {
+        midiPlayer->play(score, config);
     }
 
     logger->info("Finished autoplayer");

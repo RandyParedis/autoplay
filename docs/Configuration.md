@@ -59,9 +59,16 @@ The file contains of the following tree structure and fields:
  the same result. It consists of:
     - `pitch`: The algorithm to use when creating the pitches. It can be one of the following:
        - `random-piano`: To generate completely random pitches, playable by a keyboard/piano.
+       - `contain-stave`: To generate random pitches, contained within the stave.
        - Anything else will generate completely random pitches within the entire music range.
  - `style`: Either a style object, or a string representing a style. See the _Styles_ page
  for more info.
+ - `parts`: A list of different parts, where each element contains the following sub-tree:
+    - `instrument`: A string, containing the MIDI name of an instrument.
+    - `clef`: The name of a clef (either `Treble`, `Bass` or `Alto`) as a string.
+    - `generation`: This is the same element as the above-mentioned `generation` element, which
+    allows for each stave to have an explicit algorithm set. If this element does not exist,
+    the above-set `generation` element will be used.
  
 For more info, please take a look at the `main/config/default.json` config file.
 _**Note:** This file will be read and used as (default) input (config) for the program on

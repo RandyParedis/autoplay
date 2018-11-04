@@ -5,7 +5,9 @@
 #ifndef AUTOPLAY_CLEF_H
 #define AUTOPLAY_CLEF_H
 
+#include <cassert>
 #include <cstdint>
+#include <utility>
 
 namespace autoplay {
     namespace music {
@@ -22,7 +24,9 @@ namespace autoplay {
              * @param octave_change The change in octave if required
              */
             Clef(unsigned char sign, uint8_t line, int octave_change = 0) noexcept
-                : m_sign(sign), m_line(line), m_clef_octave_change(octave_change) {}
+                : m_sign(sign), m_line(line), m_clef_octave_change(octave_change) {
+                assert(sign == 'G' || sign == 'F' || sign == 'C');
+            }
 
             static Clef Treble() { return Clef{'G', 2}; } ///< The Treble Clef (G on the second line)
             static Clef Bass() { return Clef{'F', 4}; }   ///< The Bass Clef (F on the fourth line)
@@ -50,7 +54,10 @@ namespace autoplay {
              * Sets the sign of the Clef
              * @param sign The new sign of the Clef
              */
-            inline void setSign(const unsigned char& sign) { m_sign = sign; }
+            inline void setSign(const unsigned char& sign) {
+                assert(sign == 'G' || sign == 'F' || sign == 'C');
+                m_sign = sign;
+            }
 
             /**
              * Sets the line of the Clef
@@ -65,13 +72,26 @@ namespace autoplay {
             inline void setOctaveChange(const int& octave_change) { m_clef_octave_change = octave_change; }
 
             /**
-             * Test Clefs
-             * @param rhs
+             * Clef Equality Operator
+             * @param rhs The other clef to check against this one
              * @return true if the Clefs are the same
              */
             bool operator==(const Clef rhs) const {
                 return m_sign == rhs.m_sign && m_line == rhs.m_line && m_clef_octave_change == rhs.m_clef_octave_change;
             }
+
+            /**
+             * Clef Inequality Operator
+             * @param rhs The other clef to check against this one
+             * @return false if the Clefs are the same
+             */
+            bool operator!=(const Clef rhs) const { return !(this->operator==(rhs)); }
+
+            /**
+             * Get the range of this Clef
+             * @return A pair <min, max> containing the range of this Clef.
+             */
+            std::pair<uint8_t, uint8_t> range();
 
         private:
             unsigned char m_sign;               ///< The sign of the Clef
