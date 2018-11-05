@@ -1,0 +1,69 @@
+{
+  "Treble": {
+    "sign": "G",
+    "line": 2,
+    "octave-change": 0
+  },
+  "French Violin": {
+    "sign": "G",
+    "line": 1,
+    "octave-change": 0
+  },
+  "French": {
+    "sign": "G",
+    "line": 1,
+    "octave-change": 0
+  },
+
+  "Bass": {
+    "sign": "F",
+    "line": 4,
+    "octave-change": 0
+  },
+  "Baritone-F": {
+    "sign": "F",
+    "line": 3,
+    "octave-change": 0
+  },
+  "Varbaritone": {
+    "sign": "F",
+    "line": 3,
+    "octave-change": 0
+  },
+  "Sub-Bass": {
+    "sign": "F",
+    "line": 5,
+    "octave-change": 0
+  },
+
+  "Alto": {
+    "sign": "C",
+    "line": 3,
+    "octave-change": 0
+  },
+  "Tenor": {
+    "sign": "C",
+    "line": 4,
+    "octave-change": 0
+  },
+  "Baritone-C": {
+    "sign": "C",
+    "line": 5,
+    "octave-change": 0
+  },
+  "Mezzo-Soprano": {
+    "sign": "C",
+    "line": 2,
+    "octave-change": 0
+  },
+  "Mezzosoprano": {
+    "sign": "C",
+    "line": 2,
+    "octave-change": 0
+  },
+  "Soprano": {
+    "sign": "C",
+    "line": 1,
+    "octave-change": 0
+  }
+}

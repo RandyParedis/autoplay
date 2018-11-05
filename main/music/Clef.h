@@ -26,6 +26,7 @@ namespace autoplay {
             Clef(unsigned char sign, uint8_t line, int octave_change = 0) noexcept
                 : m_sign(sign), m_line(line), m_clef_octave_change(octave_change) {
                 assert(sign == 'G' || sign == 'F' || sign == 'C');
+                assert(line > 0 && line < 6);
             }
 
             static Clef Treble() { return Clef{'G', 2}; } ///< The Treble Clef (G on the second line)
@@ -63,7 +64,10 @@ namespace autoplay {
              * Sets the line of the Clef
              * @param line The new line of the Clef
              */
-            inline void setLine(const uint8_t& line) { m_line = line; }
+            inline void setLine(const uint8_t& line) {
+                assert(line > 0 && line < 6);
+                m_line = line;
+            }
 
             /**
              * Sets the octave change of the Clef

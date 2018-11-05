@@ -66,7 +66,7 @@ The file contains of the following tree structure and fields:
  - `parts`: A list of different parts, where each element contains the following sub-tree
  (when using an `XML`-file, each part must be inside a `part` element):
     - `instrument`: A string, containing the MIDI name of an instrument.
-    - `clef`: The name of a clef (either `Treble`, `Bass` or `Alto`) as a string.
+    - `clef`: The name of a clef as a string, or a clef object (see _Clef_ page).
     - `generation`: This is the same element as the above-mentioned `generation` element, which
     allows for each stave to have an explicit algorithm set. If this element does not exist,
     the above-set `generation` element will be used.

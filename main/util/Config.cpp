@@ -86,6 +86,7 @@ namespace autoplay {
 
             loadInstruments("../config/instruments.json");
             loadStyles("../config/styles.json");
+            loadClefs("../config/clefs.json");
 
             m_logger->debug("Parsed Options:");
             if(!filename.empty()) {
@@ -150,6 +151,30 @@ namespace autoplay {
             }
         }
 
+        void Config::loadClefs(const std::string& filename) {
+            FileHandler fileHandler;
+            try {
+                fileHandler.readConfig(filename);
+                m_clefs = *fileHandler.getRoot();
+                m_logger->debug("Loaded {} clef(s).", m_clefs.size());
+            } catch(std::invalid_argument& e) {
+                m_logger->fatal(e.what());
+                exit(EXIT_FAILURE);
+            }
+
+            auto& parts = m_ptree.get_child("parts");
+            for(size_t i = 0; i < parts.size(); ++i) {
+                pt::ptree   clef;
+                auto&       part = ptree_at_ref(parts, i);
+                music::Clef c    = getClef(part.get<std::string>("clef"));
+
+                clef.put("sign", (char)c.getSign());
+                clef.put("line", (int)c.getLine());
+                clef.put("octave-change", c.getOctaveChange());
+                part.put_child("clef", clef);
+            }
+        }
+
         std::shared_ptr<music::Instrument> Config::getInstrument(const std::string& name) const {
             if(m_instruments.count(name) == 0) {
                 m_logger->warn("Unknown instrument '{}'", name);
@@ -164,16 +189,17 @@ namespace autoplay {
         pt::ptree Config::getStyle(const std::string& name) const { return m_styles.get_child(name); }
 
         music::Clef Config::getClef(const std::string& name) const {
-            if(name == "Treble") {
-                return music::Clef::Treble();
+            pt::ptree clef = m_clefs.get_child(name);
+
+            if(m_clefs.count(name) == 0) {
+                m_logger->warn("Unknown clef '{}'", name);
             }
-            if(name == "Bass") {
-                return music::Clef::Bass();
-            }
-            if(name == "Alto") {
-                return music::Clef::Alto();
-            }
-            throw std::invalid_argument("'" + name + "' is not a valid Clef.");
+
+            auto sign   = clef.get<char>("sign", 'G');
+            auto line   = (uint8_t)clef.get<int>("line", 2);
+            auto octave = clef.get<int>("octave-change", 0);
+
+            return music::Clef{(unsigned char)sign, line, octave};
         }
 
         void merge(pt::ptree& pt, const pt::ptree& updates, bool overwrite) {
@@ -204,6 +230,8 @@ namespace autoplay {
             }
         }
 
-        pt::ptree ptree_at(pt::ptree const& pt, size_t n) { return std::next(pt.find(""), n)->second; }
+        pt::ptree& ptree_at_ref(pt::ptree& pt, size_t n) { return std::next(pt.find(""), n)->second; }
+
+        pt::ptree ptree_at(const pt::ptree& pt, size_t n) { return std::next(pt.find(""), n)->second; }
     }
 }

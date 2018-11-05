@@ -80,6 +80,12 @@ namespace autoplay {
              */
             void loadStyles(const std::string& filename);
 
+            /**
+             * Load the clefs into this Config.
+             * @param filename
+             */
+            void loadClefs(const std::string& filename);
+
         public:
             /**
              * Fetches a shared pointer to an Instrument with a given name, as it was set
@@ -98,7 +104,7 @@ namespace autoplay {
 
             /**
              * Fetches the Clef by name.
-             * @param name The name of the Clef. One of 'Treble', 'Bass', 'Alto'.
+             * @param name The name of the Clef.
              * @return The Clef.
              */
             music::Clef getClef(const std::string& name) const;
@@ -107,6 +113,7 @@ namespace autoplay {
             pt::ptree          m_ptree;       ///< The ptree that holds all configuration data
             pt::ptree          m_instruments; ///< The ptree that holds all Instruments
             pt::ptree          m_styles;      ///< The ptree that holds all styles
+            pt::ptree          m_clefs;       ///< The ptree that holds all Clefs
             zz::log::LoggerPtr m_logger;      ///< The system logger that's used everywhere
         };
 
@@ -150,7 +157,15 @@ namespace autoplay {
          * @param n     The index of the element
          * @return The ptree at position n in the array of ptree pt
          */
-        pt::ptree ptree_at(pt::ptree const& pt, size_t n);
+        pt::ptree& ptree_at_ref(pt::ptree& pt, size_t n);
+
+        /**
+         * Index a specific element in a ptree array
+         * @param pt    The ptree to check
+         * @param n     The index of the element
+         * @return The ptree at position n in the array of ptree pt
+         */
+        pt::ptree ptree_at(const pt::ptree& pt, size_t n);
     }
 }
 

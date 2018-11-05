@@ -38,8 +38,9 @@ namespace autoplay {
                 auto pitch_algo = getPitchAlgorithm(pt_part.get<std::string>("generation.pitch", ""));
 
                 // Generate Notes
-                music::Measure measure{m_config.getClef(pt_part.get<std::string>("clef", "Treble")), time, divisions,
-                                       m_config.conf<int>("style.fifths")};
+                music::Clef clef{pt_part.get<unsigned char>("clef.sign", 'G'),
+                                 (uint8_t)pt_part.get<int>("clef.line", 2), pt_part.get<int>("clef.octave-change", 0)};
+                music::Measure measure{clef, time, divisions, m_config.conf<int>("style.fifths")};
 
                 auto instrument = m_config.getInstrument(pt_part.get<std::string>("instrument"));
                 instrument->setChannel((uint8_t)(i + 1));
@@ -116,10 +117,13 @@ namespace autoplay {
             } else if(algo == "contain-stave") {
                 return
                     [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
-                        auto stave  = pt.get<int>("stave");
-                        auto clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get<std::string>("clef");
-                        auto clef   = m_config.getClef(clef_n);
-                        auto range  = clef.range();
+                        auto        stave  = pt.get<int>("stave");
+                        auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
+                        music::Clef clef   = music::Clef::Treble();
+                        clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
+                        clef.setLine((uint8_t)clef_n.get<int>("line", 2));
+                        clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
+                        auto range = clef.range();
 
                         return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second));
                     };
@@ -140,11 +144,14 @@ namespace autoplay {
             }
 
             // Generate pitch sequence
-            auto              root = m_config.conf<char>("style.root");
             std::stringstream ss;
+
+            auto root = m_config.conf<char>("style.root");
             ss << root << "-1";
-            auto        min_root = music::Note::pitch(ss.str());
-            std::string notes    = "";
+            auto min_root = music::Note::pitch(ss.str());
+
+            std::string notes = "";
+
             for(uint8_t i = 0; i < min_root; ++i) {
                 notes.push_back((char)scale.at(scale.length() - 1 - i));
             }
