@@ -7,7 +7,10 @@
     "pitch": "contain-stave"
   },
   "export": {
-    "filename": "music.xml"
+    "filename": "music.xml",
+    "title": "My Score",
+    "composer": "autoplay v@VERSION@",
+    "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
   },
   "style": "default",
   "parts": [

@@ -61,6 +61,13 @@ The file contains of the following tree structure and fields:
        - `random-piano`: To generate completely random pitches, playable by a keyboard/piano.
        - `contain-stave`: To generate random pitches, contained within the stave.
        - Anything else will generate completely random pitches within the entire music range.
+ - `export`: A small sub-tree, containing some values for exporting to MusicXML. When using
+ the string `@VERSION@` in the elements of this sub-tree, the current version of autoplay
+ will be used.
+    - `filename`: The filename to export to.
+    - `title`: The title of the piece. Not required.
+    - `composer`: The composer of the piece.
+    - `rights`: Additional copyright information for the piece.
  - `style`: Either a style object, or a string representing a style. See the _Styles_ page
  for more info.
  - `parts`: A list of different parts, where each element contains the following sub-tree

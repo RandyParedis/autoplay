@@ -13,7 +13,13 @@ set(autoplay_SRC
         music/MIDIPlayer.cpp
         music/MIDIPlayer.h
         util/Config.cpp
-        util/Config.h util/Generator.cpp util/Generator.h util/RNEngine.cpp util/RNEngine.h music/Clef.cpp)
+        util/Config.h
+        util/Generator.cpp
+        util/Generator.h
+        util/RNEngine.cpp
+        util/RNEngine.h
+        music/Clef.cpp
+        music/Score.cpp)
 
 add_library(autoplay ${autoplay_SRC})
 

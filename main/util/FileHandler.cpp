@@ -70,8 +70,12 @@ namespace autoplay {
 
             boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
 
-            // Populize Ptree
-            file_tree.put_child("score-partwise", pt::ptree());
+            /// Populize Ptree
+            // Header data
+            auto header = score.getHeaderDataAsMusicXML();
+            file_tree.put_child("score-partwise", header);
+
+            // Score
             file_tree.put("score-partwise.<xmlattr>.version", "3.0");
             file_tree.put_child("score-partwise.part-list", pt::ptree());
             unsigned int part_idx = 0;

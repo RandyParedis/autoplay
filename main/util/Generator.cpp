@@ -28,7 +28,7 @@ namespace autoplay {
             // Get Logger
             auto logger = m_config.getLogger();
 
-            music::Score score;
+            music::Score score{m_config.conf_child("export")};
             for(unsigned int i = 0; i < part_count; ++i) {
                 auto pt_part = ptree_at(parts, i);
 
