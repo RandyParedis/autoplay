@@ -12,8 +12,11 @@ This file describes all planned features to be added in the future
 - Score
     - Custom length
     - Custom signature
+- MIDIPlayer
+    - Rhythmic Instruments
 - Config
+    - Make it so the execution does not break on invalid input
     - _(Ability to randomize anything)_
 - General Todo
     - Rhythmic instruments
-    - Rhythmic clefs
+    - Simple Installation

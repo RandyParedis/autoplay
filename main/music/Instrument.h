@@ -83,6 +83,12 @@ namespace autoplay {
              */
             inline void setUnpitched(const uint8_t& unpitched) { m_unpitched = unpitched; }
 
+            /**
+             * Check if the Instrument is a percussion Instrument
+             * @return true if the Instrument is of type 'percussion'
+             */
+            inline bool isPercussion() const { return m_unpitched > 0; }
+
         private:
             std::string m_name;      ///< The name of the Instrument
             uint8_t     m_channel;   ///< The channel of the Instrument

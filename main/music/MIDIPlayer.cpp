@@ -97,8 +97,13 @@ namespace autoplay {
                 std::vector<unsigned char> msg;
                 unsigned int               duration = 0; // total duration (counted in measures)
                 for(uint8_t i = 0; i < score.getParts().size(); ++i) {
-                    auto          part       = score.getParts().at(i);
-                    auto          instrument = part->getInstrument();
+                    auto part = score.getParts().at(i);
+                    if(part->getInstruments().size() > 1) {
+                        // TODO
+                        logger->warn("The current implementation does not yet support multiple-instrument parts");
+                        continue;
+                    }
+                    auto          instrument = part->getInstruments().at(0);
                     unsigned char m1         = (char)0xc0 + (unsigned char)i;
                     auto          m2         = (unsigned char)(instrument->getUnpitched() - 1);
                     msg                      = {m1, m2};

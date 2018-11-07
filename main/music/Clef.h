@@ -24,7 +24,7 @@ namespace autoplay {
              * @param octave_change The change in octave if required
              */
             Clef(unsigned char sign, uint8_t line, int octave_change = 0) noexcept
-                : m_sign(sign), m_line(line), m_clef_octave_change(octave_change) {
+                : m_sign(sign), m_line(line), m_clef_octave_change(octave_change), m_percussion(false) {
                 assert(sign == 'G' || sign == 'F' || sign == 'C');
                 assert(line > 0 && line < 6);
             }
@@ -70,6 +70,18 @@ namespace autoplay {
             }
 
             /**
+             * Set this Clef to a percussion Clef and back again.
+             * @param percussion When true, change to percussion.
+             */
+            inline void setPercussion(const bool& percussion) { m_percussion = percussion; }
+
+            /**
+             * Check if this Clef is a percussion Clef
+             * @return true if it is
+             */
+            inline bool isPercussion() const { return m_percussion; }
+
+            /**
              * Sets the octave change of the Clef
              * @param octave change The new line of the Clef
              */
@@ -101,6 +113,7 @@ namespace autoplay {
             unsigned char m_sign;               ///< The sign of the Clef
             uint8_t       m_line;               ///< The line on which the Clef is anchored
             int           m_clef_octave_change; ///< The change in octave if required
+            bool          m_percussion;         ///< If this Clef is percussion
         };
     }
 }

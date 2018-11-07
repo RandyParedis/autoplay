@@ -5,6 +5,8 @@
 #include "Generator.h"
 #include "Randomizer.h"
 
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/foreach.hpp>
 #include <sstream>
 
 namespace autoplay {
@@ -37,14 +39,48 @@ namespace autoplay {
 
                 auto pitch_algo = getPitchAlgorithm(pt_part.get<std::string>("generation.pitch", ""));
 
+                // Set Instrument(s)
+                bool                                            percussion;
+                std::vector<std::shared_ptr<music::Instrument>> instruments = {};
+                std::map<std::string, std::string> repr_to_head;
+                if(pt_part.count("instrument") == 0) {
+                    percussion = false;
+                    BOOST_FOREACH(auto& inst, pt_part.get_child("instruments")) {
+                        auto instrument = m_config.getInstrument(inst.second.get<std::string>("instrument"));
+                        instrument->setChannel(10);
+                        instruments.emplace_back(instrument);
+
+                        auto display = inst.second.get<std::string>("display", "C4");
+                        repr_to_head.insert(std::make_pair(display, inst.second.get<std::string>("symbol", "normal")));
+                    }
+                } else {
+                    auto instrument = m_config.getInstrument(pt_part.get<std::string>("instrument"));
+                    percussion      = instrument->isPercussion();
+                    instrument->setChannel((uint8_t)(i + 1));
+                    if(percussion) {
+                        instrument->setChannel(10);
+
+                        auto display = pt_part.get<std::string>("display", "C4");
+                        repr_to_head.insert(std::make_pair(display, pt_part.get<std::string>("symbol", "normal")));
+                    }
+                    instruments.emplace_back(instrument);
+                }
+
                 // Generate Notes
-                music::Clef clef{pt_part.get<unsigned char>("clef.sign", 'G'),
-                                 (uint8_t)pt_part.get<int>("clef.line", 2), pt_part.get<int>("clef.octave-change", 0)};
+                music::Clef clef = music::Clef::Treble();
+                if(percussion) {
+                    clef.setPercussion(true);
+                } else {
+                    clef = music::Clef{pt_part.get<unsigned char>("clef.sign", 'G'),
+                                       (uint8_t)pt_part.get<int>("clef.line", 2),
+                                       pt_part.get<int>("clef.octave-change", 0)};
+                }
                 music::Measure measure{clef, time, divisions, m_config.conf<int>("style.fifths")};
 
-                auto instrument = m_config.getInstrument(pt_part.get<std::string>("instrument"));
-                instrument->setChannel((uint8_t)(i + 1));
-                std::shared_ptr<music::Part> part = std::make_shared<music::Part>(instrument);
+                std::shared_ptr<music::Part> part = std::make_shared<music::Part>(instruments);
+                part->setLines((uint8_t)pt_part.get<int>("lines", 5));
+
+                part->setInstrumentName(pt_part.get<std::string>("name", ""));
 
                 for(unsigned int j = 0; j < length * measure.max_length();) {
                     music::Note* prev = nullptr;
@@ -65,12 +101,18 @@ namespace autoplay {
                         duration = (uint8_t)(length * measure.max_length() - j);
                     }
                     music::Note note{pitch, duration};
+
+                    if(pt_part.count("instrument") == 0 || percussion) {
+                        note.setHead(repr_to_head.at(music::Note::pitchRepr(pitch)));
+                    }
+
                     measure.append(note);
                     j += duration;
                 }
+
                 part->setMeasures(measure);
                 auto picked = Randomizer::pick_uniform<float>(m_rnengine, 0.0f, 1.0f);
-                if(picked <= m_config.conf<float>("style.chance")) {
+                if(!percussion && picked <= m_config.conf<float>("style.chance")) {
                     music::Note::Semitone s;
 
                     auto c  = part->back()->back().getPitch();
@@ -112,7 +154,8 @@ namespace autoplay {
             if(algo == "random-piano") {
                 return
                     [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
-                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(21, 108));
+                        auto stave = pt.get<int>("stave");
+                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(21, 108, stave));
                     };
             } else if(algo == "contain-stave") {
                 return
@@ -125,17 +168,18 @@ namespace autoplay {
                         clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
                         auto range = clef.range();
 
-                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second));
+                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second, stave));
                     };
             } else {
                 return
                     [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
-                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 127));
+                        auto stave = pt.get<int>("stave");
+                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 127, stave));
                     };
             }
         }
 
-        std::vector<uint8_t> Generator::getPitches(uint8_t min, uint8_t max) const {
+        std::vector<uint8_t> Generator::getPitches(uint8_t min, uint8_t max, int stave) const {
             std::vector<uint8_t> ret   = {};
             auto                 scale = m_config.conf<std::string>("style.scale");
             if(scale.length() != 12) {
@@ -143,14 +187,14 @@ namespace autoplay {
                 exit(EXIT_FAILURE);
             }
 
-            // Generate pitch sequence
+            // Generate full scale
             std::stringstream ss;
 
             auto root = m_config.conf<char>("style.root");
             ss << root << "-1";
             auto min_root = music::Note::pitch(ss.str());
 
-            std::string notes = "";
+            std::string notes;
 
             for(uint8_t i = 0; i < min_root; ++i) {
                 notes.push_back((char)scale.at(scale.length() - 1 - i));
@@ -158,6 +202,26 @@ namespace autoplay {
             std::reverse(notes.begin(), notes.end());
             for(uint8_t i = min_root; i < 127; ++i) {
                 notes.push_back((char)scale.at((unsigned)(i - min_root) % 12));
+            }
+
+            // Check for multiple Instrument(s)
+            auto part = ptree_at(m_config.conf_child("parts"), (size_t)stave);
+            if(part.count("instrument") == 0 ||
+               m_config.getInstrument(part.get<std::string>("instrument"))->isPercussion()) {
+                boost::replace_all(notes, "1", "0");
+                if(part.count("instruments") == 0) {
+                    auto p = music::Note::pitch(part.get<std::string>("display"));
+                    if(0 < p && p < 127) {
+                        notes.replace(p, 1, "1");
+                    }
+                } else {
+                    BOOST_FOREACH(auto& var, part.get_child("instruments")) {
+                        auto p = music::Note::pitch(var.second.get<std::string>("display"));
+                        if(0 < p && p < 127) {
+                            notes.replace(p, 1, "1");
+                        }
+                    }
+                }
             }
 
             // Generate pitches

@@ -24,14 +24,23 @@ namespace autoplay {
              * @param measures      The vector of shared pointers to different Measure
              * objects.
              */
-            explicit Part(std::shared_ptr<Instrument> instrument = nullptr, const MeasureList& measures = {})
-                : m_measures(measures), m_instrument(std::move(instrument)) {}
+            explicit Part(std::shared_ptr<Instrument> instrument, const MeasureList& measures = {})
+                : m_measures(measures), m_instruments({std::move(instrument)}), m_instrument_name(""), m_lines(5) {}
 
             /**
-             * Sets an Instrument
+             * Constructor of Part
+             * @param instruments   The list of Instrument pointers to link.
+             * @param measures      The vector of shared pointers to different Measure
+             * objects.
+             */
+            explicit Part(const std::vector<std::shared_ptr<Instrument>>& instruments, const MeasureList& measures = {})
+                : m_measures(measures), m_instruments(instruments), m_instrument_name("") {}
+
+            /**
+             * Adds an Instrument
              * @param i The Instrument to set
              */
-            inline void setInstrument(std::shared_ptr<Instrument> i) { m_instrument = std::move(i); }
+            inline void addInstrument(std::shared_ptr<Instrument> i) { m_instruments.emplace_back(std::move(i)); }
 
             /**
              * Sets a series of Measure pointers
@@ -47,10 +56,10 @@ namespace autoplay {
             inline void setMeasures(const Measure& m) { m_measures = m.measurize(); }
 
             /**
-             * Gets the Instrument of this Part
-             * @return The Instrument (as pointer)
+             * Gets the Instrument vector of this Part
+             * @return The Instrument vector (as a vector of pointers)
              */
-            inline std::shared_ptr<Instrument> getInstrument() const { return m_instrument; }
+            inline std::vector<std::shared_ptr<Instrument>> getInstruments() const { return m_instruments; }
 
             /**
              * Gets the Measures as a MeasureList object
@@ -68,6 +77,42 @@ namespace autoplay {
                 }
                 return m_measures.back();
             }
+
+            /**
+             * Sets the name of the Instrument explicitly
+             * @param name The name of the Instrument
+             */
+            inline void setInstrumentName(const std::string& name = "") { m_instrument_name = name; }
+
+            /**
+             * Gets the name of the Instrument, if set
+             * @return The name of the Instrument
+             */
+            inline std::string getInstrumentName() const {
+                if(m_instrument_name.empty()) {
+                    if(m_instruments.empty()) {
+                        return "";
+                    } else {
+                        return m_instruments.at(0)->getName();
+                    }
+                }
+                return m_instrument_name;
+            }
+
+            /**
+             * Set the amount of lines for this Part
+             * @param lines The new amount of lines
+             */
+            inline void setLines(uint8_t lines) {
+                assert(lines > 0 && lines < 10);
+                m_lines = lines;
+            }
+
+            /**
+             * Fetches the amount of lines for this Part
+             * @return The amount of lines
+             */
+            inline uint8_t getLines() const { return m_lines; }
 
             /**
              * Compute the note that is playing at a certain time
@@ -111,8 +156,10 @@ namespace autoplay {
             }
 
         private:
-            MeasureList                 m_measures;   ///< The Measure pointers of this Part
-            std::shared_ptr<Instrument> m_instrument; ///< The Instrument of this Part
+            MeasureList                              m_measures;        ///< The Measure pointers of this Part
+            std::vector<std::shared_ptr<Instrument>> m_instruments;     ///< The Instrument vector of this Part
+            std::string                              m_instrument_name; ///< The Instrument Name
+            uint8_t                                  m_lines;           ///< The amount of lines for a stave
         };
     }
 }

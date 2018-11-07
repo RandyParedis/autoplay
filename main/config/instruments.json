@@ -407,5 +407,493 @@
     "channel": 1,
     "program": 80,
     "unpitched": 0
+  },
+
+  "Lead 1 (square)": {
+    "channel": 1,
+    "program": 81,
+    "unpitched": 0
+  },
+  "Lead 2 (sawtooth)": {
+    "channel": 1,
+    "program": 82,
+    "unpitched": 0
+  },
+  "Lead 3 (calliope)": {
+    "channel": 1,
+    "program": 83,
+    "unpitched": 0
+  },
+  "Lead 4 (chiff)": {
+    "channel": 1,
+    "program": 84,
+    "unpitched": 0
+  },
+  "Lead 5 (charang)": {
+    "channel": 1,
+    "program": 85,
+    "unpitched": 0
+  },
+  "Lead 6 (voice)": {
+    "channel": 1,
+    "program": 86,
+    "unpitched": 0
+  },
+  "Lead 7 (fifths)": {
+    "channel": 1,
+    "program": 87,
+    "unpitched": 0
+  },
+  "Lead 8 (bass + lead)": {
+    "channel": 1,
+    "program": 88,
+    "unpitched": 0
+  },
+
+  "Pad 1 (new age)": {
+    "channel": 1,
+    "program": 89,
+    "unpitched": 0
+  },
+  "Pad 2 (warm)": {
+    "channel": 1,
+    "program": 90,
+    "unpitched": 0
+  },
+  "Pad 3 (polysynth)": {
+    "channel": 1,
+    "program": 91,
+    "unpitched": 0
+  },
+  "Pad 4 (choir)": {
+    "channel": 1,
+    "program": 92,
+    "unpitched": 0
+  },
+  "Pad 5 (bowed)": {
+    "channel": 1,
+    "program": 93,
+    "unpitched": 0
+  },
+  "Pad 6 (metallic)": {
+    "channel": 1,
+    "program": 94,
+    "unpitched": 0
+  },
+  "Pad 7 (halo)": {
+    "channel": 1,
+    "program": 95,
+    "unpitched": 0
+  },
+  "Pad 8 (sweep)": {
+    "channel": 1,
+    "program": 96,
+    "unpitched": 0
+  },
+
+  "FX 1 (rain)": {
+    "channel": 1,
+    "program": 97,
+    "unpitched": 0
+  },
+  "FX 2 (soundtrack)": {
+    "channel": 1,
+    "program": 98,
+    "unpitched": 0
+  },
+  "FX 3 (crystal)": {
+    "channel": 1,
+    "program": 99,
+    "unpitched": 0
+  },
+  "FX 4 (atmosphere)": {
+    "channel": 1,
+    "program": 100,
+    "unpitched": 0
+  },
+  "FX 5 (brightness)": {
+    "channel": 1,
+    "program": 101,
+    "unpitched": 0
+  },
+  "FX 6 (goblins)": {
+    "channel": 1,
+    "program": 102,
+    "unpitched": 0
+  },
+  "FX 7 (echoes)": {
+    "channel": 1,
+    "program": 103,
+    "unpitched": 0
+  },
+  "FX 8 (sci-fi)": {
+    "channel": 1,
+    "program": 104,
+    "unpitched": 0
+  },
+
+  "Sitar": {
+    "channel": 1,
+    "program": 105,
+    "unpitched": 0
+  },
+  "Banjo": {
+    "channel": 1,
+    "program": 106,
+    "unpitched": 0
+  },
+  "Shamisen": {
+    "channel": 1,
+    "program": 107,
+    "unpitched": 0
+  },
+  "Koto": {
+    "channel": 1,
+    "program": 108,
+    "unpitched": 0
+  },
+  "Kalimba": {
+    "channel": 1,
+    "program": 109,
+    "unpitched": 0
+  },
+  "Bagpipe": {
+    "channel": 1,
+    "program": 110,
+    "unpitched": 0
+  },
+  "Fiddle": {
+    "channel": 1,
+    "program": 111,
+    "unpitched": 0
+  },
+  "Shanai": {
+    "channel": 1,
+    "program": 112,
+    "unpitched": 0
+  },
+
+  "Tinkle Bell": {
+    "channel": 1,
+    "program": 113,
+    "unpitched": 0
+  },
+  "Agogo": {
+    "channel": 1,
+    "program": 114,
+    "unpitched": 0
+  },
+  "Steel Drums": {
+    "channel": 1,
+    "program": 115,
+    "unpitched": 0
+  },
+  "Woodblock": {
+    "channel": 1,
+    "program": 116,
+    "unpitched": 0
+  },
+  "Taiko Drum": {
+    "channel": 1,
+    "program": 117,
+    "unpitched": 0
+  },
+  "Melodic Tom": {
+    "channel": 1,
+    "program": 118,
+    "unpitched": 0
+  },
+  "Synth Drum": {
+    "channel": 1,
+    "program": 119,
+    "unpitched": 0
+  },
+  "Reverse Cymbal": {
+    "channel": 1,
+    "program": 120,
+    "unpitched": 0
+  },
+
+  "Guitar Fret Noise": {
+    "channel": 1,
+    "program": 121,
+    "unpitched": 0
+  },
+  "Breath Noise": {
+    "channel": 1,
+    "program": 122,
+    "unpitched": 0
+  },
+  "Seashore": {
+    "channel": 1,
+    "program": 123,
+    "unpitched": 0
+  },
+  "Bird Tweet": {
+    "channel": 1,
+    "program": 124,
+    "unpitched": 0
+  },
+  "Telephone Ring": {
+    "channel": 1,
+    "program": 125,
+    "unpitched": 0
+  },
+  "Helicopter": {
+    "channel": 1,
+    "program": 126,
+    "unpitched": 0
+  },
+  "Applause": {
+    "channel": 1,
+    "program": 127,
+    "unpitched": 0
+  },
+  "Gunshot": {
+    "channel": 1,
+    "program": 128,
+    "unpitched": 0
+  },
+
+
+  "Bass Drum 2" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 35
+  },
+  "Bass Drum 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 36
+  },
+  "Rimshot" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 37
+  },
+  "Side Stick" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 37
+  },
+  "Snare Drum 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 38
+  },
+  "Hand Clap" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 39
+  },
+  "Snare Drum 2" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 40
+  },
+  "Low Tom 2" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 41
+  },
+  "Closed Hi-hat" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 42
+  },
+  "Low Tom 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 43
+  },
+  "Pedal Hi-hat" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 44
+  },
+  "Mid Tom 2" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 45
+  },
+  "Open Hi-hat" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 46
+  },
+  "Mid Tom 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 47
+  },
+  "High Tom 2" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 48
+  },
+  "Crash Cymbal 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 49
+  },
+  "High Tom 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 50
+  },
+  "Ride Cymbal 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 51
+  },
+  "Chinese Cymbal" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 52
+  },
+  "Ride Bell" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 53
+  },
+  "Tambourine" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 54
+  },
+  "Splash Cymbal" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 55
+  },
+  "Cowbell" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 56
+  },
+  "Crash Cymbal 2" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 57
+  },
+  "Vibra Slap" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 58
+  },
+  "Ride Cymbal 2" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 59
+  },
+  "High Bongo" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 60
+  },
+  "Low Bongo" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 61
+  },
+  "Mute High Conga" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 62
+  },
+  "Open High Conga" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 63
+  },
+  "Low Conga" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 64
+  },
+  "High Timbale" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 65
+  },
+  "Low Timbale" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 66
+  },
+  "High Agogô" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 67
+  },
+  "Low Agogô" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 68
+  },
+  "Cabasa" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 69
+  },
+  "Maracas" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 70
+  },
+  "Short Whistle" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 71
+  },
+  "Long Whistle" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 72
+  },
+  "Short Güiro" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 73
+  },
+  "Long Güiro" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 74
+  },
+  "Claves" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 75
+  },
+  "High Wood Block" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 76
+  },
+  "Low Wood Block" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 77
+  },
+  "Mute Cuíca" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 78
+  },
+  "Open Cuíca" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 79
+  },
+  "Mute Triangle" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 80
+  },
+  "Open Triangle" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 81
   }
 }

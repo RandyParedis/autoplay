@@ -33,18 +33,17 @@ namespace autoplay {
             /**
              * Get the randomization algorithm for the pitch
              * @param algo  If not empty, it will use this algorithm to check, instead of the generation.pitch value
-             * @param stave Tells the algorithm which stave is currently being used
              * @return A lambda function that implements the algorithm
              */
             std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt)>
             getPitchAlgorithm(std::string algo = "") const;
 
         private:
-            std::vector<uint8_t> getPitches(uint8_t min, uint8_t max) const;
+            std::vector<uint8_t> getPitches(uint8_t min, uint8_t max, int stave) const;
 
         private:
-            const Config m_config; ///< The Config of the system
-            RNEngine     m_rnengine;
+            Config   m_config;   ///< The Config of the system
+            RNEngine m_rnengine; ///< The Random Engine
         };
     }
 }

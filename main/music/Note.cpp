@@ -9,6 +9,8 @@
 #include <sstream>
 #include <utility>
 
+#include <boost/algorithm/string/predicate.hpp>
+
 namespace autoplay {
     namespace music {
         const uint8_t Note::DEFAULT_ON  = 90;
@@ -263,6 +265,28 @@ namespace autoplay {
                    (this->m_pitch == rhs.getPitch() && this->m_duration == rhs.getDuration() &&
                     this->m_velocity_on == rhs.getVelocityOn() && this->m_velocity_off > rhs.getVelocityOff() &&
                     this->m_pause == rhs.isPause());
+        }
+
+        std::string Note::getHeadName() const {
+            std::vector<std::string> fillable = {"normal", "diamond", "triangle", "square"};
+            for(const auto& begin : fillable) {
+                if(boost::algorithm::starts_with(m_head, begin)) {
+                    return begin;
+                }
+            }
+            return m_head;
+        }
+
+        bool Note::getHeadFilled() const {
+            std::vector<std::string> fillable = {"normal", "diamond", "triangle", "square"};
+            bool                     fill     = false;
+            for(const auto& begin : fillable) {
+                if(boost::algorithm::starts_with(m_head, begin)) {
+                    fill = true;
+                    break;
+                }
+            }
+            return (fill && boost::algorithm::ends_with(m_head, "-filled"));
         }
     }
 }

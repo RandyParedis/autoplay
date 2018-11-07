@@ -85,24 +85,32 @@ namespace autoplay {
                 // Add part to part-list
                 pt::ptree plt;
                 plt.put("<xmlattr>.id", "P" + std::to_string(part_idx));
-                plt.put("part-name", part->getInstrument()->getName());
+                plt.put("part-name", part->getInstrumentName());
 
                 // Add part to score-partwise
                 pt::ptree part_tree;
                 part_tree.put("<xmlattr>.id", "P" + std::to_string(part_idx));
 
                 // Set Instrument data
-                auto instrument = part->getInstrument();
-                plt.put("score-instrument.instrument-name", instrument->getName());
-                plt.put("score-instrument.<xmlattr>.id",
-                        "P" + std::to_string(part_idx) + "-X" + std::to_string(instrument->getUnpitched()));
-                plt.put("midi-instrument.midi-channel", instrument->getChannel());
-                plt.put("midi-instrument.midi-program", instrument->getProgram());
-                if(instrument->getUnpitched() != 0) {
-                    plt.put("midi-instrument.midi-unpitched", instrument->getUnpitched());
+                for(const auto& instrument : part->getInstruments()) {
+                    pt::ptree scin;
+                    scin.add("instrument-name", instrument->getName());
+                    scin.add("<xmlattr>.id",
+                             "P" + std::to_string(part_idx) + "-X" + std::to_string(instrument->getUnpitched()));
+                    plt.add_child("score-instrument", scin);
                 }
-                plt.put("midi-instrument.<xmlattr>.id",
-                        "P" + std::to_string(part_idx) + "-X" + std::to_string(instrument->getUnpitched()));
+                for(const auto& instrument : part->getInstruments()) {
+                    pt::ptree mdin;
+                    mdin.add("midi-channel", instrument->getChannel());
+                    mdin.add("midi-program", instrument->getProgram());
+                    if(instrument->getUnpitched() != 0) {
+                        mdin.add("midi-unpitched", instrument->getUnpitched());
+                    }
+                    mdin.add("<xmlattr>.id",
+                             "P" + std::to_string(part_idx) + "-X" + std::to_string(instrument->getUnpitched()));
+
+                    plt.add_child("midi-instrument", mdin);
+                }
 
                 // Create storage for Measure & Note attributes
                 std::shared_ptr<music::Measure>         prev(nullptr);
@@ -110,6 +118,7 @@ namespace autoplay {
 
                 // Add measures
                 unsigned int measure_idx = 0;
+                auto         new_lines   = part->getLines();
                 for(const auto& measure : part->getMeasures()) {
                     ++measure_idx;
                     pt::ptree measure_tree;
@@ -142,8 +151,17 @@ namespace autoplay {
                         auto clef = measure->getClef();
                         if(clef.getLine() != prev->getClef().getLine() || clef.getSign() != prev->getClef().getSign()) {
                             prev->setClef(clef);
+                        }
+
+                        if(clef.isPercussion()) {
+                            measure_tree.put("attributes.clef.sign", "percussion");
+                        } else {
                             measure_tree.put("attributes.clef.sign", (char)clef.getSign());
                             measure_tree.put("attributes.clef.line", clef.getLine());
+                        }
+
+                        if(new_lines != 5) {
+                            measure_tree.put("attributes.staff-details.staff-lines", (int)new_lines);
                         }
                     }
                     measure_tree.put("<xmlattr>.number", measure_idx);
@@ -161,13 +179,18 @@ namespace autoplay {
                             continue;
                         }
 
-                        note_tree.put("pitch.step", repr.first);
-                        if(s == music::Note::Semitone::SHARP) {
-                            note_tree.put("pitch.alter", 1);
-                        } else if(s == music::Note::Semitone::FLAT) {
-                            note_tree.put("pitch.alter", -1);
+                        if(measure->getClef().isPercussion()) {
+                            note_tree.put("unpitched.display-step", repr.first);
+                            note_tree.put("unpitched.display-octave", repr.second);
+                        } else {
+                            note_tree.put("pitch.step", repr.first);
+                            if(s == music::Note::Semitone::SHARP) {
+                                note_tree.put("pitch.alter", 1);
+                            } else if(s == music::Note::Semitone::FLAT) {
+                                note_tree.put("pitch.alter", -1);
+                            }
+                            note_tree.put("pitch.octave", repr.second);
                         }
-                        note_tree.put("pitch.octave", repr.second);
                         note_tree.put("duration", note.getDuration());
 
                         auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
@@ -183,6 +206,13 @@ namespace autoplay {
                         }
                         note_tree.put("voice", 1);
                         note_tree.put("type", "quarter");
+
+                        if(!note.getHeadName().empty()) {
+                            note_tree.put("notehead", note.getHeadName());
+                            if(note.getHeadFilled()) {
+                                note_tree.put("notehead.<xmlattr>.filled", "yes");
+                            }
+                        }
 
                         measure_tree.add_child("note", note_tree);
                     }

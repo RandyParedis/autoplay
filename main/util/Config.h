@@ -61,6 +61,17 @@ namespace autoplay {
             pt::ptree conf_child(const std::string& path) const;
 
             /**
+             * Put a certain value at a path in the conf.
+             * @tparam T    The value type
+             * @param path  The path to add the value to
+             * @param value The value to add
+             *
+             * @warning Use with upmost precaution!
+             */
+            template <typename T>
+            void put(const std::string& path, const T& value);
+
+            /**
              * Check if a ptree element at a certain path is a leaf.
              * @param path The path to check
              * @return True if it's a leaf.
@@ -125,6 +136,11 @@ namespace autoplay {
                 m_logger->error("Invalid path for '{}'. Not found in config.", path);
                 return T();
             }
+        }
+
+        template <typename T>
+        void Config::put(const std::string& path, const T& value) {
+            m_ptree.put(path, value);
         }
 
         /**

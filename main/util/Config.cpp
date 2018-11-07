@@ -166,7 +166,7 @@ namespace autoplay {
             for(size_t i = 0; i < parts.size(); ++i) {
                 pt::ptree   clef;
                 auto&       part = ptree_at_ref(parts, i);
-                music::Clef c    = getClef(part.get<std::string>("clef"));
+                music::Clef c    = getClef(part.get<std::string>("clef", "Treble"));
 
                 clef.put("sign", (char)c.getSign());
                 clef.put("line", (int)c.getLine());

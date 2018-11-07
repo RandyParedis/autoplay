@@ -82,6 +82,7 @@ namespace autoplay {
                 m_duration     = n.m_duration;
                 m_pause        = n.m_pause;
                 m_links        = n.m_links;
+                m_head         = n.m_head;
             }
 
             /**
@@ -260,6 +261,24 @@ namespace autoplay {
              */
             static std::pair<char, int> splitPitch(const std::string& pitch, Semitone& alter);
 
+            /**
+             * Set the head of the Note (for representation)
+             * @param head The head name to set
+             */
+            inline void setHead(const std::string& head) { m_head = head; }
+
+            /**
+             * Fetches the name of the head.
+             * @return The name of the head.
+             */
+            std::string getHeadName() const;
+
+            /**
+             * Fetches if the head is filled or not
+             * @return true if it must be filled
+             */
+            bool getHeadFilled() const;
+
         private:
             uint8_t      m_pitch;        ///< The note that is played, in the range of [0, 127]
             uint8_t      m_velocity_on;  ///< The speed at which the Note must be struck.
@@ -269,6 +288,8 @@ namespace autoplay {
             bool m_pause; ///< Whether the current Note is in fact a pause.
 
             std::vector<std::shared_ptr<Note>> m_links; ///< A list of links/beams of this Note
+
+            std::string m_head; ///< The Note head to display in MusicXML
 
         public:
             /**
