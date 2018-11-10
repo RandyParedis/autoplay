@@ -73,10 +73,27 @@ The file contains of the following tree structure and fields:
  - `parts`: A list of different parts, where each element contains the following sub-tree
  (when using an `XML`-file, each part must be inside a `part` element):
     - `instrument`: A string, containing the MIDI name of an instrument.
+    - `instruments`: When the `instrument` element does not exist, it is required that this
+    element does exist. It represents another list of instrument object (like this one),
+    but with the difference that all elements are rhythmic. This allows for displaying a
+    set of rhythmic instruments that belong together on a corresponding stave. E.g. a
+    drum set is usually represented on a single stave, where each note has a different
+    meaning.
     - `clef`: The name of a clef as a string, or a clef object (see _Clef_ page).
     - `generation`: This is the same element as the above-mentioned `generation` element, which
     allows for each stave to have an explicit algorithm set. If this element does not exist,
     the above-set `generation` element will be used.
+    - `lines`: When exporting the score to `MusicXML`-format, this variable tells how many
+    lines are needed for the instrument. Defaults to `5`, which is the normal value.
+    - `display`: For rhythmic instruments, this field tells the software where to display
+    the notes for this instrument. It is usually combined with the `instruments` field.
+    - `symbol`: Rhythmic instruments can have a series of possible representations. For
+    user friendlyness and modularity, that is what this field does. Possible values are:
+    `slash`, `triangle`, `diamond`, `square`, `cross`, `x`, `circle-x`, `normal`, `cluster`,
+    `inverted triangle`, `arrow down`, `arrow up`, `slashed`, `back slashed`, `do`, `re`,
+     `mi`, `fa`, `so`, `la`, `ti`, `none`, `normal-empty`, `diamond-empty`, `triangle-empty`
+     and `square-empty`
+     - `name`: The name for the instrument can be set explicitly with this field.
  
 For more info, please take a look at the `main/config/default.json` config file.
 _**Note:** This file will be read and used as (default) input (config) for the program on

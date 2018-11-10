@@ -21,7 +21,7 @@ namespace autoplay {
         music::Score Generator::generate() {
             // Setup default values
             // TODO: Randomize these
-            unsigned int  length     = 10; // Total amount of measures
+            unsigned int  length     = 1; // Total amount of measures
             auto          parts      = m_config.conf_child("parts");
             unsigned long part_count = parts.size(); // Number of parts
             uint8_t       divisions  = 24;           // Amount of 'ticks' each quarter note takes
@@ -42,7 +42,8 @@ namespace autoplay {
                 // Set Instrument(s)
                 bool                                            percussion;
                 std::vector<std::shared_ptr<music::Instrument>> instruments = {};
-                std::map<std::string, std::string> repr_to_head;
+                std::map<std::string, std::string>                        repr_to_head;
+                std::map<std::string, std::shared_ptr<music::Instrument>> repr_to_inst;
                 if(pt_part.count("instrument") == 0) {
                     percussion = false;
                     BOOST_FOREACH(auto& inst, pt_part.get_child("instruments")) {
@@ -52,6 +53,7 @@ namespace autoplay {
 
                         auto display = inst.second.get<std::string>("display", "C4");
                         repr_to_head.insert(std::make_pair(display, inst.second.get<std::string>("symbol", "normal")));
+                        repr_to_inst.insert(std::make_pair(display, instrument));
                     }
                 } else {
                     auto instrument = m_config.getInstrument(pt_part.get<std::string>("instrument"));
@@ -62,6 +64,7 @@ namespace autoplay {
 
                         auto display = pt_part.get<std::string>("display", "C4");
                         repr_to_head.insert(std::make_pair(display, pt_part.get<std::string>("symbol", "normal")));
+                        repr_to_inst.insert(std::make_pair(display, instrument));
                     }
                     instruments.emplace_back(instrument);
                 }
@@ -102,8 +105,10 @@ namespace autoplay {
                     }
                     music::Note note{pitch, duration};
 
+                    auto prepr = music::Note::pitchRepr(pitch);
                     if(pt_part.count("instrument") == 0 || percussion) {
-                        note.setHead(repr_to_head.at(music::Note::pitchRepr(pitch)));
+                        note.setHead(repr_to_head.at(prepr));
+                        note.setInstrument(repr_to_inst.at(prepr));
                     }
 
                     measure.append(note);
@@ -210,7 +215,8 @@ namespace autoplay {
                m_config.getInstrument(part.get<std::string>("instrument"))->isPercussion()) {
                 boost::replace_all(notes, "1", "0");
                 if(part.count("instruments") == 0) {
-                    auto p = music::Note::pitch(part.get<std::string>("display"));
+                    auto display = part.get<std::string>("display");
+                    auto p       = music::Note::pitch(display);
                     if(0 < p && p < 127) {
                         notes.replace(p, 1, "1");
                     }

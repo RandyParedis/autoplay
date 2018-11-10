@@ -98,19 +98,16 @@ namespace autoplay {
                 unsigned int               duration = 0; // total duration (counted in measures)
                 for(uint8_t i = 0; i < score.getParts().size(); ++i) {
                     auto part = score.getParts().at(i);
-                    if(part->getInstruments().size() > 1) {
-                        // TODO
-                        logger->warn("The current implementation does not yet support multiple-instrument parts");
+                    duration  = std::max(duration, (unsigned int)part->getMeasures().size());
+                    if(part->getInstruments().size() > 1 || part->getInstruments().at(0)->isPercussion()) {
                         continue;
                     }
                     auto          instrument = part->getInstruments().at(0);
                     unsigned char m1         = (char)0xc0 + (unsigned char)i;
-                    auto          m2         = (unsigned char)(instrument->getUnpitched() - 1);
+                    auto          m2         = (unsigned char)(instrument->getProgram() - 1);
                     msg                      = {m1, m2};
                     midiout->sendMessage(&msg);
                     logger->debug("\tSet Instrument ") << instrument->getName() << " to Channel " << (int)i;
-
-                    duration = std::max(duration, (unsigned int)part->getMeasures().size());
                 }
 
                 // TODO: Set time code (technically not required)
@@ -138,12 +135,31 @@ namespace autoplay {
                         std::vector<std::vector<unsigned char>> nl = {};
 
                         for(const auto& note : curr_measure->getNotes()) {
-                            nl.emplace_back(note.getOnMessage(channel));
+                            uint8_t msgch = channel;
+                            if(score.getParts().at(channel)->getInstruments().size() > 1 ||
+                               score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
+                                msgch = 9;
+                            }
+                            auto _msg = note.getOnMessage(msgch);
+                            if(score.getParts().at(channel)->getInstruments().size() > 1 ||
+                               score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
+                                if(note.getInstrument() != nullptr) {
+                                    _msg.at(1) = note.getInstrument()->getUnpitched();
+                                }
+                            }
+                            nl.emplace_back(_msg);
                             for(uint8_t len = 0; len < note.getDuration() - 2; ++len) { // duration - strike - release
                                 msg = {};
                                 nl.emplace_back(msg);
                             }
-                            nl.emplace_back(note.getOffMessage(channel));
+                            _msg = note.getOffMessage(msgch);
+                            if(score.getParts().at(channel)->getInstruments().size() > 1 ||
+                               score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
+                                if(note.getInstrument() != nullptr) {
+                                    _msg.at(1) = note.getInstrument()->getUnpitched();
+                                }
+                            }
+                            nl.emplace_back(_msg);
                         }
                         if(!note_list.empty() && note_list.back().size() != nl.size()) {
                             logger->fatal("Number of messages for Measure ")
@@ -163,7 +179,8 @@ namespace autoplay {
                         for(unsigned int j = 0; j < ptcnt; ++j) {
                             msg = note_list.at(j).at(i);
                             if(!msg.empty()) {
-                                logger->trace("\tSending message w/ pitch ") << (int)msg.at(1) << " on channel " << j;
+                                logger->trace("\tSending message w/ pitch ")
+                                    << (int)msg.at(1) << " on channel " << ((int)(msg.at(0) & ((1 << 4) - 1)));
                                 midiout->sendMessage(&msg);
                             }
                         }

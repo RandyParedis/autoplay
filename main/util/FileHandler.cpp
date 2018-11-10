@@ -92,11 +92,14 @@ namespace autoplay {
                 part_tree.put("<xmlattr>.id", "P" + std::to_string(part_idx));
 
                 // Set Instrument data
+                std::map<std::string, std::string> instr_ids;
                 for(const auto& instrument : part->getInstruments()) {
                     pt::ptree scin;
                     scin.add("instrument-name", instrument->getName());
-                    scin.add("<xmlattr>.id",
-                             "P" + std::to_string(part_idx) + "-X" + std::to_string(instrument->getUnpitched()));
+                    instr_ids.insert(std::make_pair(instrument->getName(),
+                                                    "P" + std::to_string(part_idx) + "-I" +
+                                                        std::to_string((int)instrument->getUnpitched())));
+                    scin.add("<xmlattr>.id", instr_ids.at(instrument->getName()));
                     plt.add_child("score-instrument", scin);
                 }
                 for(const auto& instrument : part->getInstruments()) {
@@ -104,10 +107,9 @@ namespace autoplay {
                     mdin.add("midi-channel", instrument->getChannel());
                     mdin.add("midi-program", instrument->getProgram());
                     if(instrument->getUnpitched() != 0) {
-                        mdin.add("midi-unpitched", instrument->getUnpitched());
+                        mdin.add("midi-unpitched", instrument->getUnpitched() + 1);
                     }
-                    mdin.add("<xmlattr>.id",
-                             "P" + std::to_string(part_idx) + "-X" + std::to_string(instrument->getUnpitched()));
+                    mdin.add("<xmlattr>.id", instr_ids.at(instrument->getName()));
 
                     plt.add_child("midi-instrument", mdin);
                 }
@@ -119,6 +121,7 @@ namespace autoplay {
                 // Add measures
                 unsigned int measure_idx = 0;
                 auto         new_lines   = part->getLines();
+                uint8_t      prev_lines  = 5;
                 for(const auto& measure : part->getMeasures()) {
                     ++measure_idx;
                     pt::ptree measure_tree;
@@ -149,18 +152,21 @@ namespace autoplay {
                         }
 
                         auto clef = measure->getClef();
-                        if(clef.getLine() != prev->getClef().getLine() || clef.getSign() != prev->getClef().getSign()) {
+                        if(clef.getLine() != prev->getClef().getLine() || clef.getSign() != prev->getClef().getSign() ||
+                           clef.isPercussion() != prev->getClef().isPercussion()) {
                             prev->setClef(clef);
+
+                            if(clef.isPercussion()) {
+                                measure_tree.put("attributes.clef.sign", "percussion");
+                                measure_tree.put("attributes.clef.line", 2);
+                            } else {
+                                measure_tree.put("attributes.clef.sign", (char)clef.getSign());
+                                measure_tree.put("attributes.clef.line", clef.getLine());
+                            }
                         }
 
-                        if(clef.isPercussion()) {
-                            measure_tree.put("attributes.clef.sign", "percussion");
-                        } else {
-                            measure_tree.put("attributes.clef.sign", (char)clef.getSign());
-                            measure_tree.put("attributes.clef.line", clef.getLine());
-                        }
-
-                        if(new_lines != 5) {
+                        if(new_lines != prev_lines) {
+                            prev_lines = new_lines;
                             measure_tree.put("attributes.staff-details.staff-lines", (int)new_lines);
                         }
                     }
@@ -193,6 +199,10 @@ namespace autoplay {
                         }
                         note_tree.put("duration", note.getDuration());
 
+                        if(note.getInstrument() != nullptr) {
+                            note_tree.put("instrument.<xmlattr>.id", instr_ids.at(note.getInstrument()->getName()));
+                        }
+
                         auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
                         if(it != links.end()) {
                             note_tree.put("tie.<xmlattr>.type", "stop");
@@ -209,8 +219,8 @@ namespace autoplay {
 
                         if(!note.getHeadName().empty()) {
                             note_tree.put("notehead", note.getHeadName());
-                            if(note.getHeadFilled()) {
-                                note_tree.put("notehead.<xmlattr>.filled", "yes");
+                            if(note.canBeFilled()) {
+                                note_tree.put("notehead.<xmlattr>.filled", note.getHeadFilled() ? "yes" : "no");
                             }
                         }
 

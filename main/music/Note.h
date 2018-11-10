@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "Instrument.h"
+
 namespace autoplay {
     namespace music {
         /**
@@ -83,6 +85,7 @@ namespace autoplay {
                 m_pause        = n.m_pause;
                 m_links        = n.m_links;
                 m_head         = n.m_head;
+                m_inst         = n.m_inst;
             }
 
             /**
@@ -261,6 +264,7 @@ namespace autoplay {
              */
             static std::pair<char, int> splitPitch(const std::string& pitch, Semitone& alter);
 
+        public:
             /**
              * Set the head of the Note (for representation)
              * @param head The head name to set
@@ -274,10 +278,28 @@ namespace autoplay {
             std::string getHeadName() const;
 
             /**
+             * Checks if the current notehead can be filled or not
+             * @return true if it can be filled.
+             */
+            bool canBeFilled() const;
+
+            /**
              * Fetches if the head is filled or not
              * @return true if it must be filled
              */
             bool getHeadFilled() const;
+
+            /**
+             * Set the Note's Instrument
+             * @param inst The Instrument of this Note
+             */
+            inline void setInstrument(const std::shared_ptr<Instrument>& inst) { m_inst = inst; }
+
+            /**
+             * Fetches the Instrument of this Note
+             * @return A shared pointer to this Instrument
+             */
+            inline std::shared_ptr<Instrument> getInstrument() const { return m_inst; }
 
         private:
             uint8_t      m_pitch;        ///< The note that is played, in the range of [0, 127]
@@ -289,7 +311,8 @@ namespace autoplay {
 
             std::vector<std::shared_ptr<Note>> m_links; ///< A list of links/beams of this Note
 
-            std::string m_head; ///< The Note head to display in MusicXML
+            std::string                 m_head; ///< The Note head to display in MusicXML
+            std::shared_ptr<Instrument> m_inst; ///< The instrument that is used to play the current Note
 
         public:
             /**

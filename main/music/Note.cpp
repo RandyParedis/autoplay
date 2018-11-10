@@ -277,6 +277,16 @@ namespace autoplay {
             return m_head;
         }
 
+        bool Note::canBeFilled() const {
+            std::vector<std::string> fillable = {"normal", "diamond", "triangle", "square"};
+            for(const auto& begin : fillable) {
+                if(boost::algorithm::starts_with(m_head, begin)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         bool Note::getHeadFilled() const {
             std::vector<std::string> fillable = {"normal", "diamond", "triangle", "square"};
             bool                     fill     = false;
@@ -286,7 +296,7 @@ namespace autoplay {
                     break;
                 }
             }
-            return (fill && boost::algorithm::ends_with(m_head, "-filled"));
+            return (fill && !boost::algorithm::ends_with(m_head, "-empty"));
         }
     }
 }

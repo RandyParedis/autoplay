@@ -15,12 +15,24 @@
   "style": "default",
   "parts": [
     {
-      "instrument": "Acoustic Grand Piano",
-      "clef": "Treble"
-    },
-    {
-      "instrument": "Acoustic Grand Piano",
-      "clef": "Bass"
+      "name": "Hi-Hat",
+      "instruments": [
+        {
+          "instrument": "Closed Hi-Hat",
+          "symbol": "x",
+          "display": "E4"
+        },
+        {
+          "instrument": "Pedal Hi-Hat",
+          "symbol": "x",
+          "display": "D4"
+        },
+        {
+          "instrument": "Open Hi-Hat",
+          "symbol": "x",
+          "display": "C4"
+        }
+      ]
     }
   ]
 }

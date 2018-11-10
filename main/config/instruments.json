@@ -661,6 +661,11 @@
     "program": 1,
     "unpitched": 35
   },
+  "Acoustic Bass Drum" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 35
+  },
   "Bass Drum 1" : {
     "channel": 10,
     "program": 1,
@@ -675,6 +680,11 @@
     "channel": 10,
     "program": 1,
     "unpitched": 37
+  },
+  "Acoustic Snare" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 38
   },
   "Snare Drum 1" : {
     "channel": 10,
@@ -691,32 +701,52 @@
     "program": 1,
     "unpitched": 40
   },
+  "Electric Snare" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 40
+  },
+  "Low Floor Tom" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 41
+  },
   "Low Tom 2" : {
     "channel": 10,
     "program": 1,
     "unpitched": 41
   },
-  "Closed Hi-hat" : {
+  "Closed Hi-Hat" : {
     "channel": 10,
     "program": 1,
     "unpitched": 42
+  },
+  "High Floor Tom" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 43
   },
   "Low Tom 1" : {
     "channel": 10,
     "program": 1,
     "unpitched": 43
   },
-  "Pedal Hi-hat" : {
+  "Pedal Hi-Hat" : {
     "channel": 10,
     "program": 1,
     "unpitched": 44
+  },
+  "Low Tom" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 45
   },
   "Mid Tom 2" : {
     "channel": 10,
     "program": 1,
     "unpitched": 45
   },
-  "Open Hi-hat" : {
+  "Open Hi-Hat" : {
     "channel": 10,
     "program": 1,
     "unpitched": 46
@@ -725,6 +755,16 @@
     "channel": 10,
     "program": 1,
     "unpitched": 47
+  },
+  "Low-Mid Tom" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 47
+  },
+  "High-Mid Tom" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 48
   },
   "High Tom 2" : {
     "channel": 10,
@@ -737,6 +777,11 @@
     "unpitched": 49
   },
   "High Tom 1" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 50
+  },
+  "High Tom" : {
     "channel": 10,
     "program": 1,
     "unpitched": 50
@@ -781,12 +826,22 @@
     "program": 1,
     "unpitched": 58
   },
+  "Vibraslap" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 58
+  },
   "Ride Cymbal 2" : {
     "channel": 10,
     "program": 1,
     "unpitched": 59
   },
   "High Bongo" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 60
+  },
+  "Hi Bongo" : {
     "channel": 10,
     "program": 1,
     "unpitched": 60
@@ -806,6 +861,16 @@
     "program": 1,
     "unpitched": 63
   },
+  "Mute Hi Conga" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 62
+  },
+  "Open Hi Conga" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 63
+  },
   "Low Conga" : {
     "channel": 10,
     "program": 1,
@@ -821,12 +886,12 @@
     "program": 1,
     "unpitched": 66
   },
-  "High Agogô" : {
+  "High Agogo" : {
     "channel": 10,
     "program": 1,
     "unpitched": 67
   },
-  "Low Agogô" : {
+  "Low Agogo" : {
     "channel": 10,
     "program": 1,
     "unpitched": 68
@@ -851,12 +916,12 @@
     "program": 1,
     "unpitched": 72
   },
-  "Short Güiro" : {
+  "Short Guiro" : {
     "channel": 10,
     "program": 1,
     "unpitched": 73
   },
-  "Long Güiro" : {
+  "Long Guiro" : {
     "channel": 10,
     "program": 1,
     "unpitched": 74
@@ -871,17 +936,22 @@
     "program": 1,
     "unpitched": 76
   },
+  "Hi Wood Block" : {
+    "channel": 10,
+    "program": 1,
+    "unpitched": 76
+  },
   "Low Wood Block" : {
     "channel": 10,
     "program": 1,
     "unpitched": 77
   },
-  "Mute Cuíca" : {
+  "Mute Cuica" : {
     "channel": 10,
     "program": 1,
     "unpitched": 78
   },
-  "Open Cuíca" : {
+  "Open Cuica" : {
     "channel": 10,
     "program": 1,
     "unpitched": 79
