@@ -115,3 +115,4 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 03-11-2018 | Added modularity for Instruments and Styles. 
 | 04-11-2018 | Added multiple part support.<br>Also expanded Instrument set to 80 different instruments.
 | 05-11-2018 | Added different/custom Clef support.
+| 10-11-2018 | Fixed Rhythmic Instrument Support
