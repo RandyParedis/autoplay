@@ -1,10 +1,16 @@
 {
-  "verbose": true,
-  "play": false,
+  "verbose": false,
+  "play": true,
   "engine": "lcg64",
   "seed": 0,
   "generation": {
-    "pitch": "contain-stave"
+    "pitch": "brownian-motion",
+    "options": {
+      "pitch": {
+        "min": -3,
+        "max": 3
+      }
+    }
   },
   "export": {
     "filename": "music.xml",
@@ -15,24 +21,8 @@
   "style": "default",
   "parts": [
     {
-      "name": "Hi-Hat",
-      "instruments": [
-        {
-          "instrument": "Closed Hi-Hat",
-          "symbol": "x",
-          "display": "E4"
-        },
-        {
-          "instrument": "Pedal Hi-Hat",
-          "symbol": "x",
-          "display": "D4"
-        },
-        {
-          "instrument": "Open Hi-Hat",
-          "symbol": "x",
-          "display": "C4"
-        }
-      ]
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Treble"
     }
   ]
 }

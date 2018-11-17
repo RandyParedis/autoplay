@@ -36,6 +36,15 @@ namespace autoplay {
 
                 pt::ptree options;
                 options.put("stave", i);
+                if(pt_part.count("generation") == 0 && m_config.conf_child("generation").count("options") == 1) {
+                    BOOST_FOREACH(auto& var, m_config.conf_child("generation.options")) {
+                        options.put_child(var.first, var.second);
+                    }
+                } else if(pt_part.get_child("generation").count("options") == 1) {
+                    BOOST_FOREACH(auto& var, pt_part.get_child("generation.options")) {
+                        options.put_child(var.first, var.second);
+                    }
+                }
 
                 auto pitch_algo = getPitchAlgorithm(pt_part.get<std::string>("generation.pitch", ""));
 
@@ -86,10 +95,9 @@ namespace autoplay {
                 part->setInstrumentName(pt_part.get<std::string>("name", ""));
 
                 for(unsigned int j = 0; j < length * measure.max_length();) {
-                    music::Note* prev = nullptr;
+                    std::shared_ptr<music::Note> prev;
                     if(j > 0) {
-                        music::Note n = measure.back();
-                        prev          = &n;
+                        prev = std::make_shared<music::Note>(measure.back());
                     }
                     std::vector<music::Note*> conc = {};
                     for(unsigned int p = 0; p < i; ++p) {
@@ -98,7 +106,7 @@ namespace autoplay {
                             conc.emplace_back(n);
                         }
                     }
-                    uint8_t pitch    = pitch_algo(m_rnengine, prev, conc, options);
+                    uint8_t pitch    = pitch_algo(m_rnengine, prev.get(), conc, options);
                     uint8_t duration = 24;
                     if(j + duration > length * measure.max_length()) {
                         duration = (uint8_t)(length * measure.max_length() - j);
@@ -174,6 +182,42 @@ namespace autoplay {
                         auto range = clef.range();
 
                         return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second, stave));
+                    };
+            } else if(algo == "brownian-motion") {
+                return
+                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
+                        auto        stave  = pt.get<int>("stave");
+                        auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
+                        music::Clef clef   = music::Clef::Treble();
+                        clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
+                        clef.setLine((uint8_t)clef_n.get<int>("line", 2));
+                        clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
+                        auto range = clef.range();
+
+                        auto pitches = getPitches(range.first, range.second, stave);
+
+                        if(prev) {
+                            auto it = std::find(pitches.begin(), pitches.end(), prev->getPitch());
+                            if(it == pitches.end()) {
+                                throw std::invalid_argument("Note '" + std::to_string(prev->getPitch()) +
+                                                            "' not in scale!");
+                            }
+                            auto idx = std::distance(pitches.begin(), it);
+                            auto min = pt.get<long>("pitch.min", -3);
+                            auto max = pt.get<long>("pitch.max", 3);
+                            if(idx + min < 0) {
+                                min = -idx;
+                            }
+                            if(idx + max >= (signed)pitches.size()) {
+                                max = pitches.size() - idx - 1;
+                            } else if(idx + max < 0) {
+                                max = -idx;
+                            }
+                            idx = Randomizer::pick_uniform(gen, (int)min, (int)max);
+                            return pitches.at((unsigned)idx);
+                        } else {
+                            return (uint8_t)Randomizer::pick_uniform(gen, pitches);
+                        }
                     };
             } else {
                 return

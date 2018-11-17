@@ -49,11 +49,11 @@ namespace autoplay {
 
                 // Check inputs.
                 unsigned int nPorts = midiin->getPortCount();
-                logger->info("There are ") << nPorts << " MIDI input sources available:";
+                logger->debug("There are ") << nPorts << " MIDI input sources available:";
 
                 for(unsigned i = 0; i < nPorts; i++) {
                     std::string portName = midiin->getPortName(i);
-                    logger->info("\tInput Port #") << (i + 1) << ": " << portName;
+                    logger->debug("\tInput Port #") << (i + 1) << ": " << portName;
                 }
 
                 // RtMidiOut constructor ... exception possible
@@ -63,11 +63,11 @@ namespace autoplay {
 
                 // Check outputs.
                 nPorts = midiout->getPortCount();
-                logger->info("There are ") << nPorts << " MIDI output sources available:";
+                logger->debug("There are ") << nPorts << " MIDI output sources available:";
 
                 for(unsigned i = 0; i < nPorts; i++) {
                     std::string portName = midiout->getPortName(i);
-                    logger->info("\tOutput Port #") << (i + 1) << ": " << portName;
+                    logger->debug("\tOutput Port #") << (i + 1) << ": " << portName;
                 }
             } catch(RtMidiError& error) { logger->error(error.getMessage().c_str()); }
 

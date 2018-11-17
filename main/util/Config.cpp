@@ -148,6 +148,14 @@ namespace autoplay {
                     sty.put("scale", m_styles.get<std::string>("types." + g, "111111111111"));
                 }
                 m_ptree.put_child("style", sty);
+            } else {
+                auto sty = m_ptree.get_child("style");
+                merge(sty, m_styles.get_child("styles.default"), true);
+                auto g = sty.get<std::string>("scale", "chromatic");
+                if(!check_binary(g)) {
+                    sty.put("scale", m_styles.get<std::string>("types." + g, "111111111111"));
+                }
+                m_ptree.put_child("style", sty);
             }
         }
 

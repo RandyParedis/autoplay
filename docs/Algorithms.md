@@ -9,8 +9,7 @@ the best result.
 ## Random Pitch Generation (RPG)
 The general idea behind RPG is basically an extension on the normal RNGs. After doing
 some research, I've come up with the following algorithms for this generation.
-For simplicity's sake, we'll suppose there are the following functions (based upon the
-corresponding functions in `GML`), assuming `[...]` is a sequence of numbers (array,
+For simplicity's sake, we'll suppose there are the following functions, assuming `[...]` is a sequence of numbers (array,
 sequential pointers, vector...) and `{...}` depicts a map or a dictionary of some sorts
 (which maps a key uniquely to a value):
 
@@ -41,7 +40,7 @@ count at the moment. This could be a 80/20 rule between note and rest.
 The algorithms I've come up with (with `pn` the new pitch and `po` the
 old/previous one) are:
 
-#### Totally Random 
+#### Totally Random
 This is maybe one of the easiest algorithms that we could use (with the exception of a
 semitone musical piece). Basically it generates a random note somewhere in the musical
 spectrum.
@@ -55,6 +54,8 @@ basically forces the jumps to be somewhere between three pitches above or below 
 currently played note. [More info here.](https://quod.lib.umich.edu/s/spobooks/bbv9810.0001.001/1:18/--algorithmic-composition-a-gentle-introduction-to-music?rgn=div1;view=fulltext#18.5)
 
 `pn = choose(range(-3, 3)) + po`
+
+Without loss of generality, the range of `-3` to `3` can be customizable.
 
 #### 1/f Noise
 As discussed [here](https://quod.lib.umich.edu/s/spobooks/bbv9810.0001.001/1:18/--algorithmic-composition-a-gentle-introduction-to-music?rgn=div1;view=fulltext#18.7),
@@ -86,7 +87,7 @@ center around the justly played note.
 
 `pn = gaussian(range(-po, 127-po), -3, 3, true) + po`
 
-(_Note that in the algorithm two shifts of the pitch are required. The first to centralize
+(_Note that in the algorithm two shifts of the pitch are required. The first is to centralize
 it around `po`, the second to bring it back to the valid range._)
 
 #### Markov Chains
@@ -151,7 +152,7 @@ All and all, `24` is a common value (it allows up to 32nd notes and triplets).
 This could give an algorithm that picks a random value between 1 and four times
 (represents a long note) the division. But then there is the issue of prime numbers.
 
-##### TL;DR
+##### TL;DR (Too Long; Didn't Read)
 Picking a precise RNR algorithm that makes the music sound good has some unwanted
 difficulties with any algorithm. The best choice would be to pick a value between 0
 and 10 to represent the rhythm (`rhythm = pow(2, choose(range(0, 10))-8)`). Next we

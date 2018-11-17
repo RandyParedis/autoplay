@@ -56,10 +56,14 @@ The file contains of the following tree structure and fields:
  will yield different results.
  - `generation`: This field contains all detailed information about which algorithms to use
  in generating the specific music itself. It describes the rules to follow in order to obtain
- the same result. It consists of:
+ the same result. (See the Algorithms page for details on individual algorithms.)
+ It consists of:
     - `pitch`: The algorithm to use when creating the pitches. It can be one of the following:
        - `random-piano`: To generate completely random pitches, playable by a keyboard/piano.
        - `contain-stave`: To generate random pitches, contained within the stave.
+       - `brownian-motion`: An implementation of the Brownian Motion algorithm that is
+       contained within the stave. Options for this algorithm are `pitch.min` and `pitch.max`,
+       representing the ranges of the jumps. 
        - Anything else will generate completely random pitches within the entire music range.
  - `export`: A small sub-tree, containing some values for exporting to MusicXML. When using
  the string `@VERSION@` in the elements of this sub-tree, the current version of autoplay

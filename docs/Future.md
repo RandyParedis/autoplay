@@ -2,9 +2,13 @@
 This file describes all planned features to be added in the future
 
 - Algorithms
+    - Rests (80/20-rule?)
     - Melodic algorithms
         - Accompaniment
-        - Brownian motion
+        - 1/f Noise
+        - Centralized
+        - (Gaussian) Voicing
+        - Markov Chains
         - ...
     - Rhythmic algorithms
     - _(Dynamic algorithms)_

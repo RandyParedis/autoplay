@@ -1,0 +1,38 @@
+{
+  "verbose": true,
+  "play": false,
+  "engine": "lcg64",
+  "seed": 0,
+  "generation": {
+    "pitch": "contain-stave"
+  },
+  "export": {
+    "filename": "music.xml",
+    "title": "My Score",
+    "composer": "autoplay v@VERSION@",
+    "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
+  },
+  "style": "default",
+  "parts": [
+    {
+      "name": "Hi-Hat",
+      "instruments": [
+        {
+          "instrument": "Closed Hi-Hat",
+          "symbol": "x",
+          "display": "E4"
+        },
+        {
+          "instrument": "Pedal Hi-Hat",
+          "symbol": "x",
+          "display": "D4"
+        },
+        {
+          "instrument": "Open Hi-Hat",
+          "symbol": "x",
+          "display": "C4"
+        }
+      ]
+    }
+  ]
+}

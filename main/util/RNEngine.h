@@ -56,7 +56,19 @@ namespace autoplay {
             R callOnMe(T& t) {
                 switch(m_engine.which()) {
                 case 0: return t(boost::get<trng::lcg64>(m_engine));
-                case 1: return t(boost::get<trng::mrg5>(m_engine));
+                case 1: return t(boost::get<trng::lcg64_shift>(m_engine));
+                case 2: return t(boost::get<trng::mrg2>(m_engine));
+                case 3: return t(boost::get<trng::mrg3>(m_engine));
+                case 4: return t(boost::get<trng::mrg4>(m_engine));
+                case 5: return t(boost::get<trng::mrg5>(m_engine));
+                case 6: return t(boost::get<trng::mrg5s>(m_engine));
+                case 7: return t(boost::get<trng::mt19937>(m_engine));
+                case 8: return t(boost::get<trng::mt19937_64>(m_engine));
+                case 9: return t(boost::get<trng::yarn2>(m_engine));
+                case 10: return t(boost::get<trng::yarn3>(m_engine));
+                case 11: return t(boost::get<trng::yarn4>(m_engine));
+                case 12: return t(boost::get<trng::yarn5>(m_engine));
+                case 13: return t(boost::get<trng::yarn5s>(m_engine));
                 default: return R();
                 }
             }
