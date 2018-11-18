@@ -16,6 +16,14 @@ namespace autoplay {
         const uint8_t Note::DEFAULT_ON  = 90;
         const uint8_t Note::DEFAULT_OFF = 40;
 
+        std::map<std::string, float> Note::DURATION = {
+            {"256th", 1.0f / 256}, {"1/256", 1.0f / 256}, {"128th", 1.0f / 128}, {"1/128", 1.0f / 128},
+            {"64th", 1.0f / 64},   {"1/64", 1.0f / 64},   {"32nd", 1.0f / 32},   {"1/32", 1.0f / 32},
+            {"16th", 1.0f / 16},   {"1/16", 1.0f / 16},   {"8th", 1.0f / 8},     {"1/8", 1.0f / 8},
+            {"eighth", 1.0f / 8},  {"4th", 1.0f / 4},     {"1/4", 1.0f / 4},     {"quarter", 1.0f / 4},
+            {"half", 1.0f / 2},    {"1/2", 1.0f / 2},     {"whole", 1.0f},       {"breve", 2.0f},
+            {"long", 4.0f}};
+
         void Note::link(music::Note& n) {
             m_links.emplace_back(std::make_shared<Note>(n));
             n.m_links.emplace_back(std::make_shared<Note>(*this));
@@ -297,6 +305,37 @@ namespace autoplay {
                 }
             }
             return (fill && !boost::algorithm::ends_with(m_head, "-empty"));
+        }
+
+        std::string Note::getType(const uint8_t& divisions) const {
+            float dur   = (std::pow(2.0f, std::floor(std::log2f(m_duration))) / (float)divisions) / 4.0f;
+            auto nearby = [](float val, float ref) -> bool { return val < ref + 0.0000001 && val > ref - 0.0000001; };
+            if(nearby(dur, 1.0f / 256.0f)) {
+                return "256th";
+            } else if(nearby(dur, 1.0f / 128.0f)) {
+                return "128th";
+            } else if(nearby(dur, 1.0f / 64.0f)) {
+                return "64th";
+            } else if(nearby(dur, 1.0f / 32.0f)) {
+                return "32nd";
+            } else if(nearby(dur, 1.0f / 16.0f)) {
+                return "16th";
+            } else if(nearby(dur, 1.0f / 8.0f)) {
+                return "eighth";
+            } else if(nearby(dur, 1.0f / 4.0f)) {
+                return "quarter";
+            } else if(nearby(dur, 1.0f / 2.0f)) {
+                return "half";
+            } else if(nearby(dur, 1.0f)) {
+                return "whole";
+            } else if(nearby(dur, 2.0f)) {
+                return "breve";
+            } else if(nearby(dur, 4.0f)) {
+                return "long";
+            }
+            throw std::runtime_error("Division value (" + std::to_string((int)divisions) +
+                                     ") gave an unknown duration of " + std::to_string(dur) + ", which came from " +
+                                     std::to_string(m_duration) + ".");
         }
     }
 }

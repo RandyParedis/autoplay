@@ -72,6 +72,11 @@ The file contains of the following tree structure and fields:
        the current stave, generate notes whose chance of being chosen corresponds with
        its value on the gauss-curve.
        - Anything else will generate completely random pitches within the entire music range.
+    - `rhythm`: The algoruthm to use for rhythms. Possible values are:
+       - `random`: A random rhythm out of the possible range.
+       - Anything else will create a constant tempo of `options.rhythm.duration` notes
+       (representations according to the MusicXML note types, or the corresponding fractions
+       when less than one). If this option cannot be found, `quarter` will be used instead.
     - `options`: An object, representing the additional options of the above-mentioned
     algorithms.
     - `rest-ratio`: A floating point number, representing the approximated percentage of

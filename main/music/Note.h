@@ -32,6 +32,8 @@ namespace autoplay {
             static const uint8_t DEFAULT_ON;  ///< Default Note 'on' velocity
             static const uint8_t DEFAULT_OFF; ///< Default Note 'off' velocity
 
+            static std::map<std::string, float> DURATION; ///< Duration map
+
         public:
             /**
              * Constructor for creating a pause.
@@ -379,6 +381,9 @@ namespace autoplay {
              * @return true if there is a field that is larger than the field of rhs
              */
             bool operator>(const Note& rhs) const;
+
+        public:
+            std::string getType(const uint8_t& divisions) const;
         };
     }
 }

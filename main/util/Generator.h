@@ -38,6 +38,14 @@ namespace autoplay {
             std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
             getPitchAlgorithm(std::string algo = "") const;
 
+            /**
+             * Get the randomization algorithm for the rhythm
+             * @param algo  If not empty, it will use this algorithm to check, instead of the generation.rhythm value
+             * @return A lambda function that implements the algorithm
+             */
+            std::function<float(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
+            getRhythmAlgorithm(std::string algo = "") const;
+
         private:
             /**
              * Get all the possible pitches within a range, according to the given scale.

@@ -6,6 +6,7 @@
   "length": 10,
   "generation": {
     "pitch": "1/f-noise",
+    "rhythm": "random",
     "rest-ratio": 0.1
   },
   "export": {

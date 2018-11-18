@@ -115,8 +115,8 @@ namespace autoplay {
                 }
 
                 // Create storage for Measure & Note attributes
-                std::shared_ptr<music::Measure>         prev(nullptr);
-                std::list<std::shared_ptr<music::Note>> links = {};
+                std::shared_ptr<music::Measure>           prev(nullptr);
+                std::vector<std::shared_ptr<music::Note>> links = {};
 
                 // Add measures
                 unsigned int measure_idx = 0;
@@ -205,19 +205,30 @@ namespace autoplay {
                             note_tree.put("instrument.<xmlattr>.id", instr_ids.at(note.getInstrument()->getName()));
                         }
 
-                        auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
+                        auto it = links.begin();
+                        for(; it < links.end(); ++it) {
+                            if(**it == note) {
+                                break;
+                            }
+                        }
+                        // auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
                         if(it != links.end()) {
-                            note_tree.put("tie.<xmlattr>.type", "stop");
+                            pt::ptree tmp;
+                            tmp.put("<xmlattr>.type", "stop");
+                            note_tree.add_child("tie", tmp);
                             links.erase(it);
                         }
                         for(const auto& p : note.getLinks()) {
                             links.push_back(p);
                         }
                         if(!note.getLinks().empty()) {
-                            note_tree.put("tie.<xmlattr>.type", "start");
+                            pt::ptree tmp;
+                            tmp.put("<xmlattr>.type", "start");
+                            note_tree.add_child("tie", tmp);
+                            // note_tree.add("tie.<xmlattr>.type", "start");
                         }
                         note_tree.put("voice", 1);
-                        note_tree.put("type", "quarter");
+                        note_tree.put("type", note.getType(prev->getDivisions()));
 
                         if(!note.getHeadName().empty()) {
                             note_tree.put("notehead", note.getHeadName());

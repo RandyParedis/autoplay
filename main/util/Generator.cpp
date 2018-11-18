@@ -25,7 +25,7 @@ namespace autoplay {
             auto          length     = (unsigned)m_config.conf<int>("length", 10); // Total amount of measures
             auto          parts      = m_config.conf_child("parts");
             unsigned long part_count = parts.size(); // Number of parts
-            uint8_t       divisions  = 24;           // Amount of 'ticks' each quarter note takes
+            uint8_t       divisions  = 128;          // Amount of 'ticks' each quarter note takes
             std::pair<uint8_t, uint8_t> time = {4, 4};
 
             // Get Logger
@@ -50,10 +50,12 @@ namespace autoplay {
                     }
                 }
 
-                auto pitch_algo = getPitchAlgorithm(pt_part.get<std::string>("generation.pitch", ""));
+                auto pitch_algo  = getPitchAlgorithm(pt_part.get<std::string>("generation.pitch", ""));
+                auto rhythm_algo = getRhythmAlgorithm(pt_part.get<std::string>("generation.rhythm", ""));
 
                 // Set Instrument(s)
-                bool                                            percussion;
+                bool percussion;
+
                 std::vector<std::shared_ptr<music::Instrument>> instruments = {};
                 std::map<std::string, std::string>                        repr_to_head;
                 std::map<std::string, std::shared_ptr<music::Instrument>> repr_to_inst;
@@ -108,7 +110,8 @@ namespace autoplay {
                         }
                     }
                     uint8_t pitch    = pitch_algo(m_rnengine, prev.get(), conc, options);
-                    uint8_t duration = 24;
+                    auto    rh       = rhythm_algo(m_rnengine, prev.get(), conc, options);
+                    auto    duration = (unsigned int)((int)divisions * 4 * rh);
                     if(j + duration > length * measure.max_length()) {
                         duration = (uint8_t)(length * measure.max_length() - j);
                     }
@@ -245,6 +248,30 @@ namespace autoplay {
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
                     return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 128, stave));
+                };
+            }
+        }
+
+        std::function<float(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
+        Generator::getRhythmAlgorithm(std::string algo) const {
+            // Get algorithm variables
+            if(algo.empty()) {
+                algo = m_config.conf<std::string>("generation.rhythm");
+            }
+
+            m_config.getLogger()->debug("Using Rhythm Algorithm '{}'", algo);
+
+            if(algo == "random") {
+                return [](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt) -> float {
+                    auto rh = (float)std::pow(2.0f, Randomizer::pick_uniform(gen, 1, 10) - 8);
+                    return rh;
+                };
+            } else {
+                return [](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt) -> float {
+                    auto rh = pt.get<std::string>("rhythm.duration", "quarter");
+                    try {
+                        return music::Note::DURATION.at(rh);
+                    } catch(std::exception& e) { return 0.25f; }
                 };
             }
         }
