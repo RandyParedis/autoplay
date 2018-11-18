@@ -199,13 +199,8 @@ namespace autoplay {
             } else if(algo == "contain-stave") {
                 return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
                               pt::ptree& pt) -> uint8_t {
-                    auto        stave  = pt.get<int>("stave");
-                    auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
-                    music::Clef clef   = music::Clef::Treble();
-                    clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
-                    clef.setLine((uint8_t)clef_n.get<int>("line", 2));
-                    clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
-                    auto range = clef.range();
+                    auto stave = pt.get<int>("stave");
+                    auto range = staveRange(stave);
 
                     return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second, stave));
                 };
@@ -219,11 +214,37 @@ namespace autoplay {
                     pt.put("_p1fn._reinit", false);
                     return res;
                 };
-            } else {
+            } else if(algo == "centralized") {
                 return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
-                    return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 127, stave));
+                    auto range = staveRange(stave);
+                    auto p     = getPitches(range.first, range.second, stave);
+
+                    std::vector<float> p2;
+                    for(const auto& v : p) {
+                        p2.push_back((int)v);
+                    }
+                    return (uint8_t)Randomizer::gaussian(gen, p2);
+                };
+            } /*else if(algo == "gaussian-voicing") {
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    auto stave = pt.get<int>("stave");
+                    auto range = staveRange(stave);
+                    auto p     = getPitches(range.first, range.second, stave);
+
+                    std::vector<float> p2;
+                    for(const auto& v : p) {
+                        p2.push_back((int)v);
+                    }
+                    return (uint8_t)Randomizer::gaussian(gen, p2, -3.0f, 3.0f, true);
+                };
+            }*/ else {
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    auto stave = pt.get<int>("stave");
+                    return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 128, stave));
                 };
             }
         }
@@ -292,15 +313,19 @@ namespace autoplay {
             return ret;
         }
 
-        uint8_t Generator::pitchBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Note* prev,
-                                               std::vector<autoplay::music::Note*>& conc, const pt::ptree& pt) const {
-            auto        stave  = pt.get<int>("stave", 0);
+        std::pair<uint8_t, uint8_t> Generator::staveRange(int stave) const {
             auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
             music::Clef clef   = music::Clef::Treble();
             clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
             clef.setLine((uint8_t)clef_n.get<int>("line", 2));
             clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
-            auto range = clef.range();
+            return clef.range();
+        }
+
+        uint8_t Generator::pitchBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Note* prev,
+                                               std::vector<autoplay::music::Note*>& conc, const pt::ptree& pt) const {
+            auto stave = pt.get<int>("stave", 0);
+            auto range = staveRange(stave);
 
             auto pitches = getPitches(range.first, range.second, stave);
 
@@ -332,13 +357,8 @@ namespace autoplay {
             uint8_t num_dice   = 3;
             auto    num_states = (uint8_t)std::pow((int)2, (int)num_dice);
 
-            auto        stave  = pt.get<int>("stave", 0);
-            auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
-            music::Clef clef   = music::Clef::Treble();
-            clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
-            clef.setLine((uint8_t)clef_n.get<int>("line", 2));
-            clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
-            auto range = clef.range();
+            auto stave = pt.get<int>("stave", 0);
+            auto range = staveRange(stave);
 
             auto pitches = getPitches(range.first, range.second, stave);
 

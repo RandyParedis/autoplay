@@ -68,6 +68,9 @@ The file contains of the following tree structure and fields:
        representing the ranges of the jumps. 
        - `1/f-noise`: An implementation of the "white noise" algorithm (based upon the
        one invented by Richard F. Voss), using 3 dice and respecting the stave.
+       - `centralized`: Using the gaussian distribution, mapped on the stave range of
+       the current stave, generate notes whose chance of being chosen corresponds with
+       its value on the gauss-curve.
        - Anything else will generate completely random pitches within the entire music range.
     - `options`: An object, representing the additional options of the above-mentioned
     algorithms.

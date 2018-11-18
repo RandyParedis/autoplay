@@ -205,8 +205,10 @@ namespace autoplay {
                                           std::function<float(const float&)> dist, float a, float b,
                                           bool fix_zero = false) {
                 float ws     = 0.0f;
-                float min    = std::min_element(std::begin(elements), std::end(elements));
-                float max    = std::max_element(std::begin(elements), std::end(elements));
+                auto  _min   = std::min_element(std::begin(elements), std::end(elements));
+                auto  _max   = std::max_element(std::begin(elements), std::end(elements));
+                float min    = std::distance(std::begin(elements), _min);
+                float max    = std::distance(std::begin(elements), _max);
                 float factor = (b - a) / (max - min);
                 if(fix_zero) {
                     factor = (b - a) / (std::min(min, max) * 2);
@@ -253,10 +255,8 @@ namespace autoplay {
              * @param step      The size of each step in the range
              * @param a         The minimal value of the skewed domain
              * @param b         The maximal value of the skewed domain
-             * @param fix_zero  If the zero-value should remain fixed in the computation
-             * or not.
-             *                  This will determine the scale factor by the smallest value
-             * to 0,
+             * @param fix_zero  If the zero-value should remain fixed in the computation or not.
+             *                  This will determine the scale factor by the smallest value to 0,
              *                  instead of the width of the container.
              *
              * @return One randomly selected element from range. If none is found, it
@@ -279,10 +279,8 @@ namespace autoplay {
              * @param elements  Container of elements
              * @param a         The minimal value of the skewed domain
              * @param b         The maximal value of the skewed domain
-             * @param fix_zero  If the zero-value should remain fixed in the computation
-             * or not.
-             *                  This will determine the scale factor by the smallest value
-             * to 0,
+             * @param fix_zero  If the zero-value should remain fixed in the computation or not.
+             *                  This will determine the scale factor by the smallest value to 0,
              *                  instead of the width of the container.
              *
              * @return One randomly selected element.

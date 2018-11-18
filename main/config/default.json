@@ -1,6 +1,6 @@
 {
   "verbose": false,
-  "play": true,
+  "play": false,
   "engine": "lcg64",
   "seed": 0,
   "length": 10,

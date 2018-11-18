@@ -50,6 +50,13 @@ namespace autoplay {
             std::vector<uint8_t> getPitches(uint8_t min, uint8_t max, int stave) const;
 
             /**
+             * Private helper function, used to obtain the range of a specific stave.
+             * @param stave     The stave to find the range for.
+             * @return A range object (as a pair <min, max> )
+             */
+            std::pair<uint8_t, uint8_t> staveRange(int stave) const;
+
+            /**
              * A pitch generation algorithm, based upon the movements of small particles that are randomly bombarded by
              * molecules of the surrounding medium.
              * @param gen   The generator object.
