@@ -4,7 +4,6 @@ This file describes all planned features to be added in the future
 - Algorithms
     - Melodic algorithms
         - Accompaniment
-        - 1/f Noise
         - Centralized
         - (Gaussian) Voicing
         - Markov Chains

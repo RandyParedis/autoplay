@@ -66,6 +66,8 @@ The file contains of the following tree structure and fields:
        - `brownian-motion`: An implementation of the Brownian Motion algorithm that is
        contained within the stave. Options for this algorithm are `pitch.min` and `pitch.max`,
        representing the ranges of the jumps. 
+       - `1/f-noise`: An implementation of the "white noise" algorithm (based upon the
+       one invented by Richard F. Voss), using 3 dice and respecting the stave.
        - Anything else will generate completely random pitches within the entire music range.
     - `options`: An object, representing the additional options of the above-mentioned
     algorithms.

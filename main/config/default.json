@@ -1,18 +1,12 @@
 {
   "verbose": false,
-  "play": false,
+  "play": true,
   "engine": "lcg64",
   "seed": 0,
   "length": 10,
   "generation": {
-    "pitch": "brownian-motion",
-    "options": {
-      "pitch": {
-        "min": -3,
-        "max": 3
-      }
-    },
-    "rest-ratio": 0.2
+    "pitch": "1/f-noise",
+    "rest-ratio": 0.1
   },
   "export": {
     "filename": "music.xml",

@@ -7,6 +7,7 @@
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/foreach.hpp>
+#include <bitset>
 #include <sstream>
 
 namespace autoplay {
@@ -36,9 +37,12 @@ namespace autoplay {
 
                 pt::ptree options;
                 options.put("stave", i);
-                if(pt_part.count("generation") == 0 && m_config.conf_child("generation").count("options") == 1) {
-                    BOOST_FOREACH(auto& var, m_config.conf_child("generation.options")) {
-                        options.put_child(var.first, var.second);
+                options.put("_p1fn._reinit", true);
+                if(pt_part.count("generation") == 0) {
+                    if(m_config.conf_child("generation").count("options") == 1) {
+                        BOOST_FOREACH(auto& var, m_config.conf_child("generation.options")) {
+                            options.put_child(var.first, var.second);
+                        }
                     }
                 } else if(pt_part.get_child("generation").count("options") == 1) {
                     BOOST_FOREACH(auto& var, pt_part.get_child("generation.options")) {
@@ -154,7 +158,7 @@ namespace autoplay {
                 }
 
                 // Generate random rests (for this part)
-                auto rests = m_config.conf<float>("style.rest-ratio", 0.0f);
+                auto rests = m_config.conf<float>("generation.rest-ratio", 0.0f);
                 if(pt_part.count("generation.rest-ratio") != 0) {
                     rests = pt_part.get<float>("generation.rest-ratio", 0.0f);
                 }
@@ -177,7 +181,7 @@ namespace autoplay {
             return score;
         }
 
-        std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt)>
+        std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
         Generator::getPitchAlgorithm(std::string algo) const {
             // Get algorithm variables
             if(algo.empty()) {
@@ -187,66 +191,40 @@ namespace autoplay {
             m_config.getLogger()->debug("Using Pitch Algorithm '{}'", algo);
 
             if(algo == "random-piano") {
-                return
-                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
-                        auto stave = pt.get<int>("stave");
-                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(21, 108, stave));
-                    };
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    auto stave = pt.get<int>("stave");
+                    return (uint8_t)Randomizer::pick_uniform(gen, getPitches(21, 108, stave));
+                };
             } else if(algo == "contain-stave") {
-                return
-                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
-                        auto        stave  = pt.get<int>("stave");
-                        auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
-                        music::Clef clef   = music::Clef::Treble();
-                        clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
-                        clef.setLine((uint8_t)clef_n.get<int>("line", 2));
-                        clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
-                        auto range = clef.range();
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    auto        stave  = pt.get<int>("stave");
+                    auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
+                    music::Clef clef   = music::Clef::Treble();
+                    clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
+                    clef.setLine((uint8_t)clef_n.get<int>("line", 2));
+                    clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
+                    auto range = clef.range();
 
-                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second, stave));
-                    };
+                    return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second, stave));
+                };
             } else if(algo == "brownian-motion") {
-                return
-                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
-                        auto        stave  = pt.get<int>("stave");
-                        auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
-                        music::Clef clef   = music::Clef::Treble();
-                        clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
-                        clef.setLine((uint8_t)clef_n.get<int>("line", 2));
-                        clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
-                        auto range = clef.range();
-
-                        auto pitches = getPitches(range.first, range.second, stave);
-
-                        if(prev) {
-                            auto it = std::find(pitches.begin(), pitches.end(), prev->getPitch());
-                            if(it == pitches.end()) {
-                                throw std::invalid_argument("Note '" + std::to_string(prev->getPitch()) +
-                                                            "' not in scale!");
-                            }
-                            auto idx = std::distance(pitches.begin(), it);
-                            auto min = pt.get<long>("pitch.min", -3);
-                            auto max = pt.get<long>("pitch.max", 3);
-                            if(idx + min < 0) {
-                                min = -idx;
-                            }
-                            if(idx + max >= (signed)pitches.size()) {
-                                max = pitches.size() - idx - 1;
-                            } else if(idx + max < 0) {
-                                max = -idx;
-                            }
-                            idx = Randomizer::pick_uniform(gen, (int)(min + idx), (int)(max + idx));
-                            return pitches.at((unsigned)idx);
-                        } else {
-                            return (uint8_t)Randomizer::pick_uniform(gen, pitches);
-                        }
-                    };
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> uint8_t { return pitchBrownianMotion(gen, prev, conc, pt); };
+            } else if(algo == "1/f-noise") {
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    auto res = pitch1FNoise(gen, pt);
+                    pt.put("_p1fn._reinit", false);
+                    return res;
+                };
             } else {
-                return
-                    [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree pt) -> uint8_t {
-                        auto stave = pt.get<int>("stave");
-                        return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 127, stave));
-                    };
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    auto stave = pt.get<int>("stave");
+                    return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 127, stave));
+                };
             }
         }
 
@@ -312,6 +290,95 @@ namespace autoplay {
             }
 
             return ret;
+        }
+
+        uint8_t Generator::pitchBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Note* prev,
+                                               std::vector<autoplay::music::Note*>& conc, const pt::ptree& pt) const {
+            auto        stave  = pt.get<int>("stave", 0);
+            auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
+            music::Clef clef   = music::Clef::Treble();
+            clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
+            clef.setLine((uint8_t)clef_n.get<int>("line", 2));
+            clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
+            auto range = clef.range();
+
+            auto pitches = getPitches(range.first, range.second, stave);
+
+            if(prev) {
+                auto it = std::find(pitches.begin(), pitches.end(), prev->getPitch());
+                if(it == pitches.end()) {
+                    throw std::invalid_argument("Note '" + std::to_string(prev->getPitch()) + "' not in scale!");
+                }
+                auto idx = std::distance(pitches.begin(), it);
+                auto min = pt.get<long>("pitch.min", -3);
+                auto max = pt.get<long>("pitch.max", 3);
+                if(idx + min < 0) {
+                    min = -idx;
+                }
+                if(idx + max >= (signed)pitches.size()) {
+                    max = pitches.size() - idx - 1;
+                } else if(idx + max < 0) {
+                    max = -idx;
+                }
+                idx = Randomizer::pick_uniform(gen, (int)(min + idx), (int)(max + idx));
+                return pitches.at((unsigned)idx);
+            } else {
+                return (uint8_t)Randomizer::pick_uniform(gen, pitches);
+            }
+        }
+
+        uint8_t Generator::pitch1FNoise(autoplay::util::RNEngine& gen, const pt::ptree& pt) const {
+            // Constants through function
+            uint8_t num_dice   = 3;
+            auto    num_states = (uint8_t)std::pow((int)2, (int)num_dice);
+
+            auto        stave  = pt.get<int>("stave", 0);
+            auto        clef_n = ptree_at(m_config.conf_child("parts"), (uint8_t)stave).get_child("clef");
+            music::Clef clef   = music::Clef::Treble();
+            clef.setSign(clef_n.get<unsigned char>("sign", 'G'));
+            clef.setLine((uint8_t)clef_n.get<int>("line", 2));
+            clef.setOctaveChange(clef_n.get<int>("octave-change", 0));
+            auto range = clef.range();
+
+            auto pitches = getPitches(range.first, range.second, stave);
+
+            // (Re)init table
+            static uint8_t state = 0;
+            static std::vector<std::pair<uint8_t, uint8_t>> dice{num_dice, {0, 0}};
+
+            if(pt.get<bool>("_p1fn._reinit", false)) {
+                state = 0;
+                dice.assign(num_dice, {0, 0});
+
+                // Fill dice_ranges uniformly
+                auto all = (uint8_t)((int)(pitches.size() - 1) / num_dice);
+                for(auto& die : dice) {
+                    die.second = all;
+                }
+                all = (uint8_t)((pitches.size() - 1) - (all * num_dice));
+                for(unsigned int i = 0; i < all; ++i) {
+                    dice.at(i % num_dice).second += 1;
+                }
+            }
+
+            // Roll dice (depending on the state)
+            unsigned int sum = 0;
+            for(unsigned int i = 0; i < dice.size(); ++i) {
+                if(state == 0) {
+                    dice.at(i).first = (uint8_t)Randomizer::pick_uniform(gen, 0, dice.at(i).second + 1);
+                    sum += dice.at(i).first;
+                } else {
+                    std::bitset<16> bs{(unsigned long long)((state - 1) ^ state)};
+                    if(bs.test(i)) {
+                        dice.at(i).first = (uint8_t)Randomizer::pick_uniform(gen, 0, dice.at(i).second + 1);
+                        sum += dice.at(i).first;
+                    }
+                }
+            }
+
+            state = (uint8_t)((state + 1) % num_states);
+
+            return pitches.at(sum);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace autoplay {
              * Choose an integer element uniformly from a range
              * @param gen       A random engine generator
              * @param min       The minimum of the range
-             * @param max       The maximum of the range
+             * @param max       The maximum of the range (exclusive)
              * @return One randomly selected element in a range
              */
             static int pick_uniform(RNEngine& gen, const int& min, const int& max) {

@@ -140,6 +140,13 @@ namespace autoplay {
                                score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
                                 msgch = 9;
                             }
+                            if(note.isPause()) {
+                                for(uint8_t len = 0; len < note.getDuration(); ++len) {
+                                    msg = {};
+                                    nl.emplace_back(msg);
+                                }
+                                continue;
+                            }
                             auto _msg = note.getOnMessage(msgch);
                             if(score.getParts().at(channel)->getInstruments().size() > 1 ||
                                score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
