@@ -117,3 +117,4 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 05-11-2018 | Added different/custom Clef support.
 | 10-11-2018 | Fixed Rhythmic Instrument Support
 | 17-11-2018 | Added **Brownian Motion** as a pitch algorithm.
+| 18-11-2018 | Added `rest-ratio` and `length` parameters to config file.

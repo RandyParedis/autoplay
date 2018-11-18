@@ -54,6 +54,8 @@ The file contains of the following tree structure and fields:
  - `seed`: The seed to give the engine. This way, the same seed returns the same music.
  Obviously, when more options are added and more things are being randomized, the same seed
  will yield different results.
+ - `length`: The duration of the score to generate, expressed in measures. Defaults to
+ 10 when this field is not set.
  - `generation`: This field contains all detailed information about which algorithms to use
  in generating the specific music itself. It describes the rules to follow in order to obtain
  the same result. (See the Algorithms page for details on individual algorithms.)
@@ -65,6 +67,11 @@ The file contains of the following tree structure and fields:
        contained within the stave. Options for this algorithm are `pitch.min` and `pitch.max`,
        representing the ranges of the jumps. 
        - Anything else will generate completely random pitches within the entire music range.
+    - `options`: An object, representing the additional options of the above-mentioned
+    algorithms.
+    - `rest-ratio`: A floating point number, representing the approximated percentage of
+      notes that should be turned into rests.<br>_(**Note:** This percentage is merely an 
+      approximation and thus is not a precise representation of the exact percentage.)_
  - `export`: A small sub-tree, containing some values for exporting to MusicXML. When using
  the string `@VERSION@` in the elements of this sub-tree, the current version of autoplay
  will be used.
@@ -100,5 +107,6 @@ The file contains of the following tree structure and fields:
      - `name`: The name for the instrument can be set explicitly with this field.
  
 For more info, please take a look at the `main/config/default.json` config file.
+
 _**Note:** This file will be read and used as (default) input (config) for the program on
 launch, so any changes to this file will change your default values._

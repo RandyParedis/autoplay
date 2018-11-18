@@ -155,6 +155,57 @@ namespace autoplay {
                 return nullptr;
             }
 
+            /**
+             * Get the nth Note of the Part
+             * @param n The index of the Note
+             * @return A pointer to the Note at index n.
+             */
+            Note* noteAt(unsigned int n) const {
+                if(m_measures.empty()) {
+                    return nullptr;
+                }
+
+                // Find the correct Measure
+                unsigned int mi     = 0;
+                unsigned int curidx = 0;
+                while(curidx < n) {
+                    // curidx is the first index of the next Measure
+                    curidx += m_measures.at(mi++)->getNotes().size();
+                }
+                if(curidx == n) {
+                    return &m_measures.at(mi)->getNotes().at(0);
+                } else {
+                    curidx -= m_measures.at(--mi)->getNotes().size();
+                    return &m_measures.at(mi)->getNotes().at(n - curidx);
+                }
+            }
+
+            /**
+             * Get the nth Note of the Part and change it to a pause/rest
+             * @param n The index of the Note
+             * @return true if succesful
+             */
+            bool toPause(unsigned int n) const {
+                if(m_measures.empty()) {
+                    return false;
+                }
+
+                // Find the correct Measure
+                unsigned int mi     = 0;
+                unsigned int curidx = 0;
+                while(curidx < n) {
+                    // curidx is the first index of the next Measure
+                    curidx += m_measures.at(mi++)->getNotes().size();
+                }
+                if(curidx == n) {
+                    m_measures.at(mi)->getNotes().at(0).toPause();
+                } else {
+                    curidx -= m_measures.at(--mi)->getNotes().size();
+                    m_measures.at(mi)->getNotes().at(n - curidx).toPause();
+                }
+                return true;
+            }
+
         private:
             MeasureList                              m_measures;        ///< The Measure pointers of this Part
             std::vector<std::shared_ptr<Instrument>> m_instruments;     ///< The Instrument vector of this Part

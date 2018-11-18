@@ -2,7 +2,6 @@
 This file describes all planned features to be added in the future
 
 - Algorithms
-    - Rests (80/20-rule?)
     - Melodic algorithms
         - Accompaniment
         - 1/f Noise
@@ -14,10 +13,9 @@ This file describes all planned features to be added in the future
     - _(Dynamic algorithms)_
     - _(Custom algorithm parsing)_
 - Score
-    - Custom length
-    - Custom signature
+    - Custom staff signature (time, BPM...)
 - Config
-    - Make it so the execution does not break on invalid input
+    - Make it so the execution does not break on invalid input (preprocessing)
     - _(Ability to randomize anything)_
 - General Todo
     - Simple Installation

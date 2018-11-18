@@ -177,6 +177,11 @@ namespace autoplay {
             inline bool isNote() const { return !m_pause; };
 
             /**
+             * Turns the current Note into a rest/pause
+             */
+            inline void toPause() { m_pause = true; }
+
+            /**
              * Returns the MIDI message of the Note.
              * @param channel   The channel on which the Note is played. This is in the
              * range of [0, 15]

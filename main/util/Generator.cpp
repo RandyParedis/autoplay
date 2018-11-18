@@ -21,7 +21,7 @@ namespace autoplay {
         music::Score Generator::generate() {
             // Setup default values
             // TODO: Randomize these
-            unsigned int  length     = 1; // Total amount of measures
+            auto          length     = (unsigned)m_config.conf<int>("length", 10); // Total amount of measures
             auto          parts      = m_config.conf_child("parts");
             unsigned long part_count = parts.size(); // Number of parts
             uint8_t       divisions  = 24;           // Amount of 'ticks' each quarter note takes
@@ -94,11 +94,8 @@ namespace autoplay {
 
                 part->setInstrumentName(pt_part.get<std::string>("name", ""));
 
+                std::shared_ptr<music::Note> prev;
                 for(unsigned int j = 0; j < length * measure.max_length();) {
-                    std::shared_ptr<music::Note> prev;
-                    if(j > 0) {
-                        prev = std::make_shared<music::Note>(measure.back());
-                    }
                     std::vector<music::Note*> conc = {};
                     for(unsigned int p = 0; p < i; ++p) {
                         music::Note* n = score.getParts().at(p)->at(j);
@@ -119,18 +116,24 @@ namespace autoplay {
                         note.setInstrument(repr_to_inst.at(prepr));
                     }
 
+                    prev = std::make_shared<music::Note>(note);
                     measure.append(note);
                     j += duration;
                 }
 
                 part->setMeasures(measure);
                 auto picked = Randomizer::pick_uniform<float>(m_rnengine, 0.0f, 1.0f);
+
+                // Change the last Note to the root note with a chance of style.chance
                 if(!percussion && picked <= m_config.conf<float>("style.chance")) {
                     music::Note::Semitone s;
 
-                    auto c  = part->back()->back().getPitch();
-                    auto r  = music::Note::pitchRepr(c);
-                    auto p  = music::Note::splitPitch(r, s);
+                    auto c = part->back()->back().getPitch();
+                    auto r = music::Note::pitchRepr(c);
+                    auto p = music::Note::splitPitch(r, s);
+
+                    // Find nearest root note.
+                    //  To do this, there are 3 possibilities: same octave, or one octave up or down.
                     auto p1 = music::Note::pitch(m_config.conf<std::string>("style.root") + std::to_string(p.second));
                     auto p2 =
                         music::Note::pitch(m_config.conf<std::string>("style.root") + std::to_string(p.second - 1));
@@ -148,6 +151,25 @@ namespace autoplay {
                     } else {
                         part->back()->back().setPitch(p1);
                     }
+                }
+
+                // Generate random rests (for this part)
+                auto rests = m_config.conf<float>("style.rest-ratio", 0.0f);
+                if(pt_part.count("generation.rest-ratio") != 0) {
+                    rests = pt_part.get<float>("generation.rest-ratio", 0.0f);
+                }
+                if(rests < 0.0f) {
+                    logger->warn("The rest-ratio is less than 0. Changing it to 0.");
+                    rests = std::fabs(rests);
+                }
+                unsigned int ntcnt = 0;
+                for(const auto& _m : part->getMeasures()) {
+                    ntcnt += _m->getNotes().size();
+                }
+                auto amount = (unsigned int)std::round(ntcnt * rests);
+                for(unsigned int w = 0; w < amount; ++w) {
+                    auto idx = (unsigned)Randomizer::pick_uniform(m_rnengine, 0, ntcnt - 1);
+                    part->toPause(idx);
                 }
                 score.addPart(part);
             }
@@ -213,7 +235,7 @@ namespace autoplay {
                             } else if(idx + max < 0) {
                                 max = -idx;
                             }
-                            idx = Randomizer::pick_uniform(gen, (int)min, (int)max);
+                            idx = Randomizer::pick_uniform(gen, (int)(min + idx), (int)(max + idx));
                             return pitches.at((unsigned)idx);
                         } else {
                             return (uint8_t)Randomizer::pick_uniform(gen, pitches);

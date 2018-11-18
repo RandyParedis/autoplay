@@ -1,8 +1,9 @@
 {
   "verbose": false,
-  "play": true,
+  "play": false,
   "engine": "lcg64",
   "seed": 0,
+  "length": 10,
   "generation": {
     "pitch": "brownian-motion",
     "options": {
@@ -10,7 +11,8 @@
         "min": -3,
         "max": 3
       }
-    }
+    },
+    "rest-ratio": 0.2
   },
   "export": {
     "filename": "music.xml",

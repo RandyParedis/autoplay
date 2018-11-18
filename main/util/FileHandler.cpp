@@ -182,6 +182,8 @@ namespace autoplay {
 
                         if(note.isPause()) {
                             note_tree.put("rest", "");
+                            note_tree.put("duration", note.getDuration());
+                            measure_tree.add_child("note", note_tree);
                             continue;
                         }
 

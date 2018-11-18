@@ -48,10 +48,11 @@ namespace autoplay {
              * Get the specified value from the config pt
              * @tparam T    The return type
              * @param path  The name of the config value to get
+             * @param def   The default value of the to-be-gotten path
              * @return The value of what was gotten
              */
             template <typename T>
-            T conf(const std::string& path) const;
+            T conf(const std::string& path, const T& def = T()) const;
 
             /**
              * Get a child at a given path in the config ptree
@@ -129,9 +130,9 @@ namespace autoplay {
         };
 
         template <typename T>
-        T Config::conf(const std::string& path) const {
+        T Config::conf(const std::string& path, const T& def) const {
             try {
-                return m_ptree.get<T>(path);
+                return m_ptree.get<T>(path, def);
             } catch(pt::ptree_error& pte) {
                 m_logger->error("Invalid path for '{}'. Not found in config.", path);
                 return T();

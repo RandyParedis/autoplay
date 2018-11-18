@@ -184,6 +184,12 @@ namespace autoplay {
              */
             inline std::vector<Note> getNotes() const { return m_notes; }
 
+            /**
+             * Fetches all Notes from this Measure by reference
+             * @return A vector, containing all Notes.
+             */
+            inline std::vector<Note>& getNotes() { return m_notes; }
+
         private:
             int  m_fifths;                      ///< The amount of fifths for the measure (defaults to 0)
             Clef m_clef;                        ///< The clef of the current measure
