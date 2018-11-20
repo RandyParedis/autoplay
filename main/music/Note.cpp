@@ -307,7 +307,33 @@ namespace autoplay {
             return (fill && !boost::algorithm::ends_with(m_head, "-empty"));
         }
 
-        std::string Note::getType(const uint8_t& divisions) const {
+        std::vector<Note> Note::splitByDivisions(const int& divisions) const {
+            std::vector<Note> ref;
+
+            float rem = 0.0f;
+            float T   = (float)m_duration / (4.0f * divisions);
+            int   n   = 1;
+
+            auto nearby = [](float val, float ref) -> bool { return val < ref + 0.00000001 && val > ref - 0.00000001; };
+
+            while(n != 0) {
+                T -= rem;
+                float _n = std::log2(T) + 8;
+                n        = (int)std::floor(_n);
+                rem      = (float)std::pow(2.0f, n - 8);
+                Note note{*this};
+                note.setDuration((unsigned int)(rem * divisions * 4));
+                ref.emplace_back(note);
+
+                if(nearby(_n - n, 0.0f)) {
+                    break;
+                }
+            }
+
+            return ref;
+        }
+
+        std::string Note::getType(const int& divisions) const {
             float dur   = (std::pow(2.0f, std::floor(std::log2f(m_duration))) / (float)divisions) / 4.0f;
             auto nearby = [](float val, float ref) -> bool { return val < ref + 0.0000001 && val > ref - 0.0000001; };
             if(nearby(dur, 1.0f / 256.0f)) {

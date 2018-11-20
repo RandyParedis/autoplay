@@ -25,7 +25,8 @@ namespace autoplay {
             auto          length     = (unsigned)m_config.conf<int>("length", 10); // Total amount of measures
             auto          parts      = m_config.conf_child("parts");
             unsigned long part_count = parts.size(); // Number of parts
-            uint8_t       divisions  = 128;          // Amount of 'ticks' each quarter note takes
+            int           divisions  = 256;          // Amount of 'ticks' each quarter note takes
+
             std::pair<uint8_t, uint8_t> time = {4, 4};
 
             // Get Logger
@@ -111,7 +112,9 @@ namespace autoplay {
                     }
                     uint8_t pitch    = pitch_algo(m_rnengine, prev.get(), conc, options);
                     auto    rh       = rhythm_algo(m_rnengine, prev.get(), conc, options);
-                    auto    duration = (unsigned int)((int)divisions * 4 * rh);
+                    auto    duration = (unsigned)(divisions * 4 * rh);
+
+                    // Prevent overflowing over final measure
                     if(j + duration > length * measure.max_length()) {
                         duration = (uint8_t)(length * measure.max_length() - j);
                     }

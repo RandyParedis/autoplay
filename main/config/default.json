@@ -7,7 +7,7 @@
   "generation": {
     "pitch": "1/f-noise",
     "rhythm": "random",
-    "rest-ratio": 0.1
+    "rest-ratio": 0.05
   },
   "export": {
     "filename": "music.xml",
@@ -15,7 +15,7 @@
     "composer": "autoplay v@VERSION@",
     "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
   },
-  "style": "default",
+  "style": "F-major",
   "parts": [
     {
       "instrument": "Acoustic Grand Piano",

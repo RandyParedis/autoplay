@@ -383,7 +383,14 @@ namespace autoplay {
             bool operator>(const Note& rhs) const;
 
         public:
-            std::string getType(const uint8_t& divisions) const;
+            /**
+             * Split the Note in a series of linked notes, w.r.t. the divisions
+             * @param divisions The amount of divisions to take into a count.
+             * @return A vector of linked Notes
+             */
+            std::vector<Note> splitByDivisions(const int& divisions) const;
+
+            std::string getType(const int& divisions) const;
         };
     }
 }

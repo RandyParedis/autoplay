@@ -132,10 +132,10 @@ namespace autoplay {
 
                     // Set attributes if required
                     if(measure->hasAttributes()) {
-                        uint8_t divisions = measure->getDivisions();
+                        int divisions = measure->getDivisions();
                         if(divisions != prev->getDivisions()) {
                             prev->setDivisions(divisions);
-                            measure_tree.put("attributes.divisions", (int)divisions);
+                            measure_tree.put("attributes.divisions", divisions);
                         }
 
                         int fifths = measure->getFifths();
@@ -173,71 +173,87 @@ namespace autoplay {
                     measure_tree.put("<xmlattr>.number", measure_idx);
 
                     // Add Notes
-                    for(const auto& note : measure->getNotes()) {
-                        pt::ptree note_tree;
+                    for(const auto& note_ : measure->getNotes()) {
+                        auto vec = note_.splitByDivisions(prev->getDivisions());
+                        for(unsigned int i = 0; i < vec.size(); ++i) {
+                            pt::ptree   note_tree;
+                            music::Note note = vec.at(i);
 
-                        music::Note::Semitone s;
+                            music::Note::Semitone s;
 
-                        auto repr = music::Note::splitPitch(music::Note::pitchRepr(note.getPitch()), s);
+                            auto repr = music::Note::splitPitch(music::Note::pitchRepr(note.getPitch()), s);
 
-                        if(note.isPause()) {
-                            note_tree.put("rest", "");
+                            if(note.isPause()) {
+                                note_tree.put("rest", "");
+                                note_tree.put("duration", note.getDuration());
+                                measure_tree.add_child("note", note_tree);
+                                continue;
+                            }
+
+                            if(measure->getClef().isPercussion()) {
+                                note_tree.put("unpitched.display-step", repr.first);
+                                note_tree.put("unpitched.display-octave", repr.second);
+                            } else {
+                                note_tree.put("pitch.step", repr.first);
+                                if(s == music::Note::Semitone::SHARP) {
+                                    note_tree.put("pitch.alter", 1);
+                                } else if(s == music::Note::Semitone::FLAT) {
+                                    note_tree.put("pitch.alter", -1);
+                                }
+                                note_tree.put("pitch.octave", repr.second);
+                            }
                             note_tree.put("duration", note.getDuration());
+
+                            if(note.getInstrument() != nullptr) {
+                                note_tree.put("instrument.<xmlattr>.id", instr_ids.at(note.getInstrument()->getName()));
+                            }
+
+                            if(i == 0) {
+                                auto it = links.begin();
+                                for(; it < links.end(); ++it) {
+                                    if(**it == note_) {
+                                        break;
+                                    }
+                                }
+                                // auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
+                                if(it != links.end()) {
+                                    pt::ptree tmp;
+                                    tmp.put("<xmlattr>.type", "stop");
+                                    note_tree.add_child("tie", tmp);
+                                    links.erase(it);
+                                }
+                                for(const auto& p : note_.getLinks()) {
+                                    links.push_back(p);
+                                }
+                            } else {
+                                pt::ptree tmp;
+                                tmp.put("<xmlattr>.type", "stop");
+                                note_tree.add_child("tie", tmp);
+                            }
+
+                            if(i == vec.size() - 1) {
+                                if(!note_.getLinks().empty()) {
+                                    pt::ptree tmp;
+                                    tmp.put("<xmlattr>.type", "start");
+                                    note_tree.add_child("tie", tmp);
+                                }
+                            } else {
+                                pt::ptree tmp;
+                                tmp.put("<xmlattr>.type", "start");
+                                note_tree.add_child("tie", tmp);
+                            }
+                            note_tree.put("voice", 1);
+                            note_tree.put("type", note.getType(prev->getDivisions()));
+
+                            if(!note.getHeadName().empty()) {
+                                note_tree.put("notehead", note.getHeadName());
+                                if(note.canBeFilled()) {
+                                    note_tree.put("notehead.<xmlattr>.filled", note.getHeadFilled() ? "yes" : "no");
+                                }
+                            }
+
                             measure_tree.add_child("note", note_tree);
-                            continue;
                         }
-
-                        if(measure->getClef().isPercussion()) {
-                            note_tree.put("unpitched.display-step", repr.first);
-                            note_tree.put("unpitched.display-octave", repr.second);
-                        } else {
-                            note_tree.put("pitch.step", repr.first);
-                            if(s == music::Note::Semitone::SHARP) {
-                                note_tree.put("pitch.alter", 1);
-                            } else if(s == music::Note::Semitone::FLAT) {
-                                note_tree.put("pitch.alter", -1);
-                            }
-                            note_tree.put("pitch.octave", repr.second);
-                        }
-                        note_tree.put("duration", note.getDuration());
-
-                        if(note.getInstrument() != nullptr) {
-                            note_tree.put("instrument.<xmlattr>.id", instr_ids.at(note.getInstrument()->getName()));
-                        }
-
-                        auto it = links.begin();
-                        for(; it < links.end(); ++it) {
-                            if(**it == note) {
-                                break;
-                            }
-                        }
-                        // auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
-                        if(it != links.end()) {
-                            pt::ptree tmp;
-                            tmp.put("<xmlattr>.type", "stop");
-                            note_tree.add_child("tie", tmp);
-                            links.erase(it);
-                        }
-                        for(const auto& p : note.getLinks()) {
-                            links.push_back(p);
-                        }
-                        if(!note.getLinks().empty()) {
-                            pt::ptree tmp;
-                            tmp.put("<xmlattr>.type", "start");
-                            note_tree.add_child("tie", tmp);
-                            // note_tree.add("tie.<xmlattr>.type", "start");
-                        }
-                        note_tree.put("voice", 1);
-                        note_tree.put("type", note.getType(prev->getDivisions()));
-
-                        if(!note.getHeadName().empty()) {
-                            note_tree.put("notehead", note.getHeadName());
-                            if(note.canBeFilled()) {
-                                note_tree.put("notehead.<xmlattr>.filled", note.getHeadFilled() ? "yes" : "no");
-                            }
-                        }
-
-                        measure_tree.add_child("note", note_tree);
                     }
 
                     if(measure_idx == part->getMeasures().size()) {

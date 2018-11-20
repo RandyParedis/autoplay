@@ -35,10 +35,10 @@ namespace autoplay {
              * @param divisions The amount of divisions a quarter note takes
              * @param fifths    The fifths of this Measure
              */
-            Measure(const Clef& clef, const std::pair<uint8_t, uint8_t> time, uint8_t divisions, int fifths = 0)
+            Measure(const Clef& clef, const std::pair<uint8_t, uint8_t> time, int divisions, int fifths = 0)
                 : m_fifths(fifths), m_clef(clef), m_time(time), m_notes(), m_divisions(divisions) {
                 assert(m_time.first != 0 && m_time.second != 0);
-                assert(m_divisions != 0);
+                assert(m_divisions > 0);
                 assert(time.second % 2 == 0);
             }
 
@@ -105,8 +105,8 @@ namespace autoplay {
              * Set the divisions
              * @param d The new division parameter
              */
-            void setDivisions(const uint8_t& d) {
-                assert(d != 0);
+            void setDivisions(const int& d) {
+                assert(d > 0);
                 m_divisions = d;
             }
 
@@ -114,7 +114,7 @@ namespace autoplay {
              * Get the divisions of this Measure
              * @return the divisions of this Measure
              */
-            inline uint8_t getDivisions() const { return m_divisions; }
+            inline int getDivisions() const { return m_divisions; }
 
             /**
              * Compute the length of all Notes in this Measure
@@ -196,7 +196,7 @@ namespace autoplay {
             std::pair<uint8_t, uint8_t> m_time; ///< The time of the measure, in the form of <beats, beat-type>
 
             std::vector<Note> m_notes;     ///< The Notes of this Measure
-            uint8_t           m_divisions; ///< The divisions value (amount of duration per quarter
+            int               m_divisions; ///< The divisions value (amount of duration per quarter
                                            /// Note) for this Measure
         };
     }
