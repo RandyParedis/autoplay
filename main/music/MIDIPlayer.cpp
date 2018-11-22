@@ -127,12 +127,24 @@ namespace autoplay {
                 zz::log::ProgBar pb{duration, "Playing"};
                 for(unsigned measure_number = 0; measure_number < duration; ++measure_number) {
                     std::vector<std::vector<std::vector<unsigned char>>> note_list;
+
+                    int length = 0;
+                    int bpm    = 0;
+
                     for(uint8_t channel = 0; channel < score.getParts().size(); ++channel) {
                         auto curr_measure = score.getParts().at(channel)->getMeasures().at(measure_number);
                         if(curr_measure->isOverflowing()) {
                             logger->error("Measure ") << measure_number << " overflowing for Part " << (int)channel;
                         }
-                        std::vector<std::vector<unsigned char>> nl = {};
+                        std::vector<std::vector<unsigned char>> nl;
+
+                        if(length == 0) {
+                            length = 4 * curr_measure->getDivisions() / curr_measure->getTime().second;
+                        }
+
+                        if(bpm == 0) {
+                            bpm = curr_measure->getBPM();
+                        }
 
                         for(const auto& note : curr_measure->getNotes()) {
                             uint8_t msgch = channel;
@@ -147,26 +159,35 @@ namespace autoplay {
                                 }
                                 continue;
                             }
-                            auto _msg = note.getOnMessage(msgch);
-                            if(score.getParts().at(channel)->getInstruments().size() > 1 ||
-                               score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
-                                if(note.getInstrument() != nullptr) {
-                                    _msg.at(1) = note.getInstrument()->getUnpitched();
+                            std::vector<unsigned char> _msg = {};
+                            if(!note.getTieEnd()) {
+                                _msg = note.getOnMessage(msgch);
+                                if(score.getParts().at(channel)->getInstruments().size() > 1 ||
+                                   score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
+                                    if(note.getInstrument() != nullptr) {
+                                        _msg.at(1) = note.getInstrument()->getUnpitched();
+                                    }
                                 }
                             }
                             nl.emplace_back(_msg);
+
                             for(uint8_t len = 0; len < note.getDuration() - 2; ++len) { // duration - strike - release
                                 msg = {};
                                 nl.emplace_back(msg);
                             }
-                            _msg = note.getOffMessage(msgch);
-                            if(score.getParts().at(channel)->getInstruments().size() > 1 ||
-                               score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
-                                if(note.getInstrument() != nullptr) {
-                                    _msg.at(1) = note.getInstrument()->getUnpitched();
+                            if(note.getTieStart()) {
+                                msg = {};
+                                nl.emplace_back(msg);
+                            } else {
+                                _msg = note.getOffMessage(msgch);
+                                if(score.getParts().at(channel)->getInstruments().size() > 1 ||
+                                   score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
+                                    if(note.getInstrument() != nullptr) {
+                                        _msg.at(1) = note.getInstrument()->getUnpitched();
+                                    }
                                 }
+                                nl.emplace_back(_msg);
                             }
-                            nl.emplace_back(_msg);
                         }
                         if(!note_list.empty() && note_list.back().size() != nl.size()) {
                             logger->fatal("Number of messages for Measure ")
@@ -191,7 +212,7 @@ namespace autoplay {
                                 midiout->sendMessage(&msg);
                             }
                         }
-                        SLEEP(24);
+                        SLEEP((int)(60 * 1000 / (bpm * length)));
                     }
                     pb.step(1);
                 }
