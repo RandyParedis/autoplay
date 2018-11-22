@@ -25,7 +25,7 @@ namespace autoplay {
             auto          length     = (unsigned)m_config.conf<int>("length", 10); // Total amount of measures
             auto          parts      = m_config.conf_child("parts");
             unsigned long part_count = parts.size(); // Number of parts
-            int           divisions  = 256;          // Amount of 'ticks' each quarter note takes
+            int           divisions  = 64;           // Amount of 'ticks' each quarter note takes
 
             std::pair<uint8_t, uint8_t> time = {4, 4};
 
@@ -116,7 +116,7 @@ namespace autoplay {
 
                     // Prevent overflowing over final measure
                     if(j + duration > length * measure.max_length()) {
-                        duration = (uint8_t)(length * measure.max_length() - j);
+                        duration = length * measure.max_length() - j;
                     }
                     music::Note note{pitch, duration};
 

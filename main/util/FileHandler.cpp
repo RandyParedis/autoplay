@@ -114,9 +114,8 @@ namespace autoplay {
                     plt.add_child("midi-instrument", mdin);
                 }
 
-                // Create storage for Measure & Note attributes
-                std::shared_ptr<music::Measure>           prev(nullptr);
-                std::vector<std::shared_ptr<music::Note>> links = {};
+                // Create storage for Measure attributes
+                std::shared_ptr<music::Measure> prev(nullptr);
 
                 // Add measures
                 unsigned int measure_idx = 0;
@@ -174,10 +173,10 @@ namespace autoplay {
 
                     // Add Notes
                     for(const auto& note_ : measure->getNotes()) {
-                        auto vec = note_.splitByDivisions(prev->getDivisions());
-                        for(unsigned int i = 0; i < vec.size(); ++i) {
-                            pt::ptree   note_tree;
-                            music::Note note = vec.at(i);
+                        auto vec = note_.splitByDivisions(prev->getDivisions(), false);
+                        for(const auto& note : vec) {
+                            pt::ptree note_tree;
+                            pt::ptree notation_tree;
 
                             music::Note::Semitone s;
 
@@ -208,42 +207,26 @@ namespace autoplay {
                                 note_tree.put("instrument.<xmlattr>.id", instr_ids.at(note.getInstrument()->getName()));
                             }
 
-                            if(i == 0) {
-                                auto it = links.begin();
-                                for(; it < links.end(); ++it) {
-                                    if(**it == note_) {
-                                        break;
-                                    }
-                                }
-                                // auto it = std::find(links.begin(), links.end(), std::make_shared<music::Note>(note));
-                                if(it != links.end()) {
-                                    pt::ptree tmp;
-                                    tmp.put("<xmlattr>.type", "stop");
-                                    note_tree.add_child("tie", tmp);
-                                    links.erase(it);
-                                }
-                                for(const auto& p : note_.getLinks()) {
-                                    links.push_back(p);
-                                }
-                            } else {
+                            if(note.getTieEnd()) {
                                 pt::ptree tmp;
                                 tmp.put("<xmlattr>.type", "stop");
                                 note_tree.add_child("tie", tmp);
+                                notation_tree.add_child("tied", tmp);
                             }
 
-                            if(i == vec.size() - 1) {
-                                if(!note_.getLinks().empty()) {
-                                    pt::ptree tmp;
-                                    tmp.put("<xmlattr>.type", "start");
-                                    note_tree.add_child("tie", tmp);
-                                }
-                            } else {
+                            if(note.getTieStart()) {
                                 pt::ptree tmp;
                                 tmp.put("<xmlattr>.type", "start");
                                 note_tree.add_child("tie", tmp);
+                                notation_tree.add_child("tied", tmp);
                             }
+
                             note_tree.put("voice", 1);
                             note_tree.put("type", note.getType(prev->getDivisions()));
+
+                            for(uint8_t i = 0; i < note.getDots(); ++i) {
+                                note_tree.add("dot", "");
+                            }
 
                             if(!note.getHeadName().empty()) {
                                 note_tree.put("notehead", note.getHeadName());
@@ -251,6 +234,8 @@ namespace autoplay {
                                     note_tree.put("notehead.<xmlattr>.filled", note.getHeadFilled() ? "yes" : "no");
                                 }
                             }
+
+                            note_tree.put_child("notations", notation_tree);
 
                             measure_tree.add_child("note", note_tree);
                         }

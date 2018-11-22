@@ -21,5 +21,4 @@ This file describes all planned features to be added in the future
     - _(Ability to randomize anything)_
 - General Todo
     - Simple Installation
-    - Change rhythmic output of tied notes to dotted notes
     - Change travis-ci to display test output

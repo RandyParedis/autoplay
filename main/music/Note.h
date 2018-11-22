@@ -69,7 +69,7 @@ namespace autoplay {
              */
             Note(uint8_t pitch, uint8_t velocity_on, uint8_t velocity_off, unsigned int duration)
                 : m_pitch(pitch), m_velocity_on(velocity_on), m_velocity_off(velocity_off), m_duration(duration),
-                  m_pause(false), m_links() {
+                  m_pause(false), m_tie_start(false), m_tie_end(false), m_dots(0), m_head(""), m_inst() {
                 assert(pitch <= 127);
                 assert(velocity_on <= 127);
                 assert(velocity_off <= 127);
@@ -85,29 +85,48 @@ namespace autoplay {
                 m_velocity_off = n.m_velocity_off;
                 m_duration     = n.m_duration;
                 m_pause        = n.m_pause;
-                m_links        = n.m_links;
+                m_tie_start    = n.m_tie_start;
+                m_tie_end      = n.m_tie_end;
+                m_dots         = n.m_dots;
                 m_head         = n.m_head;
                 m_inst         = n.m_inst;
             }
 
             /**
-             * Links a Note to this Note and the other way around.
-             * @param n The Note to link/tie
+             * Ties a Note to a following Note
+             * @param enable    If this must be enabled.
              */
-            void link(Note& n);
+            inline void setTieStart(bool enable = true) { m_tie_start = enable; }
 
             /**
-             * Get all the links of the current Note
-             * @return A vector of shared pointers of all links
+             * Ties a Note to a preceding Note
+             * @param enable    If this must be enabled.
              */
-            inline std::vector<std::shared_ptr<Note>> getLinks() const { return m_links; }
+            inline void setTieEnd(bool enable = true) { m_tie_end = enable; }
 
             /**
-             * Check if two Notes are linked
-             * @param n the Note to check
-             * @return true if they are linked, false otherwise
+             * Get if the current Note is linked to a following Note
+             * @return true if so
              */
-            bool isLinkedTo(const Note& n);
+            inline bool getTieStart() const { return m_tie_start; }
+
+            /**
+             * Get if the current Note is linked to a previous Note
+             * @return true if so
+             */
+            inline bool getTieEnd() const { return m_tie_end; }
+
+            /**
+             * Sets the amount of dots to use
+             * @param dots New amount of dots.
+             */
+            inline void setDots(const uint8_t& dots) { m_dots = dots; }
+
+            /**
+             * Fetches the number of dots of the Note
+             * @return the number of dots
+             */
+            inline uint8_t getDots() const { return m_dots; }
 
             /**
              * Returns the duration of the Note.
@@ -316,7 +335,9 @@ namespace autoplay {
 
             bool m_pause; ///< Whether the current Note is in fact a pause.
 
-            std::vector<std::shared_ptr<Note>> m_links; ///< A list of links/beams of this Note
+            bool    m_tie_start; ///< Whether the current Note is tied to a sequential Note
+            bool    m_tie_end;   ///< Whether the current Note is tied to a preceding Note
+            uint8_t m_dots;      ///< The amount of dots of the Note
 
             std::string                 m_head; ///< The Note head to display in MusicXML
             std::shared_ptr<Instrument> m_inst; ///< The instrument that is used to play the current Note
@@ -385,10 +406,11 @@ namespace autoplay {
         public:
             /**
              * Split the Note in a series of linked notes, w.r.t. the divisions
-             * @param divisions The amount of divisions to take into a count.
+             * @param divisions     The amount of divisions to take into a count.
+             * @param generatedots  When true, dots must be used whenever possible.
              * @return A vector of linked Notes
              */
-            std::vector<Note> splitByDivisions(const int& divisions) const;
+            std::vector<Note> splitByDivisions(const int& divisions, bool generatedots) const;
 
             std::string getType(const int& divisions) const;
         };

@@ -24,20 +24,6 @@ namespace autoplay {
             {"half", 1.0f / 2},    {"1/2", 1.0f / 2},     {"whole", 1.0f},       {"breve", 2.0f},
             {"long", 4.0f}};
 
-        void Note::link(music::Note& n) {
-            m_links.emplace_back(std::make_shared<Note>(n));
-            n.m_links.emplace_back(std::make_shared<Note>(*this));
-        }
-
-        bool Note::isLinkedTo(const music::Note& n) {
-            for(const std::shared_ptr<Note>& pn : this->getLinks()) {
-                if(*pn == n) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         std::vector<unsigned char> Note::getMessage(uint8_t channel, bool note_on) const {
             // There are but 16 channels
             assert(channel < 16);
@@ -307,8 +293,12 @@ namespace autoplay {
             return (fill && !boost::algorithm::ends_with(m_head, "-empty"));
         }
 
-        std::vector<Note> Note::splitByDivisions(const int& divisions) const {
+        std::vector<Note> Note::splitByDivisions(const int& divisions, bool generatedots) const {
             std::vector<Note> ref;
+
+            if(m_duration == 0) {
+                throw std::runtime_error("Duration of Note is 0!");
+            }
 
             float rem = 0.0f;
             float T   = (float)m_duration / (4.0f * divisions);
@@ -316,6 +306,7 @@ namespace autoplay {
 
             auto nearby = [](float val, float ref) -> bool { return val < ref + 0.00000001 && val > ref - 0.00000001; };
 
+            // Add filled notes
             while(n != 0) {
                 T -= rem;
                 float _n = std::log2(T) + 8;
@@ -323,12 +314,38 @@ namespace autoplay {
                 rem      = (float)std::pow(2.0f, n - 8);
                 Note note{*this};
                 note.setDuration((unsigned int)(rem * divisions * 4));
+                note.setTieStart();
+                note.setTieEnd();
                 ref.emplace_back(note);
 
                 if(nearby(_n - n, 0.0f)) {
                     break;
                 }
             }
+
+            // Add dots
+            if(ref.size() > 1 && generatedots) {
+                uint8_t max_dots = 2;
+                uint8_t dots     = 0;
+                for(auto i = ref.size() - 1; i > 0; --i) {
+                    if(dots < max_dots && ref.at(i).getDuration() * 2 == ref.at(i - 1).getDuration()) {
+                        ++dots;
+                        ref.erase(ref.begin() + i);
+                    } else {
+                        ref.at(i).setDots(dots);
+                        auto dur    = ref.at(i).getDuration();
+                        auto newdur = dur;
+                        for(uint8_t j = 1; j <= dots; ++j) {
+                            newdur += dur / (int)std::pow(2, j);
+                        }
+                        ref.at(i).setDuration(newdur);
+                        dots = 0;
+                    }
+                }
+            }
+
+            ref.at(0).setTieEnd(this->getTieEnd());
+            ref.back().setTieStart(this->getTieStart());
 
             return ref;
         }

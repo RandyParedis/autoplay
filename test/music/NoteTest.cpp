@@ -92,15 +92,13 @@ TEST(NoteStandard, NoteSetters) {
     EXPECT_DEATH(n.setVelocityOn(128), "");
     EXPECT_DEATH(n.setVelocityOff(128), "");
 
-    music::Note m{n};
-    EXPECT_EQ(m, n);
-    m.setDuration(5);
-    EXPECT_NE(m, n);
+    n.setTieStart();
 
-    n.link(m);
+    EXPECT_TRUE(n.getTieStart());
 
-    EXPECT_TRUE(n.isLinkedTo(m));
-    EXPECT_TRUE(m.isLinkedTo(n));
+    n.setTieEnd();
+
+    EXPECT_TRUE(n.getTieEnd());
 }
 
 TEST(NoteMessages, OnMessage) {

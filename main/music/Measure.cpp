@@ -78,7 +78,8 @@ namespace autoplay {
                         for(unsigned int i = 0; i < v.size(); ++i) {
                             // Link/tie all Notes
                             if(i < v.size() - 1) {
-                                v[i].link(v[i + 1]);
+                                v[i].setTieStart();
+                                v[i + 1].setTieEnd();
                             }
 
                             // Append to measures

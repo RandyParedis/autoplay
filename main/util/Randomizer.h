@@ -216,12 +216,12 @@ namespace autoplay {
                 const auto probability = [&dist, &a, &min, &factor](const long idx) -> float {
                     return dist(a + (idx - min) * factor);
                 };
-                for(long i = 0; i < elements.size(); ++i) {
+                for(long i = 0; i < (signed)elements.size(); ++i) {
                     ws += probability(i);
                 }
                 trng::uniform_dist<float> U(1, ws);
                 auto                      rw = gen.callOnMe<float>(U);
-                for(long i = 0; i < elements.size(); ++i) {
+                for(long i = 0; i < (signed)elements.size(); ++i) {
                     rw -= probability(i);
                     if(rw <= 0) {
                         return elements.at(i);
