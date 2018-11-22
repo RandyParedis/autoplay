@@ -126,4 +126,4 @@ script:
     mkdir build; cd build
     cmake -DTRNG_LOCATION=$HOME/deps/trng ..
     make install
-    cd $TRAVIS_BUILD_DIR/installed/bin && ./tests
+    cd installed/bin && ./tests
