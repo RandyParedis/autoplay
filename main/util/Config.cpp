@@ -141,7 +141,10 @@ namespace autoplay {
                 }
                 auto sty = m_styles.get_child("styles." + style_name);
                 if(style_name != "default") {
-                    merge(sty, m_styles.get_child("styles.default"), true);
+                    merge(sty, m_styles.get_child("styles." + sty.get<std::string>("from", "default")), true);
+                    if(sty.get<std::string>("from", "default") != "default") {
+                        merge(sty, m_styles.get_child("styles.default"), true);
+                    }
                 }
                 auto g = sty.get<std::string>("scale", "chromatic");
                 if(!check_binary(g)) {
@@ -150,7 +153,7 @@ namespace autoplay {
                 m_ptree.put_child("style", sty);
             } else {
                 auto sty = m_ptree.get_child("style");
-                merge(sty, m_styles.get_child("styles.default"), true);
+                merge(sty, m_styles.get_child("styles." + sty.get<std::string>("from", "default")), true);
                 auto g = sty.get<std::string>("scale", "chromatic");
                 if(!check_binary(g)) {
                     sty.put("scale", m_styles.get<std::string>("types." + g, "111111111111"));
@@ -221,8 +224,10 @@ namespace autoplay {
                 } else {
                     if(update.second.back().first.empty()) { // if list
                         pt.put_child(update.first, update.second);
-                    } else {
+                    } else if(pt.count(update.first) != 0) {
                         merge(pt.get_child(update.first), update.second, overwrite);
+                    } else {
+                        pt.put_child(update.first, update.second);
                     }
                 }
             }

@@ -15,7 +15,10 @@
     "composer": "autoplay v@VERSION@",
     "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
   },
-  "style": "F-major",
+  "style": {
+    "from": "F-major",
+    "bpm": 160
+  },
   "parts": [
     {
       "instrument": "Acoustic Grand Piano",

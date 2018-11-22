@@ -27,7 +27,8 @@ namespace autoplay {
             unsigned long part_count = parts.size(); // Number of parts
             int           divisions  = 64;           // Amount of 'ticks' each quarter note takes
 
-            std::pair<uint8_t, uint8_t> time = {4, 4};
+            std::pair<uint8_t, uint8_t> time = {(uint8_t)m_config.conf<int>("style.time.beats", 4),
+                                                (uint8_t)m_config.conf<int>("style.time.type", 4)};
 
             // Get Logger
             auto logger = m_config.getLogger();
@@ -95,6 +96,8 @@ namespace autoplay {
                                        pt_part.get<int>("clef.octave-change", 0)};
                 }
                 music::Measure measure{clef, time, divisions, m_config.conf<int>("style.fifths")};
+
+                measure.setBPM(m_config.conf<int>("style.bpm", 80));
 
                 std::shared_ptr<music::Part> part = std::make_shared<music::Part>(instruments);
                 part->setLines((uint8_t)pt_part.get<int>("lines", 5));

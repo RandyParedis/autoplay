@@ -26,7 +26,7 @@ namespace autoplay {
             /**
              * Default constructor
              */
-            Measure() : m_fifths(0), m_clef(Clef::Treble()), m_time({0, 0}), m_notes(), m_divisions(0) {}
+            Measure() : m_fifths(0), m_clef(Clef::Treble()), m_time({0, 0}), m_notes(), m_divisions(0), m_bpm(0) {}
 
             /**
              * Constructor with arguments
@@ -36,7 +36,7 @@ namespace autoplay {
              * @param fifths    The fifths of this Measure
              */
             Measure(const Clef& clef, const std::pair<uint8_t, uint8_t> time, int divisions, int fifths = 0)
-                : m_fifths(fifths), m_clef(clef), m_time(time), m_notes(), m_divisions(divisions) {
+                : m_fifths(fifths), m_clef(clef), m_time(time), m_notes(), m_divisions(divisions), m_bpm(80) {
                 assert(m_time.first != 0 && m_time.second != 0);
                 assert(m_divisions > 0);
                 assert(time.second % 2 == 0);
@@ -190,14 +190,28 @@ namespace autoplay {
              */
             inline std::vector<Note>& getNotes() { return m_notes; }
 
+            /**
+             * Sets the BPM. It uses the time as reference;
+             *      e.g. if beat-type is 4, bpm is expressed in quarter notes
+             * @param bpm The bpm to be set
+             */
+            inline void setBPM(int bpm) { m_bpm = bpm; }
+
+            /**
+             * Fetches the amount of BPM for the measure.
+             * @return The BPM of the measure
+             */
+            inline int getBPM() const { return m_bpm; }
+
         private:
             int  m_fifths;                      ///< The amount of fifths for the measure (defaults to 0)
             Clef m_clef;                        ///< The clef of the current measure
             std::pair<uint8_t, uint8_t> m_time; ///< The time of the measure, in the form of <beats, beat-type>
 
-            std::vector<Note> m_notes;     ///< The Notes of this Measure
-            int               m_divisions; ///< The divisions value (amount of duration per quarter
-                                           /// Note) for this Measure
+            std::vector<Note> m_notes; ///< The Notes of this Measure
+
+            int m_divisions; ///< The divisions value (amount of duration per quarter Note) for this Measure
+            int m_bpm;       ///< The amount of beats per minute (expressed wrt the time signature)
         };
     }
 }

@@ -29,6 +29,12 @@ When strictly negative, we take a look at the first `abs(n)` values (`abs(n)` is
 value of the `fifths` value) of the `flat list`.
   - `sharp list`: `F`, `C`, `G`, `D`, `A`, `E`, `B`
   - `flat list`: `B`, `E`, `A`, `D`, `G`, `C`, `F`
+- `bpm`: The amount of beats per minute of the score. This determines the tempo for the
+defined beat-type.
+- `time`: The time signature of the score. Contains two fields:
+  - `beats`: The amount of beats per measure.
+  - `type`: The beat-type of the score.
+- `from`: This helper field allows a user to simply identify with which style to merge. 
 
 None of the above fields are required. If they are not set, the value of the default style
 is used.

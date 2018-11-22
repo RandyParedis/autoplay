@@ -7,7 +7,9 @@
 
 namespace autoplay {
     namespace music {
-        bool Measure::hasAttributes() const { return m_time.first != 0 && m_time.second != 0 && m_divisions > 0; }
+        bool Measure::hasAttributes() const {
+            return m_time.first != 0 && m_time.second != 0 && m_divisions > 0 && m_bpm != 0;
+        }
 
         void Measure::setTime(uint8_t beats, uint8_t beat_type) { this->setTime({beats, beat_type}); }
 
@@ -44,8 +46,9 @@ namespace autoplay {
         }
 
         MeasureList Measure::measurize() const {
-            std::shared_ptr<Measure> me  = std::make_shared<Measure>(m_clef, m_time, m_divisions, m_fifths);
-            MeasureList              res = {me};
+            std::shared_ptr<Measure> me = std::make_shared<Measure>(m_clef, m_time, m_divisions, m_fifths);
+            me->setBPM(m_bpm);
+            MeasureList res = {me};
             if(isOverflowing()) {
                 for(const Note& n : m_notes) {
                     std::shared_ptr<Measure> m     = res.back();
@@ -54,6 +57,7 @@ namespace autoplay {
                         m->m_notes.emplace_back(n);
                     } else if(m_len == m->max_length()) {
                         res.emplace_back(std::make_shared<Measure>(m_clef, m_time, m_divisions, m_fifths));
+                        res.back()->setBPM(m_bpm);
                         res.back()->m_notes.emplace_back(n);
                     } else {
                         // Create new notes
@@ -86,6 +90,7 @@ namespace autoplay {
                             m->m_notes.emplace_back(v[i]);
                             if(i < v.size() - 1) {
                                 res.emplace_back(std::make_shared<Measure>(m_clef, m_time, m_divisions, m_fifths));
+                                res.back()->setBPM(m_bpm);
                                 m = res.back();
                             }
                         }

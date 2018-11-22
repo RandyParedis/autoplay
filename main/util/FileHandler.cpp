@@ -131,6 +131,19 @@ namespace autoplay {
 
                     // Set attributes if required
                     if(measure->hasAttributes()) {
+                        auto time = measure->getTime();
+                        int  bpm  = measure->getBPM();
+                        if(bpm != prev->getBPM()) {
+                            prev->setBPM(bpm);
+                            music::Note nt{(unsigned)(4 * measure->getDivisions() / time.second)};
+                            measure_tree.put("direction.direction-type.metronome.beat-unit",
+                                             nt.getType(measure->getDivisions()));
+                            measure_tree.put("direction.direction-type.metronome.per-minute", measure->getBPM());
+                            measure_tree.put("direction.direction-type.metronome.<xmlattr>.parentheses", "no");
+                            measure_tree.put("direction.sound.<xmlattr>.tempo", measure->getBPM());
+                            measure_tree.put("direction.<xmlattr>.placement", "above");
+                        }
+
                         int divisions = measure->getDivisions();
                         if(divisions != prev->getDivisions()) {
                             prev->setDivisions(divisions);
@@ -143,7 +156,6 @@ namespace autoplay {
                             measure_tree.put("attributes.key.fifths", fifths);
                         }
 
-                        auto time = measure->getTime();
                         if(time != prev->getTime()) {
                             prev->setTime(time);
                             measure_tree.put("attributes.time.beats", time.first);
@@ -173,7 +185,7 @@ namespace autoplay {
 
                     // Add Notes
                     for(const auto& note_ : measure->getNotes()) {
-                        auto vec = note_.splitByDivisions(prev->getDivisions(), false);
+                        auto vec = note_.splitByDivisions(prev->getDivisions(), true);
                         for(const auto& note : vec) {
                             pt::ptree note_tree;
                             pt::ptree notation_tree;

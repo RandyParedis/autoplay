@@ -90,7 +90,7 @@ The file contains of the following tree structure and fields:
     - `composer`: The composer of the piece.
     - `rights`: Additional copyright information for the piece.
  - `style`: Either a style object, or a string representing a style. See the _Styles_ page
- for more info.
+ for more info on these objects.
  - `parts`: A list of different parts, where each element contains the following sub-tree
  (when using an `XML`-file, each part must be inside a `part` element):
     - `instrument`: A string, containing the MIDI name of an instrument.

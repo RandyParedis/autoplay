@@ -31,7 +31,12 @@
       "scale": "chromatic",
       "root": "C",
       "chance": 0.9,
-      "fifths": 0
+      "fifths": 0,
+      "bpm": 80,
+      "time": {
+        "beats": 4,
+        "type": 4
+      }
     },
 
     "white-keys": {

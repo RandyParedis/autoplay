@@ -11,8 +11,6 @@ This file describes all planned features to be added in the future
     - Rhythmic algorithms
     - _(Dynamic algorithms)_
     - _(Custom algorithm parsing)_
-- Score
-    - Custom staff signature (time, BPM...)
 - MidiPlayer
     - Fix issues with playback
     - _(Force playing at all times)_
