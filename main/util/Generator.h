@@ -88,6 +88,20 @@ namespace autoplay {
              */
             uint8_t pitch1FNoise(RNEngine& gen, const pt::ptree& pt) const;
 
+            /**
+             * A rhythm generation algorithm, based upon the movements of small particles that are randomly bombarded by
+             * molecules of the surrounding medium.
+             * @param gen   The generator object.
+             * @param prev  The previous note that is played
+             * @param conc  A vector of all concurrent notes that are being played
+             * @param pt    A ptree with additional options. This algorithm expects rhythm.min and rhythm.max to be set
+             *              in this ptree. When missing, -3 and 3 will be chosen respectively.
+             * index.
+             * @return A new rhythm.
+             */
+            float rhythmBrownianMotion(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                                       const pt::ptree& pt) const;
+
         private:
             Config   m_config;   ///< The Config of the system
             RNEngine m_rnengine; ///< The Random Engine

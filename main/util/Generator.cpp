@@ -99,6 +99,8 @@ namespace autoplay {
 
                 measure.setBPM(m_config.conf<int>("style.bpm", 80));
 
+                options.put("rhythm._divs", divisions);
+
                 std::shared_ptr<music::Part> part = std::make_shared<music::Part>(instruments);
                 part->setLines((uint8_t)pt_part.get<int>("lines", 5));
 
@@ -269,9 +271,18 @@ namespace autoplay {
 
             if(algo == "random") {
                 return [](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt) -> float {
-                    auto rh = (float)std::pow(2.0f, Randomizer::pick_uniform(gen, 1, 10) - 8);
+                    auto smallest =
+                        (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.smallest", "256th")));
+                    auto largest =
+                        (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.largest", "long")));
+                    smallest += 8;
+                    largest += 8;
+                    auto rh = (float)std::pow(2.0f, Randomizer::pick_uniform(gen, smallest, largest) - 8);
                     return rh;
                 };
+            } else if(algo == "brownian-motion") {
+                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                              pt::ptree& pt) -> float { return rhythmBrownianMotion(gen, prev, conc, pt); };
             } else {
                 return [](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt) -> float {
                     auto rh = pt.get<std::string>("rhythm.duration", "quarter");
@@ -432,6 +443,32 @@ namespace autoplay {
             state = (uint8_t)((state + 1) % num_states);
 
             return pitches.at(sum);
+        }
+
+        float Generator::rhythmBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Note* prev,
+                                              std::vector<autoplay::music::Note*>& conc, const pt::ptree& pt) const {
+            auto divisions = pt.get<unsigned int>("rhythm._divs");
+            auto smallest  = (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.smallest", "256th")));
+            auto largest   = (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.largest", "long")));
+            smallest += 8;
+            largest += 8;
+            if(prev) {
+                float prev_type = (float)prev->getDuration() / (4.0f * divisions);
+                auto  prev_n    = (int)(std::log2(prev_type) + 8);
+                auto  min       = pt.get<int>("rhythm.min", -3);
+                auto  max       = pt.get<int>("rhythm.max", 3);
+                if(prev_n + min < smallest) {
+                    min = prev_n - smallest;
+                }
+                if(prev_n + max >= largest) {
+                    max = largest - prev_n;
+                } else if(prev_n + max < smallest) {
+                    max = prev_n - smallest;
+                }
+                return (float)std::pow(2.0f, Randomizer::pick_uniform(gen, prev_n + min, prev_n + max) - 8);
+            } else {
+                return (float)std::pow(2.0f, Randomizer::pick_uniform(gen, smallest, largest) - 8);
+            }
         }
     }
 }

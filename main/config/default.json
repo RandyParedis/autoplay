@@ -7,17 +7,23 @@
   "generation": {
     "pitch": "1/f-noise",
     "rhythm": "random",
+    "options": {
+      "rhythm": {
+        "smallest": "16th",
+        "largest": "quarter"
+      }
+    },
     "rest-ratio": 0.05
   },
   "export": {
-    "filename": "music.xml",
+    "filename": "good-rhythm.xml",
     "title": "My Score",
     "composer": "autoplay v@VERSION@",
     "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
   },
   "style": {
     "from": "F-major",
-    "bpm": 160
+    "bpm": 100
   },
   "parts": [
     {

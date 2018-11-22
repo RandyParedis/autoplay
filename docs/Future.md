@@ -18,3 +18,4 @@ This file describes all planned features to be added in the future
     - _(Ability to randomize anything)_
 - General Todo
     - Simple Installation
+    - Automatic beaming for notes
