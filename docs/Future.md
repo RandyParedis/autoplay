@@ -24,3 +24,4 @@ This file describes all planned features to be added in the future
 - General Todo
     - Simple Installation
     - Automatic beaming for notes
+    - Add support for chords
