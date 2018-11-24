@@ -26,8 +26,10 @@ namespace autoplay {
 
         unsigned int Measure::length() const {
             unsigned int length = 0;
-            for(const Note& n : m_notes) {
-                length += n.getDuration();
+            for(const Chord& c : m_notes) {
+                if(!c.empty()) {
+                    length += c.getDuration();
+                }
             }
             return length;
         }
@@ -50,32 +52,33 @@ namespace autoplay {
             me->setBPM(m_bpm);
             MeasureList res = {me};
             if(isOverflowing()) {
-                for(const Note& n : m_notes) {
+                for(const Chord& c : m_notes) {
                     std::shared_ptr<Measure> m     = res.back();
                     unsigned int             m_len = m->length();
-                    if(m_len + n.getDuration() <= m->max_length()) {
-                        m->m_notes.emplace_back(n);
-                    } else if(m_len == m->max_length()) {
+                    if(m_len + c.getDuration() <= m->max_length()) {
+                        m->m_notes.emplace_back(c);
+                    } else if(m_len == m->max_length() && c.getDuration() < m->max_length()) {
                         res.emplace_back(std::make_shared<Measure>(m_clef, m_time, m_divisions, m_fifths));
                         res.back()->setBPM(m_bpm);
-                        res.back()->m_notes.emplace_back(n);
+                        res.back()->m_notes.emplace_back(c);
                     } else {
                         // Create new notes
-                        std::vector<Note> v = {};
+                        std::vector<Chord> v = {};
 
                         unsigned int da = m->max_length() - m_len;
-                        Note         a{n};
+
+                        Chord a{c};
                         a.setDuration(da);
                         v.emplace_back(a);
 
-                        unsigned int db = n.getDuration() - da;
+                        unsigned int db = c.getDuration() - da;
                         while(db > m->max_length()) {
-                            Note b{n};
+                            Chord b{c};
                             b.setDuration(m->max_length());
                             v.emplace_back(b);
                             db -= m->max_length();
                         }
-                        Note b{n};
+                        Chord b{c};
                         b.setDuration(db);
                         v.emplace_back(b);
 
@@ -103,17 +106,25 @@ namespace autoplay {
         }
 
         MeasureList Measure::operator+(const Measure& rhs) {
-            for(const Note& n : rhs.m_notes) {
-                *this += n;
+            for(const Chord& c : rhs.m_notes) {
+                *this += c;
             }
             return this->measurize();
         }
 
         Measure* Measure::operator+(const Note& rhs) {
+            Chord chord{rhs};
+            this->m_notes.emplace_back(chord);
+            return this;
+        }
+
+        Measure* Measure::operator+(const Chord& rhs) {
             this->m_notes.emplace_back(rhs);
             return this;
         }
 
         void Measure::operator+=(const Note& rhs) { *this + rhs; }
+
+        void Measure::operator+=(const Chord& rhs) { *this + rhs; }
     }
 }

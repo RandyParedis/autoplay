@@ -115,12 +115,12 @@ namespace autoplay {
             inline uint8_t getLines() const { return m_lines; }
 
             /**
-             * Compute the note that is playing at a certain time
+             * Compute the Chord that is playing at a certain time
              * @param timestamp The time to look
-             * @return A pointer to the Note that is playing, or nullptr if no Note has
+             * @return A pointer to the Chord that is playing, or nullptr if no Chord has
              * been found.
              */
-            Note* at(unsigned int timestamp) const {
+            Chord* at(unsigned int timestamp) const {
                 unsigned int c  = 0;
                 unsigned int mi = 0;
                 auto         m  = m_measures.at(mi);
@@ -143,12 +143,12 @@ namespace autoplay {
                     return nullptr;
                 }
 
-                // Find the right Note
-                for(Note& note : m_measures.at(mi)->getNotes()) {
-                    if(c + note.getDuration() < timestamp) {
-                        c += note.getDuration();
+                // Find the right Chord
+                for(Chord& chord : m_measures.at(mi)->getNotes()) {
+                    if(c + chord.getDuration() < timestamp) {
+                        c += chord.getDuration();
                     } else {
-                        return &note;
+                        return &chord;
                     }
                 }
 
@@ -156,11 +156,11 @@ namespace autoplay {
             }
 
             /**
-             * Get the nth Note of the Part
-             * @param n The index of the Note
-             * @return A pointer to the Note at index n.
+             * Get the nth Chord of the Part
+             * @param n The index of the Chord
+             * @return A pointer to the Chord at index n.
              */
-            Note* noteAt(unsigned int n) const {
+            Chord* noteAt(unsigned int n) const {
                 if(m_measures.empty()) {
                     return nullptr;
                 }
@@ -181,8 +181,8 @@ namespace autoplay {
             }
 
             /**
-             * Get the nth Note of the Part and change it to a pause/rest
-             * @param n The index of the Note
+             * Get the nth Chord of the Part and change it to a pause/rest
+             * @param n The index of the Chord
              * @return true if succesful
              */
             bool toPause(unsigned int n) const {

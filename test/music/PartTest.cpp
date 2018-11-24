@@ -51,5 +51,5 @@ TEST(PartStandard, PartSetters) {
 
     EXPECT_EQ(p.getMeasures().size(), 2);
 
-    EXPECT_EQ(p.at(36)->getPitch(), 13);
+    EXPECT_EQ(p.at(36)->bottom()->getPitch(), 13);
 }

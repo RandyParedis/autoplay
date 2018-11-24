@@ -293,15 +293,46 @@ namespace autoplay {
             return (fill && !boost::algorithm::ends_with(m_head, "-empty"));
         }
 
-        std::vector<Note> Note::splitByDivisions(const int& divisions, bool generatedots) const {
-            std::vector<Note> ref;
+        std::string Note::getType(const int& divisions) const {
+            float dur   = (std::pow(2.0f, std::floor(std::log2f(m_duration))) / (float)divisions) / 4.0f;
+            auto nearby = [](float val, float ref) -> bool { return val < ref + 0.0000001 && val > ref - 0.0000001; };
+            if(nearby(dur, 1.0f / 256.0f)) {
+                return "256th";
+            } else if(nearby(dur, 1.0f / 128.0f)) {
+                return "128th";
+            } else if(nearby(dur, 1.0f / 64.0f)) {
+                return "64th";
+            } else if(nearby(dur, 1.0f / 32.0f)) {
+                return "32nd";
+            } else if(nearby(dur, 1.0f / 16.0f)) {
+                return "16th";
+            } else if(nearby(dur, 1.0f / 8.0f)) {
+                return "eighth";
+            } else if(nearby(dur, 1.0f / 4.0f)) {
+                return "quarter";
+            } else if(nearby(dur, 1.0f / 2.0f)) {
+                return "half";
+            } else if(nearby(dur, 1.0f)) {
+                return "whole";
+            } else if(nearby(dur, 2.0f)) {
+                return "breve";
+            } else if(nearby(dur, 4.0f)) {
+                return "long";
+            }
+            throw std::runtime_error("Division value (" + std::to_string((int)divisions) +
+                                     ") gave an unknown duration of " + std::to_string(dur) + ", which came from " +
+                                     std::to_string(m_duration) + ".");
+        }
 
-            if(m_duration == 0) {
-                throw std::runtime_error("Duration of Note is 0!");
+        std::vector<Chord> Chord::splitByDivisions(const int& divisions, bool generatedots) const {
+            std::vector<Chord> ref;
+
+            if(getDuration() == 0) {
+                throw std::runtime_error("Duration of Chord is 0!");
             }
 
             float rem = 0.0f;
-            float T   = (float)m_duration / (4.0f * divisions);
+            float T   = (float)getDuration() / (4.0f * divisions);
             int   n   = 1;
 
             auto nearby = [](float val, float ref) -> bool { return val < ref + 0.00000001 && val > ref - 0.00000001; };
@@ -312,11 +343,11 @@ namespace autoplay {
                 float _n = std::log2(T) + 8;
                 n        = (int)std::floor(_n);
                 rem      = (float)std::pow(2.0f, n - 8);
-                Note note{*this};
-                note.setDuration((unsigned int)(rem * divisions * 4));
-                note.setTieStart();
-                note.setTieEnd();
-                ref.emplace_back(note);
+                Chord chord{*this};
+                chord.setDuration((unsigned int)(rem * divisions * 4));
+                chord.setTieStart();
+                chord.setTieEnd();
+                ref.emplace_back(chord);
 
                 if(nearby(_n - n, 0.0f)) {
                     break;
@@ -350,35 +381,17 @@ namespace autoplay {
             return ref;
         }
 
-        std::string Note::getType(const int& divisions) const {
-            float dur   = (std::pow(2.0f, std::floor(std::log2f(m_duration))) / (float)divisions) / 4.0f;
-            auto nearby = [](float val, float ref) -> bool { return val < ref + 0.0000001 && val > ref - 0.0000001; };
-            if(nearby(dur, 1.0f / 256.0f)) {
-                return "256th";
-            } else if(nearby(dur, 1.0f / 128.0f)) {
-                return "128th";
-            } else if(nearby(dur, 1.0f / 64.0f)) {
-                return "64th";
-            } else if(nearby(dur, 1.0f / 32.0f)) {
-                return "32nd";
-            } else if(nearby(dur, 1.0f / 16.0f)) {
-                return "16th";
-            } else if(nearby(dur, 1.0f / 8.0f)) {
-                return "eighth";
-            } else if(nearby(dur, 1.0f / 4.0f)) {
-                return "quarter";
-            } else if(nearby(dur, 1.0f / 2.0f)) {
-                return "half";
-            } else if(nearby(dur, 1.0f)) {
-                return "whole";
-            } else if(nearby(dur, 2.0f)) {
-                return "breve";
-            } else if(nearby(dur, 4.0f)) {
-                return "long";
+        std::shared_ptr<Note> Chord::bottom() const {
+            if(empty()) {
+                return nullptr;
             }
-            throw std::runtime_error("Division value (" + std::to_string((int)divisions) +
-                                     ") gave an unknown duration of " + std::to_string(dur) + ", which came from " +
-                                     std::to_string(m_duration) + ".");
+            unsigned int idx = 0;
+            for(unsigned int i = 0; i < m_notes.size(); ++i) {
+                if(m_notes.at(i)->getPitch() < m_notes.at(idx)->getPitch()) {
+                    idx = i;
+                }
+            }
+            return m_notes.at(idx);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace autoplay {
              * @param algo  If not empty, it will use this algorithm to check, instead of the generation.pitch value
              * @return A lambda function that implements the algorithm
              */
-            std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
+            std::function<uint8_t(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt)>
             getPitchAlgorithm(std::string algo = "") const;
 
             /**
@@ -43,7 +43,7 @@ namespace autoplay {
              * @param algo  If not empty, it will use this algorithm to check, instead of the generation.rhythm value
              * @return A lambda function that implements the algorithm
              */
-            std::function<float(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
+            std::function<float(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt)>
             getRhythmAlgorithm(std::string algo = "") const;
 
         private:
@@ -75,7 +75,7 @@ namespace autoplay {
              * index.
              * @return A new pitch.
              */
-            uint8_t pitchBrownianMotion(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+            uint8_t pitchBrownianMotion(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                                         const pt::ptree& pt) const;
 
             /**
@@ -99,7 +99,7 @@ namespace autoplay {
              * index.
              * @return A new rhythm.
              */
-            float rhythmBrownianMotion(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+            float rhythmBrownianMotion(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                                        const pt::ptree& pt) const;
 
         private:

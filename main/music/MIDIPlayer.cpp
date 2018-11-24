@@ -123,6 +123,8 @@ namespace autoplay {
                 midiout->sendMessage(&msg);
 
                 // Collect & Play Measures
+                // TODO: split up in collect and playback
+                // TODO: add support for playing chords, instead of the bottom note.
                 logger->debug("Collecting and Playing ") << duration << " Measure(s)";
                 zz::log::ProgBar pb{duration, "Playing"};
                 for(unsigned measure_number = 0; measure_number < duration; ++measure_number) {
@@ -146,44 +148,44 @@ namespace autoplay {
                             bpm = curr_measure->getBPM();
                         }
 
-                        for(const auto& note : curr_measure->getNotes()) {
+                        for(const auto& chord : curr_measure->getNotes()) {
                             uint8_t msgch = channel;
                             if(score.getParts().at(channel)->getInstruments().size() > 1 ||
                                score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
                                 msgch = 9;
                             }
-                            if(note.isPause()) {
-                                for(uint8_t len = 0; len < note.getDuration(); ++len) {
+                            if(chord.isPause()) {
+                                for(uint8_t len = 0; len < chord.getDuration(); ++len) {
                                     msg = {};
                                     nl.emplace_back(msg);
                                 }
                                 continue;
                             }
                             std::vector<unsigned char> _msg = {};
-                            if(!note.getTieEnd()) {
-                                _msg = note.getOnMessage(msgch);
+                            if(!chord.getTieEnd()) {
+                                _msg = chord.bottom()->getOnMessage(msgch);
                                 if(score.getParts().at(channel)->getInstruments().size() > 1 ||
                                    score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
-                                    if(note.getInstrument() != nullptr) {
-                                        _msg.at(1) = note.getInstrument()->getUnpitched();
+                                    if(chord.bottom()->getInstrument() != nullptr) {
+                                        _msg.at(1) = chord.bottom()->getInstrument()->getUnpitched();
                                     }
                                 }
                             }
                             nl.emplace_back(_msg);
 
-                            for(uint8_t len = 0; len < note.getDuration() - 2; ++len) { // duration - strike - release
+                            for(uint8_t len = 0; len < chord.getDuration() - 2; ++len) { // duration - strike - release
                                 msg = {};
                                 nl.emplace_back(msg);
                             }
-                            if(note.getTieStart()) {
+                            if(chord.getTieStart()) {
                                 msg = {};
                                 nl.emplace_back(msg);
                             } else {
-                                _msg = note.getOffMessage(msgch);
+                                _msg = chord.bottom()->getOffMessage(msgch);
                                 if(score.getParts().at(channel)->getInstruments().size() > 1 ||
                                    score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
-                                    if(note.getInstrument() != nullptr) {
-                                        _msg.at(1) = note.getInstrument()->getUnpitched();
+                                    if(chord.bottom()->getInstrument() != nullptr) {
+                                        _msg.at(1) = chord.bottom()->getInstrument()->getUnpitched();
                                     }
                                 }
                                 nl.emplace_back(_msg);

@@ -16,6 +16,7 @@ This file describes all planned features to be added in the future
     - _(Dynamic algorithms)_
     - _(Custom algorithm parsing)_
 - MidiPlayer
+    - Optimize playback (redo algorithm).
     - _(Force playing at all times)_
 - Config
     - Make it so the execution does not break on invalid input (preprocessing)
@@ -24,4 +25,3 @@ This file describes all planned features to be added in the future
 - General Todo
     - Simple Installation
     - Automatic beaming for notes
-    - Add support for chords

@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -404,15 +405,117 @@ namespace autoplay {
             bool operator>(const Note& rhs) const;
 
         public:
+            std::string getType(const int& divisions) const;
+        };
+
+        /**
+         * The Chord class is a class used to define a group of Notes that are played similtaneously.
+         */
+        class Chord
+        {
+        private:
+            std::vector<std::shared_ptr<Note>> m_notes;
+
+        public:
+            explicit Chord(const Note& note) : m_notes() { m_notes.emplace_back(std::make_shared<Note>(note)); }
+
+            Chord(const Chord& rhs) {
+                for(const std::shared_ptr<Note>& note : rhs.m_notes) {
+                    Note n = *note.get();
+                    m_notes.emplace_back(std::make_shared<Note>(n));
+                }
+            }
+
+            inline std::vector<std::shared_ptr<Note>> getNotes() const { return m_notes; }
+
             /**
-             * Split the Note in a series of linked notes, w.r.t. the divisions
+             * Sets the Chord to have a specific duration.
+             * @param d The new duration of all Notes in the Chord
+             */
+            inline void setDuration(const unsigned int& d) {
+                for(const std::shared_ptr<Note>& note : m_notes) {
+                    note->setDuration(d);
+                }
+            }
+
+            /**
+             * Ties a Note to a following Note
+             * @param enable    If this must be enabled.
+             */
+            inline void setTieStart(bool enable = true) {
+                for(const std::shared_ptr<Note>& note : m_notes) {
+                    note->setTieStart(enable);
+                }
+            }
+
+            /**
+             * Ties a Note to a preceding Note
+             * @param enable    If this must be enabled.
+             */
+            inline void setTieEnd(bool enable = true) {
+                for(const std::shared_ptr<Note>& note : m_notes) {
+                    note->setTieEnd(enable);
+                }
+            }
+
+            /**
+             * Get if the current Chord has a Note that is tied to a following Note
+             * @return true if so
+             */
+            inline bool getTieStart() const { return m_notes.begin()->get()->getTieStart(); }
+
+            /**
+             * Get if the current Chord has a Note that is tied to a preceding Note
+             * @return true if so
+             */
+            inline bool getTieEnd() const { return m_notes.begin()->get()->getTieEnd(); }
+
+            /**
+             * Returns the duration of the Chord.
+             * @return The duration of the Chord.
+             */
+            inline unsigned int getDuration() const { return m_notes.begin()->get()->getDuration(); }
+
+            /**
+             * Sets the amount of dots to use
+             * @param dots New amount of dots.
+             */
+            inline void setDots(const uint8_t& dots) {
+                for(const std::shared_ptr<Note>& note : m_notes) {
+                    note->setDots(dots);
+                }
+            }
+
+            /**
+             * Checks if the Chord is empty
+             * @return true if it is empty
+             */
+            inline bool empty() const { return m_notes.empty(); }
+
+            /**
+             * Changes the Chord to a Pause
+             */
+            inline void toPause() { m_notes.begin()->get()->toPause(); }
+
+            /**
+             * Checks if the current Chord is a Pause
+             * @return true if so
+             */
+            inline bool isPause() const { return m_notes.begin()->get()->isPause(); }
+
+            /**
+             * Finds the lowest Note of the Chord
+             * @return a shared pointer, pointing to the bottom note (root Note) of the Chord
+             */
+            std::shared_ptr<Note> bottom() const;
+
+            /**
+             * Split the Chord in a series of linked notes, w.r.t. the divisions
              * @param divisions     The amount of divisions to take into a count.
              * @param generatedots  When true, dots must be used whenever possible.
              * @return A vector of linked Notes
              */
-            std::vector<Note> splitByDivisions(const int& divisions, bool generatedots) const;
-
-            std::string getType(const int& divisions) const;
+            std::vector<Chord> splitByDivisions(const int& divisions, bool generatedots) const;
         };
     }
 }

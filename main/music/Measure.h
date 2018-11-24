@@ -167,28 +167,47 @@ namespace autoplay {
             void operator+=(const Note& rhs);
 
             /**
+             * Add a Chord to this Measure
+             * @param rhs The Chord to add
+             * @return This Measure, after the note was added
+             */
+            Measure* operator+(const Chord& rhs);
+
+            /**
+             * Add a Chord respectively to this Measure
+             * @param rhs The Chord to add
+             */
+            void operator+=(const Chord& rhs);
+
+            /**
              * Append a Note to the Measure. Alias of operator+
              * @param n The Note to append.
              */
             inline void append(const Note& n) { *this += n; }
 
             /**
-             * Get the last Note of the Measure by reference
+             * Append a Chord to the Measure. Alias of operator+
+             * @param n The Chord to append.
+             */
+            inline void append(const Chord& n) { *this += n; }
+
+            /**
+             * Get the last Chord of the Measure by reference
              * @return The back of the m_notes vector
              */
-            inline Note& back() { return m_notes.back(); }
+            inline Chord& back() { return m_notes.back(); }
 
             /**
-             * Fetches all Notes from this Measure
+             * Fetches all Chords from this Measure
              * @return A vector, containing all Notes.
              */
-            inline std::vector<Note> getNotes() const { return m_notes; }
+            inline std::vector<Chord> getNotes() const { return m_notes; }
 
             /**
-             * Fetches all Notes from this Measure by reference
+             * Fetches all Chords from this Measure by reference
              * @return A vector, containing all Notes.
              */
-            inline std::vector<Note>& getNotes() { return m_notes; }
+            inline std::vector<Chord>& getNotes() { return m_notes; }
 
             /**
              * Sets the BPM. It uses the time as reference;
@@ -208,7 +227,7 @@ namespace autoplay {
             Clef m_clef;                        ///< The clef of the current measure
             std::pair<uint8_t, uint8_t> m_time; ///< The time of the measure, in the form of <beats, beat-type>
 
-            std::vector<Note> m_notes; ///< The Notes of this Measure
+            std::vector<Chord> m_notes; ///< The Notes of this Measure
 
             int m_divisions; ///< The divisions value (amount of duration per quarter Note) for this Measure
             int m_bpm;       ///< The amount of beats per minute (expressed wrt the time signature)

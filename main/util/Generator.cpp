@@ -106,11 +106,11 @@ namespace autoplay {
 
                 part->setInstrumentName(pt_part.get<std::string>("name", ""));
 
-                std::shared_ptr<music::Note> prev;
+                std::shared_ptr<music::Chord> prev;
                 for(unsigned int j = 0; j < length * measure.max_length();) {
-                    std::vector<music::Note*> conc = {};
+                    std::vector<music::Chord*> conc = {};
                     for(unsigned int p = 0; p < i; ++p) {
-                        music::Note* n = score.getParts().at(p)->at(j);
+                        music::Chord* n = score.getParts().at(p)->at(j);
                         if(n) {
                             conc.emplace_back(n);
                         }
@@ -131,7 +131,7 @@ namespace autoplay {
                         note.setInstrument(repr_to_inst.at(prepr));
                     }
 
-                    prev = std::make_shared<music::Note>(note);
+                    prev = std::make_shared<music::Chord>(note);
                     measure.append(note);
                     j += duration;
                 }
@@ -143,7 +143,7 @@ namespace autoplay {
                 if(!percussion && picked <= m_config.conf<float>("style.chance")) {
                     music::Note::Semitone s;
 
-                    auto c = part->back()->back().getPitch();
+                    auto c = part->back()->back().bottom()->getPitch();
                     auto r = music::Note::pitchRepr(c);
                     auto p = music::Note::splitPitch(r, s);
 
@@ -158,13 +158,13 @@ namespace autoplay {
                     auto ap2 = std::abs(c - p2);
                     auto ap3 = std::abs(c - p3);
                     if(ap1 < ap2 && ap1 < ap3) {
-                        part->back()->back().setPitch(p1);
+                        part->back()->back().bottom()->setPitch(p1);
                     } else if(ap2 < ap1 && ap2 < ap3) {
-                        part->back()->back().setPitch(p2);
+                        part->back()->back().bottom()->setPitch(p2);
                     } else if(ap3 < ap2 && ap3 < ap1) {
-                        part->back()->back().setPitch(p3);
+                        part->back()->back().bottom()->setPitch(p3);
                     } else {
-                        part->back()->back().setPitch(p1);
+                        part->back()->back().bottom()->setPitch(p1);
                     }
                 }
 
@@ -192,7 +192,7 @@ namespace autoplay {
             return score;
         }
 
-        std::function<uint8_t(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
+        std::function<uint8_t(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt)>
         Generator::getPitchAlgorithm(std::string algo) const {
             // Get algorithm variables
             if(algo.empty()) {
@@ -202,13 +202,13 @@ namespace autoplay {
             m_config.getLogger()->debug("Using Pitch Algorithm '{}'", algo);
 
             if(algo == "random-piano") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
                     return (uint8_t)Randomizer::pick_uniform(gen, getPitches(21, 108, stave));
                 };
             } else if(algo == "contain-stave") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
                     auto range = staveRange(stave);
@@ -216,17 +216,17 @@ namespace autoplay {
                     return (uint8_t)Randomizer::pick_uniform(gen, getPitches(range.first, range.second, stave));
                 };
             } else if(algo == "brownian-motion") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t { return pitchBrownianMotion(gen, prev, conc, pt); };
             } else if(algo == "1/f-noise") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto res = pitch1FNoise(gen, pt);
                     pt.put("_p1fn._reinit", false);
                     return res;
                 };
             } else if(algo == "centralized") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
                     auto range = staveRange(stave);
@@ -239,7 +239,7 @@ namespace autoplay {
                     return (uint8_t)Randomizer::gaussian(gen, p2);
                 };
             } /*else if(algo == "gaussian-voicing") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
                     auto range = staveRange(stave);
@@ -252,7 +252,7 @@ namespace autoplay {
                     return (uint8_t)Randomizer::gaussian(gen, p2, -3.0f, 3.0f, true);
                 };
             }*/ else {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
                     return (uint8_t)Randomizer::pick_uniform(gen, getPitches(0, 128, stave));
@@ -260,7 +260,7 @@ namespace autoplay {
             }
         }
 
-        std::function<float(RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt)>
+        std::function<float(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt)>
         Generator::getRhythmAlgorithm(std::string algo) const {
             // Get algorithm variables
             if(algo.empty()) {
@@ -270,7 +270,7 @@ namespace autoplay {
             m_config.getLogger()->debug("Using Rhythm Algorithm '{}'", algo);
 
             if(algo == "random") {
-                return [](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt) -> float {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> float {
                     auto smallest =
                         (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.smallest", "256th")));
                     auto largest =
@@ -281,10 +281,10 @@ namespace autoplay {
                     return rh;
                 };
             } else if(algo == "brownian-motion") {
-                return [this](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc,
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> float { return rhythmBrownianMotion(gen, prev, conc, pt); };
             } else {
-                return [](RNEngine& gen, music::Note* prev, std::vector<music::Note*>& conc, pt::ptree& pt) -> float {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> float {
                     auto rh = pt.get<std::string>("rhythm.duration", "quarter");
                     try {
                         return music::Note::DURATION.at(rh);
@@ -366,17 +366,20 @@ namespace autoplay {
             return clef.range();
         }
 
-        uint8_t Generator::pitchBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Note* prev,
-                                               std::vector<autoplay::music::Note*>& conc, const pt::ptree& pt) const {
+        uint8_t Generator::pitchBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Chord* prev,
+                                               std::vector<autoplay::music::Chord*>& conc, const pt::ptree& pt) const {
             auto stave = pt.get<int>("stave", 0);
             auto range = staveRange(stave);
 
             auto pitches = getPitches(range.first, range.second, stave);
 
             if(prev) {
-                auto it = std::find(pitches.begin(), pitches.end(), prev->getPitch());
+                uint8_t pitch = prev->getNotes()
+                                    .at((unsigned long)Randomizer::pick_uniform(gen, 0, (int)prev->getNotes().size()))
+                                    ->getPitch();
+                auto it = std::find(pitches.begin(), pitches.end(), pitch);
                 if(it == pitches.end()) {
-                    throw std::invalid_argument("Note '" + std::to_string(prev->getPitch()) + "' not in scale!");
+                    throw std::invalid_argument("Note '" + std::to_string(pitch) + "' not in scale!");
                 }
                 auto idx = std::distance(pitches.begin(), it);
                 auto min = pt.get<long>("pitch.min", -3);
@@ -445,8 +448,8 @@ namespace autoplay {
             return pitches.at(sum);
         }
 
-        float Generator::rhythmBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Note* prev,
-                                              std::vector<autoplay::music::Note*>& conc, const pt::ptree& pt) const {
+        float Generator::rhythmBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Chord* prev,
+                                              std::vector<autoplay::music::Chord*>& conc, const pt::ptree& pt) const {
             auto divisions = pt.get<unsigned int>("rhythm._divs");
             auto smallest  = (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.smallest", "256th")));
             auto largest   = (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.largest", "long")));

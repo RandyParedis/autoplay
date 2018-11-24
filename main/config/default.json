@@ -10,13 +10,13 @@
     "options": {
       "rhythm": {
         "smallest": "16th",
-        "largest": "quarter"
+        "largest": "half"
       }
     },
     "rest-ratio": 0.05
   },
   "export": {
-    "filename": "good-rhythm.xml",
+    "filename": "music.xml",
     "title": "My Score",
     "composer": "autoplay v@VERSION@",
     "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
