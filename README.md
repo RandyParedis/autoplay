@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.com/RandyParedis/autoplay.svg?token=JpPMZMYvvgwpSMxJCpEi&branch=master)](https://travis-ci.com/RandyParedis/autoplay)
 
 `autoplay` is a simple `C++` library of a combination of some music composition
-algorithms. The target of this project is to create music software that can
+algorithms (`autoplayer` is the executable for it). The target of this project is to create music software that can
 automatically generate good melodies in a lovely rhythm with a gentle dynamic,
 using advanced programming techniques.
 
@@ -10,8 +10,17 @@ For more information on how this project works, please take a look at the `docs`
 I'm sure you'll find what you're looking for there.
 
 ## Functionality
-The current functionality is almost nonexistant. It nowadays only plays the
-_Ode to Joy_ from Beethoven.
+By setting the right values and commandline arguments, you are currently able to generate okay-sounding multi-part scores and get a [MusicXML](https://www.musicxml.com/) representation of the score. At the moment, merely single-notes are generated per part.
+
+Triplet-like structures lie outside the scope of this project, wherefore they are not generated.
+
+#### What's in `autoplay`?
+Because most people like lists, I've listed the possibilities of `autoplay` below.
+- Customizable!
+- Pseudo-random (with a wide range of possible engines)!
+- A wide range of pitch and rhythm generation algorithms!
+- Exports to MusicXML, a format used in many score-writing software!
+- Integratable in other projects!
 
 ## Execution
 To execute `autoplay`, one simply has to execute the executable `autoplayer`.
@@ -28,7 +37,7 @@ submodules) as well.
 This project makes use of the [RtMidi](https://www.music.mcgill.ca/~gary/rtmidi/) library,
 current version `3.0.0`.
 This library allows for _real-time_ playback of the music. Maybe this dependency will be
-removed later on.
+removed/togglable later on.
 
 To install this dependency, you have to install and update the submodules of this repo.
 The necessary files will be linked automatically during compilation.
