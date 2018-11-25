@@ -7,6 +7,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include <boost/foreach.hpp>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <list>
@@ -184,10 +185,11 @@ namespace autoplay {
                     measure_tree.put("<xmlattr>.number", measure_idx);
 
                     // Add Notes
-                    for(const auto& chord_ : measure->getNotes()) {
-                        auto vec = chord_.splitByDivisions(prev->getDivisions(), true);
-                        for(const auto& chord : vec) {
-                            bool c_ = false;
+                    for(unsigned int _c_ = 0; _c_ < measure->getNotes().size(); ++_c_) {
+                        auto vec = measure->getNotes().at(_c_).splitByDivisions(prev->getDivisions(), true);
+                        for(unsigned int _v_ = 0; _v_ < vec.size(); ++_v_) {
+                            auto chord = vec.at(_v_);
+                            bool c_    = false;
                             if(chord.isPause()) {
                                 pt::ptree note_tree;
                                 note_tree.put("rest", "");
@@ -255,6 +257,70 @@ namespace autoplay {
                                     if(note->canBeFilled()) {
                                         note_tree.put("notehead.<xmlattr>.filled",
                                                       note->getHeadFilled() ? "yes" : "no");
+                                    }
+                                }
+
+                                // Set beams
+                                for(unsigned int b = 1; b < 6; ++b) {
+                                    int          ref     = measure->getDivisions() / (int)std::pow(2, b - 1);
+                                    unsigned int curdur  = note->getDuration();
+                                    int          prevdur = -1;
+                                    if(_v_ == 0) {
+                                        if(_c_ != 0) {
+                                            auto x = measure->getNotes()
+                                                         .at(_c_ - 1)
+                                                         .splitByDivisions(prev->getDivisions(), true)
+                                                         .back();
+                                            if(!x.isPause()) {
+                                                prevdur = x.getDuration();
+                                            }
+                                        }
+                                    } else {
+                                        if(!vec.at(_v_ - 1).isPause()) {
+                                            prevdur = vec.at(_v_ - 1).getDuration();
+                                        }
+                                    }
+
+                                    int nextdur = -1;
+                                    if(_v_ == vec.size() - 1) {
+                                        if(_c_ != measure->getNotes().size() - 1) {
+                                            auto x = measure->getNotes()
+                                                         .at(_c_ + 1)
+                                                         .splitByDivisions(prev->getDivisions(), true)
+                                                         .front();
+                                            if(!x.isPause()) {
+                                                nextdur = x.getDuration();
+                                            }
+                                        }
+                                    } else {
+                                        if(!vec.at(_v_ + 1).isPause()) {
+                                            nextdur = vec.at(_v_ + 1).getDuration();
+                                        }
+                                    }
+
+                                    if(curdur < ref && !(prevdur == -1 && nextdur == -1)) {
+                                        pt::ptree beam;
+                                        if(prevdur == -1) {
+                                            beam.add("beam", "begin");
+                                            beam.add("beam.<xmlattr>.number", b);
+                                        } else if(nextdur == -1) {
+                                            beam.add("beam", "end");
+                                            beam.add("beam.<xmlattr>.number", b);
+                                        } else {
+                                            if(prevdur < ref && nextdur < ref) {
+                                                beam.add("beam", "continue");
+                                                beam.add("beam.<xmlattr>.number", b);
+                                            } else if(prevdur < ref) {
+                                                beam.add("beam", "end");
+                                                beam.add("beam.<xmlattr>.number", b);
+                                            } else if(nextdur < ref) {
+                                                beam.add("beam", "begin");
+                                                beam.add("beam.<xmlattr>.number", b);
+                                            }
+                                        }
+                                        if(!beam.empty()) {
+                                            note_tree.add_child("beam", beam.get_child("beam"));
+                                        }
                                     }
                                 }
 

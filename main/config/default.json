@@ -4,6 +4,11 @@
   "engine": "lcg64",
   "seed": 0,
   "length": 5,
+
+  "instruments": "../config/instruments.json",
+  "styles": "../config/styles.json",
+  "clefs": "../config/clefs.json",
+
   "generation": {
     "pitch": "1/f-noise",
     "rhythm": "random",

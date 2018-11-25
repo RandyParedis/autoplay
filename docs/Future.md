@@ -20,11 +20,10 @@ This file describes all planned features to be added in the future
     - _(Force playing at all times)_
 - Config
     - Make it so the execution does not break on invalid input (preprocessing)
-    - Add `instruments.json` and `styles.json` to the config file (and parsing of arguments with flags (`-i`, `--instruments`) or (`-s`, `--styles`))
+    - Allow `autoplayer` to be executed anywhere.
     - _(Ability to randomize anything)_
 - General Todo
     - Simple Installation
-    - Automatic beaming for notes
     - Markov Chain Preparation
         - conversion from `MIDI`-files to `MusicXML`-files can be done on linux if `MuseScore 2` is installed via `musescore -o output.xml input.mid`
         - Add `MusicXML` note parser for pitch and rhythm.

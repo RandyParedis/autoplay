@@ -11,7 +11,10 @@ suppresses all others._
 | `--version` | Display the current version of `autoplay`.
 | `-v`, `--verbose` | Show debug information, even in _Release_ mode. (overwrites config file)
 | `-p`, `--play` | When this flag is set, the music will be played upon execution. (overwrites config file)
-| `-c`, `--config` | A configuration file to load. (Currently, only JSON is supported)
+| `-c`, `--config` | A configuration file to load.
+| `-i`, `--instruments` | An instruments file to load.
+| `-s`, `--styles` | A styles file to load.
+| `-k`, `--clefs` | A clefs file to load.
 
 # Config File
 It is also possible to load a config file into `autoplayer`, to allow for further and
@@ -56,6 +59,13 @@ The file contains of the following tree structure and fields:
  will yield different results.
  - `length`: The duration of the score to generate, expressed in measures. Defaults to
  10 when this field is not set.
+ - `instruments`: The instruments file to use.<br>_**Note:**
+ Please be aware this field will be discarded if the corresponding flags have been
+ set._
+ - `styles`: The styles file to use.<br>_**Note:** Please be aware this field will
+ be discarded if the corresponding flags have been set._
+ - `clefs`: The clefs file to use.<br>_**Note:** Please be aware this field will be
+ discarded if the corresponding flags have been set._
  - `generation`: This field contains all detailed information about which algorithms to use
  in generating the specific music itself. It describes the rules to follow in order to obtain
  the same result. (See the Algorithms page for details on individual algorithms.)

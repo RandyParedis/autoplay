@@ -47,6 +47,18 @@ namespace autoplay {
             bool play;
             parser.add_opt_flag('p', "play", "should the music be played life", &play);
             parser.add_opt_value<std::string>('c', "config", filename, "", "load a config file", "filename");
+            std::string instrument_file;
+            parser.add_opt_value<std::string>(
+                'i', "instruments", instrument_file, "",
+                "load an instrument config file; when omitted, the default instruments.json is used", "filename");
+            std::string styles_file;
+            parser.add_opt_value<std::string>(
+                's', "styles", styles_file, "",
+                "load a styles config file; when omitted, the default styles.json is used", "filename");
+            std::string clefs_file;
+            parser.add_opt_value<std::string>('k', "clefs", clefs_file, "",
+                                              "load a clefs config file; when omitted, the default clefs.json is used",
+                                              "filename");
 
             parser.parse(argc, argv);
 
@@ -77,6 +89,24 @@ namespace autoplay {
                 m_logger->error("Invalid amount of 'play' attributes found!");
             }
 
+            if(m_ptree.count("instruments") == 1) {
+                instrument_file = m_ptree.get<std::string>("instruments");
+            } else if(m_ptree.count("instruments") > 1) {
+                m_logger->error("Invalid amount of 'instruments' attributes found!");
+            }
+
+            if(m_ptree.count("styles") == 1) {
+                styles_file = m_ptree.get<std::string>("styles");
+            } else if(m_ptree.count("styles") > 1) {
+                m_logger->error("Invalid amount of 'styles' attributes found!");
+            }
+
+            if(m_ptree.count("clefs") == 1) {
+                clefs_file = m_ptree.get<std::string>("clefs");
+            } else if(m_ptree.count("clefs") > 1) {
+                m_logger->error("Invalid amount of 'clefs' attributes found!");
+            }
+
             if(!verbose) {
                 m_logger->set_level_mask(0x3c);
             }
@@ -84,9 +114,20 @@ namespace autoplay {
             m_ptree.put("verbose", verbose);
             m_ptree.put("play", play);
 
-            loadInstruments("../config/instruments.json");
-            loadStyles("../config/styles.json");
-            loadClefs("../config/clefs.json");
+            if(instrument_file.empty()) {
+                instrument_file = "../config/instruments.json";
+            }
+            loadInstruments(instrument_file);
+
+            if(styles_file.empty()) {
+                styles_file = "../config/styles.json";
+            }
+            loadStyles(styles_file);
+
+            if(clefs_file.empty()) {
+                clefs_file = "../config/clefs.json";
+            }
+            loadClefs(clefs_file);
 
             m_logger->debug("Parsed Options:");
             if(!filename.empty()) {
@@ -114,6 +155,26 @@ namespace autoplay {
             try {
                 fileHandler.readConfig(filename);
                 m_instruments = *fileHandler.getRoot();
+
+                // Check validity
+                std::vector<std::string> to_rem;
+                BOOST_FOREACH(const auto& var, m_instruments) {
+                    if(var.second.size() != 3) {
+                        m_logger->warn("Instrument '{}' has {} children; expected 3.", var.first, var.second.size());
+                    }
+                    if(var.second.count("channel") + var.second.count("program") + var.second.count("unpitched") != 3) {
+                        m_logger->warn("Invalid Instrument '{}'. Discarding...", var.first);
+                        to_rem.emplace_back(var.first);
+                    }
+                }
+                for(const auto& rem : to_rem) {
+                    m_instruments.erase(rem);
+                }
+                if(m_instruments.empty()) {
+                    m_logger->fatal("The instrument config file '{}' is invalid.", filename);
+                    exit(EXIT_FAILURE);
+                }
+
                 m_logger->debug("Loaded {} instrument(s).", m_instruments.size());
             } catch(std::invalid_argument& e) {
                 m_logger->fatal(e.what());
@@ -126,6 +187,17 @@ namespace autoplay {
             try {
                 fileHandler.readConfig(filename);
                 m_styles = *fileHandler.getRoot();
+
+                // Check validity
+                if(m_styles.count("types") != 1) {
+                    m_logger->fatal("The styles config file '{}' has an invalid amount of 'types' keys.", filename);
+                    exit(EXIT_FAILURE);
+                }
+                if(m_styles.count("styles") != 1) {
+                    m_logger->fatal("The styles config file '{}' has an invalid amount of 'styles' keys.", filename);
+                    exit(EXIT_FAILURE);
+                }
+
                 m_logger->debug("Loaded {} style(s).", m_styles.get_child("styles").size());
             } catch(std::invalid_argument& e) {
                 m_logger->fatal(e.what());
@@ -141,10 +213,12 @@ namespace autoplay {
                 }
                 auto sty = m_styles.get_child("styles." + style_name);
                 if(style_name != "default") {
-                    merge(sty, m_styles.get_child("styles." + sty.get<std::string>("from", "default")), true);
-                    if(sty.get<std::string>("from", "default") != "default") {
-                        merge(sty, m_styles.get_child("styles.default"), true);
+                    auto from = sty.get<std::string>("from", "default");
+                    while(from != "default") {
+                        merge(sty, m_styles.get_child("styles." + from), true);
+                        from = m_styles.get_child("styles." + from).get<std::string>("from", "default");
                     }
+                    merge(sty, m_styles.get_child("styles.default"), true);
                 }
                 auto g = sty.get<std::string>("scale", "chromatic");
                 if(!check_binary(g)) {
@@ -167,6 +241,26 @@ namespace autoplay {
             try {
                 fileHandler.readConfig(filename);
                 m_clefs = *fileHandler.getRoot();
+
+                // Check validity
+                std::vector<std::string> to_rem;
+                BOOST_FOREACH(const auto& var, m_clefs) {
+                    if(var.second.size() != 3) {
+                        m_logger->warn("Clef '{}' has {} children; expected 3.", var.first, var.second.size());
+                    }
+                    if(var.second.count("sign") + var.second.count("line") + var.second.count("octave-change") != 3) {
+                        m_logger->warn("Invalid Clef '{}'. Discarding...", var.first);
+                        to_rem.emplace_back(var.first);
+                    }
+                }
+                for(const auto& rem : to_rem) {
+                    m_clefs.erase(rem);
+                }
+                if(m_clefs.empty()) {
+                    m_logger->fatal("The clef config file '{}' is invalid.", filename);
+                    exit(EXIT_FAILURE);
+                }
+
                 m_logger->debug("Loaded {} clef(s).", m_clefs.size());
             } catch(std::invalid_argument& e) {
                 m_logger->fatal(e.what());
