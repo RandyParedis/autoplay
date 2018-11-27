@@ -79,7 +79,7 @@ namespace autoplay {
                 for(T i = min; i < max; i += step) {
                     ws += weight(i);
                 }
-                trng::uniform_dist<T> U(1, ws);
+                trng::uniform_dist<T> U(0, ws);
                 float                 rw = gen.callOnMe<T>(U);
                 for(T i = min; i < max; i += step) {
                     rw -= weight(i);
@@ -107,7 +107,7 @@ namespace autoplay {
                 for(const auto& w : elements) {
                     ws += weight(w);
                 }
-                trng::uniform_dist<T> U(1, ws);
+                trng::uniform_dist<T> U(0, ws);
                 float                 rw = gen.callOnMe<T>(U);
                 for(const auto& w : elements) {
                     rw -= weight(w);
@@ -161,7 +161,7 @@ namespace autoplay {
                 for(float i = min; i < max; i += step) {
                     ws += probability(i);
                 }
-                trng::uniform_dist<float> U(1, ws);
+                trng::uniform_dist<float> U(0, ws);
                 auto                      rw = gen.callOnMe<float>(U);
                 for(float i = min; i < max; i += step) {
                     rw -= probability(i);
@@ -219,7 +219,7 @@ namespace autoplay {
                 for(long i = 0; i < (signed)elements.size(); ++i) {
                     ws += probability(i);
                 }
-                trng::uniform_dist<float> U(1, ws);
+                trng::uniform_dist<float> U(0, ws);
                 auto                      rw = gen.callOnMe<float>(U);
                 for(long i = 0; i < (signed)elements.size(); ++i) {
                     rw -= probability(i);

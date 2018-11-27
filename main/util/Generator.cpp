@@ -115,24 +115,55 @@ namespace autoplay {
                             conc.emplace_back(n);
                         }
                     }
-                    uint8_t pitch    = pitch_algo(m_rnengine, prev.get(), conc, options);
-                    auto    rh       = rhythm_algo(m_rnengine, prev.get(), conc, options);
-                    auto    duration = (unsigned)(divisions * 4 * rh);
+
+                    // Set Rhythm
+                    auto rh       = rhythm_algo(m_rnengine, prev.get(), conc, options);
+                    auto duration = (unsigned)(divisions * 4 * rh);
 
                     // Prevent overflowing over final measure
                     if(j + duration > length * measure.max_length()) {
                         duration = length * measure.max_length() - j;
                     }
-                    music::Note note{pitch, duration};
 
-                    auto prepr = music::Note::pitchRepr(pitch);
-                    if(pt_part.count("instrument") == 0 || percussion) {
-                        note.setHead(repr_to_head.at(prepr));
-                        note.setInstrument(repr_to_inst.at(prepr));
+                    // Ability to do chords
+                    int          num_notes = 1;
+                    const double q         = 1.0;
+                    const double y         = 4.0;
+                    if(pt_part.count("chord-ratio") == 1) {
+                        std::function<float(const double&)> func = [&pt_part](const double& f) -> float {
+                            return pt_part.get<float>("chord-ratio." + std::to_string((int)f), 0.0f);
+                        };
+                        num_notes = (int)Randomizer::pick_weighted(m_rnengine, q, y, q, func);
+                    } else if(m_config.conf_child("generation.options").count("chord-ratio") == 1) {
+                        std::function<float(const double&)> func = [this](const double& f) -> float {
+                            return m_config.conf<float>("generation.options.chord-ratio." + std::to_string((int)f),
+                                                        0.0f);
+                        };
+                        num_notes = (int)Randomizer::pick_weighted(m_rnengine, q, y, q, func);
+                    }
+                    music::Chord chord;
+                    for(int nn = 0; nn < num_notes; ++nn) {
+                        uint8_t pitch = pitch_algo(m_rnengine, prev.get(), conc, options);
+
+                        if(chord.in(pitch)) {
+                            --nn;
+                            continue;
+                        }
+
+                        music::Note note{pitch, duration};
+
+                        auto prepr = music::Note::pitchRepr(pitch);
+                        if(pt_part.count("instrument") == 0 || percussion) {
+                            note.setHead(repr_to_head.at(prepr));
+                            note.setInstrument(repr_to_inst.at(prepr));
+                        }
+
+                        chord.append(note);
                     }
 
-                    prev = std::make_shared<music::Chord>(note);
-                    measure.append(note);
+                    prev = std::make_shared<music::Chord>(chord);
+
+                    measure.append(chord);
                     j += duration;
                 }
 

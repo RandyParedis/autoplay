@@ -417,6 +417,8 @@ namespace autoplay {
             std::vector<std::shared_ptr<Note>> m_notes;
 
         public:
+            Chord() : m_notes() {}
+
             explicit Chord(const Note& note) : m_notes() { m_notes.emplace_back(std::make_shared<Note>(note)); }
 
             Chord(const Chord& rhs) {
@@ -516,6 +518,28 @@ namespace autoplay {
              * @return A vector of linked Notes
              */
             std::vector<Chord> splitByDivisions(const int& divisions, bool generatedots) const;
+
+            /**
+             * Append a Note to the Chord
+             * @param note The Note to append
+             */
+            inline void append(const Note& note) { m_notes.emplace_back(std::make_shared<Note>(note)); }
+
+            /**
+             * Check if a chord has a specific pitch to play
+             * @param pitch The pitch to check
+             * @return True if it is in the chord.
+             */
+            inline bool in(const uint8_t& pitch) {
+                bool b = false;
+                for(const std::shared_ptr<Note>& note : m_notes) {
+                    if(note->getPitch() == pitch) {
+                        b = true;
+                        break;
+                    }
+                }
+                return b;
+            }
         };
     }
 }

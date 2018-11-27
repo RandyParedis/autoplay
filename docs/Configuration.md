@@ -92,6 +92,9 @@ The file contains of the following tree structure and fields:
        when less than one). If this option cannot be found, `quarter` will be used instead.
     - `options`: An object, representing the additional options of the above-mentioned
     algorithms.
+        - `chord-ratio`: when this object is present, it represents the chance that a chord
+        of `n` notes is played. For instance, if this object is `{"1":0.5, "2":0.5}`, there
+        is a 50/50 chance of a single note, or a two-note chord.
     - `rest-ratio`: A floating point number, representing the approximated percentage of
       notes that should be turned into rests.<br>_(**Note:** This percentage is merely an 
       approximation and thus is not a precise representation of the exact percentage.)_
