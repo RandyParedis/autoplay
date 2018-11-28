@@ -3,23 +3,22 @@
   "play": false,
   "engine": "lcg64",
   "seed": 0,
-  "length": 5,
+  "length": 25,
 
   "instruments": "../config/instruments.json",
   "styles": "../config/styles.json",
   "clefs": "../config/clefs.json",
 
   "generation": {
-    "pitch": "1/f-noise",
+    "pitch": "brownian-motion",
     "rhythm": "random",
     "options": {
       "rhythm": {
-        "smallest": "16th",
+        "smallest": "eighth",
         "largest": "half"
       },
       "chord-ratio": {
-        "1": 0.7,
-        "2": 0.2,
+        "1": 0.9,
         "3": 0.1
       }
     },
@@ -32,8 +31,8 @@
     "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
   },
   "style": {
-    "from": "F-major",
-    "bpm": 100
+    "from": "C-major",
+    "bpm": 160
   },
   "parts": [
     {

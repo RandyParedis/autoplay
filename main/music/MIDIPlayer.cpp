@@ -122,101 +122,75 @@ namespace autoplay {
                 msg = {0x80, 10, 0};
                 midiout->sendMessage(&msg);
 
-                // Collect & Play Measures
-                // TODO: split up in collect and playback
-                // TODO: add support for playing chords, instead of the bottom note.
-                logger->debug("Collecting and Playing ") << duration << " Measure(s)";
-                zz::log::ProgBar pb{duration, "Playing"};
+                // Collect Measures
+                using message_type      = std::vector<unsigned char>;
+                using message_list_type = std::vector<message_type>;
+                using timestap_type     = std::vector<message_list_type>;
+                unsigned int length     = 0;
+                int          bpm        = 0;
+
+                timestap_type note_list(1);
+                logger->debug("Collecting {} Measure(s).", duration);
                 for(unsigned measure_number = 0; measure_number < duration; ++measure_number) {
-                    std::vector<std::vector<std::vector<unsigned char>>> note_list;
+                    auto begin_measure = score.getParts().front()->getMeasures().at(measure_number);
+                    length             = 4 * (unsigned)begin_measure->getDivisions() / begin_measure->getTime().second;
+                    unsigned int measure_duration = length * begin_measure->getTime().first;
 
-                    int length = 0;
-                    int bpm    = 0;
+                    if(bpm == 0) {
+                        bpm = begin_measure->getBPM();
+                    }
 
+                    unsigned int begin = (unsigned int)note_list.size() - 1;
+                    note_list.resize(note_list.size() + measure_duration);
+
+                    // Fill message list with all messages that need to be send at the current timestep
                     for(uint8_t channel = 0; channel < score.getParts().size(); ++channel) {
                         auto curr_measure = score.getParts().at(channel)->getMeasures().at(measure_number);
-                        if(curr_measure->isOverflowing()) {
-                            logger->error("Measure ") << measure_number << " overflowing for Part " << (int)channel;
-                        }
-                        std::vector<std::vector<unsigned char>> nl;
-
-                        if(length == 0) {
-                            length = 4 * curr_measure->getDivisions() / curr_measure->getTime().second;
+                        bool perc         = score.getParts().at(channel)->getInstruments().size() > 1 ||
+                                    score.getParts().at(channel)->getInstruments().at(0)->isPercussion();
+                        uint8_t msgch = channel;
+                        if(perc) {
+                            msgch = 9;
                         }
 
-                        if(bpm == 0) {
-                            bpm = curr_measure->getBPM();
-                        }
+                        unsigned int time = 0;
 
                         for(const auto& chord : curr_measure->getNotes()) {
-                            uint8_t msgch = channel;
-                            if(score.getParts().at(channel)->getInstruments().size() > 1 ||
-                               score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
-                                msgch = 9;
-                            }
-                            if(chord.isPause()) {
-                                for(uint8_t len = 0; len < chord.getDuration(); ++len) {
-                                    msg = {};
-                                    nl.emplace_back(msg);
-                                }
-                                continue;
-                            }
-                            std::vector<unsigned char> _msg = {};
-                            if(!chord.getTieEnd()) {
-                                _msg = chord.bottom()->getOnMessage(msgch);
-                                if(score.getParts().at(channel)->getInstruments().size() > 1 ||
-                                   score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
-                                    if(chord.bottom()->getInstrument() != nullptr) {
-                                        _msg.at(1) = chord.bottom()->getInstrument()->getUnpitched();
+                            if(!chord.isPause()) {
+                                for(const auto& note : chord.getNotes()) {
+                                    if(!note->getTieEnd()) {
+                                        auto _msg = note->getOnMessage(msgch);
+                                        if(perc && note->getInstrument() != nullptr) {
+                                            _msg.at(1) = note->getInstrument()->getUnpitched();
+                                        }
+                                        note_list.at(begin + time).emplace_back(_msg);
+                                    }
+                                    if(!note->getTieStart()) {
+                                        auto _msg = note->getOffMessage(msgch);
+                                        if(perc && note->getInstrument() != nullptr) {
+                                            _msg.at(1) = note->getInstrument()->getUnpitched();
+                                        }
+                                        note_list.at(begin + time + note->getDuration()).emplace_back(_msg);
                                     }
                                 }
                             }
-                            nl.emplace_back(_msg);
+                            time += chord.getDuration();
+                        }
+                    }
+                }
 
-                            for(uint8_t len = 0; len < chord.getDuration() - 2; ++len) { // duration - strike - release
-                                msg = {};
-                                nl.emplace_back(msg);
-                            }
-                            if(chord.getTieStart()) {
-                                msg = {};
-                                nl.emplace_back(msg);
-                            } else {
-                                _msg = chord.bottom()->getOffMessage(msgch);
-                                if(score.getParts().at(channel)->getInstruments().size() > 1 ||
-                                   score.getParts().at(channel)->getInstruments().at(0)->isPercussion()) {
-                                    if(chord.bottom()->getInstrument() != nullptr) {
-                                        _msg.at(1) = chord.bottom()->getInstrument()->getUnpitched();
-                                    }
-                                }
-                                nl.emplace_back(_msg);
-                            }
+                // Play Measures
+                if(bpm == 0 || length == 0) {
+                    logger->error("Impossible to play empty score.");
+                } else {
+                    zz::log::ProgBar pb{(unsigned int)note_list.size(), "Playing"};
+                    for(const auto& msgs : note_list) {
+                        for(const auto& m : msgs) {
+                            midiout->sendMessage(&m);
                         }
-                        if(!note_list.empty() && note_list.back().size() != nl.size()) {
-                            logger->fatal("Number of messages for Measure ")
-                                << (int)(measure_number - 1) << " do not equal those for Measure "
-                                << (int)measure_number;
-                        }
-                        note_list.emplace_back(nl);
-                    }
-                    if(note_list.empty()) {
-                        logger->warn("No Parts found to play.");
-                        break;
-                    }
-                    auto ptcnt = note_list.size();
-                    auto d     = note_list.back().size();
-                    logger->trace("Playing ") << ptcnt << " Part(s) of size " << d;
-                    for(unsigned int i = 0; i < d; ++i) {
-                        for(unsigned int j = 0; j < ptcnt; ++j) {
-                            msg = note_list.at(j).at(i);
-                            if(!msg.empty()) {
-                                logger->trace("\tSending message w/ pitch ")
-                                    << (int)msg.at(1) << " on channel " << ((int)(msg.at(0) & ((1 << 4) - 1)));
-                                midiout->sendMessage(&msg);
-                            }
-                        }
+                        pb.step(1);
                         SLEEP((int)(60 * 1000 / (bpm * length)));
                     }
-                    pb.step(1);
                 }
 
                 // Control Change

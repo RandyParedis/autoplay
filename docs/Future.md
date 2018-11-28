@@ -10,13 +10,12 @@ This file describes all planned features to be added in the future
         - ...
     - Rhythmic algorithms
         - 1/f Noise
-        - Markov Chains
         - Most Common Structures (MCS)
+        - Markov Chains
         - ...
     - _(Dynamic algorithms)_
     - _(Custom algorithm parsing)_
 - MidiPlayer
-    - Optimize playback (redo algorithm).
     - _(Force playing at all times)_
 - Config
     - Make it so the execution does not break on invalid input (preprocessing)

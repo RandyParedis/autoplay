@@ -214,9 +214,15 @@ namespace autoplay {
                 auto sty = m_styles.get_child("styles." + style_name);
                 if(style_name != "default") {
                     auto from = sty.get<std::string>("from", "default");
-                    while(from != "default") {
+
+                    // For loop to prevent circular dependencies to link to one another
+                    for(int i = 0; i < m_styles.get_child("styles").size() && from != "default"; ++i) {
                         merge(sty, m_styles.get_child("styles." + from), true);
                         from = m_styles.get_child("styles." + from).get<std::string>("from", "default");
+
+                        if(i == m_styles.get_child("styles").size() - 1) {
+                            m_logger->warn("Circular Style dependency suspected for '{}' and '{}'.", from, style_name);
+                        }
                     }
                     merge(sty, m_styles.get_child("styles.default"), true);
                 }
@@ -226,8 +232,19 @@ namespace autoplay {
                 }
                 m_ptree.put_child("style", sty);
             } else {
-                auto sty = m_ptree.get_child("style");
-                merge(sty, m_styles.get_child("styles." + sty.get<std::string>("from", "default")), true);
+                auto sty  = m_ptree.get_child("style");
+                auto from = sty.get<std::string>("from", "default");
+
+                // For loop to prevent circular dependencies to link to one another
+                for(int i = 0; i < m_styles.get_child("styles").size() && from != "default"; ++i) {
+                    merge(sty, m_styles.get_child("styles." + from), true);
+                    from = m_styles.get_child("styles." + from).get<std::string>("from", "default");
+
+                    if(i == m_styles.get_child("styles").size() - 1) {
+                        m_logger->warn("Circular Style dependency suspected for '{}' and '{}'.", from, style_name);
+                    }
+                }
+                merge(sty, m_styles.get_child("styles.default"), true);
                 auto g = sty.get<std::string>("scale", "chromatic");
                 if(!check_binary(g)) {
                     sty.put("scale", m_styles.get<std::string>("types." + g, "111111111111"));
