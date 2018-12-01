@@ -12,13 +12,13 @@
   "generation": {
     "pitch": "brownian-motion",
     "rhythm": "random",
+    "chord": "weighted",
     "options": {
       "rhythm": {
         "smallest": "eighth",
         "largest": "half"
       },
-      "chord-ratio": {
-        "1": 0.9,
+      "chord": {
         "3": 0.1
       }
     },

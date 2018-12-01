@@ -13,6 +13,9 @@ This file describes all planned features to be added in the future
         - Most Common Structures (MCS)
         - Markov Chains
         - ...
+    - Chord Note Count algorithms
+        - Markov Chains
+        - ...
     - _(Dynamic algorithms)_
     - _(Custom algorithm parsing)_
 - MidiPlayer

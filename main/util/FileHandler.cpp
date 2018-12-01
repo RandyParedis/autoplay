@@ -262,9 +262,9 @@ namespace autoplay {
 
                                 // Set beams
                                 for(unsigned int b = 1; b < 6; ++b) {
-                                    int          ref     = measure->getDivisions() / (int)std::pow(2, b - 1);
-                                    unsigned int curdur  = note->getDuration();
-                                    int          prevdur = -1;
+                                    int ref     = measure->getDivisions() / (int)std::pow(2, b - 1);
+                                    int curdur  = note->getDuration();
+                                    int prevdur = -1;
                                     if(_v_ == 0) {
                                         if(_c_ != 0) {
                                             auto x = measure->getNotes()

@@ -19,9 +19,10 @@ namespace autoplay {
         public:
             /**
              * Default Constructor
-             * @param config The Config that has been initialized with the system
+             * @param config    The Config that has been initialized with the system
+             * @param logger    The logger to use to output all info to.
              */
-            explicit Generator(const Config& config);
+            explicit Generator(const Config& config, const zz::log::LoggerPtr& logger);
 
             /**
              * Generates a random Score
@@ -45,6 +46,14 @@ namespace autoplay {
              */
             std::function<float(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt)>
             getRhythmAlgorithm(std::string algo = "") const;
+
+            /**
+             * Get the randomization algorithm for the Chord Note count
+             * @param algo  If not empty, it will use this algorithm to check, instead of the generation.chord value
+             * @return A lambda function that implements the algorithm
+             */
+            std::function<int(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt)>
+            getChordNoteCountAlgorithm(std::string algo = "") const;
 
         private:
             /**
@@ -103,8 +112,9 @@ namespace autoplay {
                                        const pt::ptree& pt) const;
 
         private:
-            Config   m_config;   ///< The Config of the system
-            RNEngine m_rnengine; ///< The Random Engine
+            Config             m_config;   ///< The Config of the system
+            RNEngine           m_rnengine; ///< The Random Engine
+            zz::log::LoggerPtr m_logger;   ///< The Logger Object
         };
     }
 }

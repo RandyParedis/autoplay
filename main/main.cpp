@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
     std::shared_ptr<music::MIDIPlayer> midiPlayer = music::MIDIPlayer::instance();
     midiPlayer->probe(config);
 
-    util::Generator generator{config};
+    util::Generator generator{config, logger};
     music::Score    score = generator.generate();
 
     if(!config.isLeaf("export")) {

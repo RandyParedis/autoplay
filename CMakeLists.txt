@@ -28,11 +28,11 @@ message(STATUS "TRNG location: ${TRNG_LOCATION}")
 
 add_subdirectory(main)
 
-target_include_directories(autoplay PUBLIC ${TRNG_LOCATION}/include)
-target_include_directories(autoplay PUBLIC ${TRNG_LOCATION}/lib)
-target_include_directories(autoplay PUBLIC ${DEPENDENCY_DIR})
+target_include_directories(autoplay SYSTEM PUBLIC ${TRNG_LOCATION}/include)
+target_include_directories(autoplay SYSTEM PUBLIC ${TRNG_LOCATION}/lib)
+target_include_directories(autoplay SYSTEM PUBLIC ${DEPENDENCY_DIR})
 #target_include_directories(autoplay PUBLIC ${DEPENDENCY_DIR}/zupply/src)
-target_include_directories(autoplay PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(autoplay SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 
 add_subdirectory(test)
 

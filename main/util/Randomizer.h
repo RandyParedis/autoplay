@@ -68,7 +68,7 @@ namespace autoplay {
              * @param max       The maximum of the range (exclusive)
              * @param step      The size of each step in the range
              * @param weight    A weight function that can be used to determine the weight
-             * of each element in the range
+             *                  of each element in the range
              * @return One randomly selected element from a range. If none is found,
              * returns the max.
              */
@@ -79,8 +79,9 @@ namespace autoplay {
                 for(T i = min; i < max; i += step) {
                     ws += weight(i);
                 }
-                trng::uniform_dist<T> U(0, ws);
-                float                 rw = gen.callOnMe<T>(U);
+                trng::uniform_dist<float> U(0.0f, ws);
+
+                auto rw = gen.callOnMe<float>(U);
                 for(T i = min; i < max; i += step) {
                     rw -= weight(i);
                     if(rw <= 0) {
@@ -98,7 +99,7 @@ namespace autoplay {
              * @param gen       A random engine generator
              * @param elements  Container of elements
              * @param weight    A weight function that can be used to determine the weight
-             * of each element in the container
+             *                  of each element in the container
              * @return One randomly selected element
              */
             template <template <typename...> class C, typename T, typename... Ts>
@@ -107,8 +108,9 @@ namespace autoplay {
                 for(const auto& w : elements) {
                     ws += weight(w);
                 }
-                trng::uniform_dist<T> U(0, ws);
-                float                 rw = gen.callOnMe<T>(U);
+                trng::uniform_dist<float> U(0, ws);
+
+                auto rw = gen.callOnMe<float>(U);
                 for(const auto& w : elements) {
                     rw -= weight(w);
                     if(rw <= 0) {
@@ -126,26 +128,19 @@ namespace autoplay {
              * @param max       The maximum of the range (exclusive)
              * @param step      The size of each step in the range
              * @param weight    A weight function that can be used to determine the weight
-             * of each element in the range
+             *                  of each element in the range
              * @param a         The minimal value of the skewed domain
              * @param b         The maximal value of the skewed domain
-             * @param fix_zero  If the zero-value should remain fixed in the computation
-             * or not.
-             *                  This will determine the scale factor by the smallest value
-             * to 0,
+             * @param fix_zero  If the zero-value should remain fixed in the computation or not.
+             *                  This will determine the scale factor by the smallest value to 0,
              *                  instead of the width of the container.
              *
-             * @note    This function will do a transformation on the domain of the
-             * elements container.
-             *          It will basically map the indexes of each element uniformly over
-             * the domain of
-             *          [a, b] before using the index as an input-value for the weight
-             * function.
-             *          This makes it easier to chose a random value based upon a
-             * distribution.
+             * @note    This function will do a transformation on the domain of the elements container.
+             *          It will basically map the indexes of each element uniformly over the domain of
+             *          [a, b] before using the index as an input-value for the weight function.
+             *          This makes it easier to chose a random value based upon a distribution.
              *
-             * @return One randomly selected element from a range. If none is found,
-             * returns the max.
+             * @return One randomly selected element from a range. If none is found, returns the max.
              */
             static float pick_distributed(RNEngine& gen, const float& min, const float& max, const float& step,
                                           std::function<float(const float&)> dist, float a, float b,
@@ -162,7 +157,8 @@ namespace autoplay {
                     ws += probability(i);
                 }
                 trng::uniform_dist<float> U(0, ws);
-                auto                      rw = gen.callOnMe<float>(U);
+
+                auto rw = gen.callOnMe<float>(U);
                 for(float i = min; i < max; i += step) {
                     rw -= probability(i);
                     if(rw <= 0) {
@@ -180,23 +176,17 @@ namespace autoplay {
              * @param gen       A random engine generator
              * @param elements  Container of elements
              * @param weight    A weight function that can be used to determine the weight
-             * of each element in the container
+             *                  of each element in the container
              * @param a         The minimal value of the skewed domain
              * @param b         The maximal value of the skewed domain
-             * @param fix_zero  If the zero-value should remain fixed in the computation
-             * or not.
-             *                  This will determine the scale factor by the smallest value
-             * to 0,
+             * @param fix_zero  If the zero-value should remain fixed in the computation or not.
+             *                  This will determine the scale factor by the smallest value to 0,
              *                  instead of the width of the container.
              *
-             * @note    This function will do a transformation on the domain of the
-             * elements container.
-             *          It will basically map the indexes of each element uniformly over
-             * the domain of
-             *          [a, b] before using the index as an input-value for the weight
-             * function.
-             *          This makes it easier to chose a random value based upon a
-             * distribution.
+             * @note    This function will do a transformation on the domain of the elements container.
+             *          It will basically map the indexes of each element uniformly over the domain of
+             *          [a, b] before using the index as an input-value for the weight function.
+             *          This makes it easier to chose a random value based upon a distribution.
              *
              * @return One randomly selected element
              */
@@ -220,7 +210,8 @@ namespace autoplay {
                     ws += probability(i);
                 }
                 trng::uniform_dist<float> U(0, ws);
-                auto                      rw = gen.callOnMe<float>(U);
+
+                auto rw = gen.callOnMe<float>(U);
                 for(long i = 0; i < (signed)elements.size(); ++i) {
                     rw -= probability(i);
                     if(rw <= 0) {
@@ -235,8 +226,7 @@ namespace autoplay {
              * @param x     X-value
              * @param mu    Mean
              * @param sigma Standard Derivation
-             * @return The y-value of the normal distribution (distributed with mu and
-             * sigma) for a given x.
+             * @return The y-value of the normal distribution (distributed with mu and sigma) for a given x.
              */
             static float gauss_curve(const float& x, const float& mu = 0.0f, const float& sigma = 1.0f) {
                 float res = 1.0f / (sigma * std::sqrt(2.0f * (float)M_PI));
@@ -259,8 +249,7 @@ namespace autoplay {
              *                  This will determine the scale factor by the smallest value to 0,
              *                  instead of the width of the container.
              *
-             * @return One randomly selected element from range. If none is found, it
-             * returns max.
+             * @return One randomly selected element from range. If none is found, it returns max.
              */
             static float gaussian(RNEngine& gen, const float& min, const float& max, const float& step, float a = -3.0f,
                                   float b = 3.0f, bool fix_zero = false) {

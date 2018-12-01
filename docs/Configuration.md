@@ -82,7 +82,7 @@ The file contains of the following tree structure and fields:
        the current stave, generate notes whose chance of being chosen corresponds with
        its value on the gauss-curve.
        - Anything else will generate completely random pitches within the entire music range.
-    - `rhythm`: The algoruthm to use for rhythms. The `options.rhythm.smallest` and 
+    - `rhythm`: The algorithm to use for rhythms. The `options.rhythm.smallest` and 
     `options.rhythm.largest` options allow the user to specify the minimal and maximal
     duration of a note. This is respected by all algorithm.<br>Possible algorithms are:
        - `random`: A random rhythm out of the possible range.
@@ -90,11 +90,29 @@ The file contains of the following tree structure and fields:
        - Anything else will create a constant tempo of `options.rhythm.duration` notes
        (representations according to the MusicXML note types, or the corresponding fractions
        when less than one). If this option cannot be found, `quarter` will be used instead.
+    - `chord`: This is the algorithm that is being used in deciding how many notes to
+    play in a chord at a given time. The possible values are:
+       - `random`: Choose a random value in the inclusive range from `options.chord.min`
+       to `options.chord.max`.
+       - `weighted`: Give each value a certain percentage of occurring (by setting the
+       valid elements in `options.chord`). For instance:
+       ```
+       "chord": {
+           "2": 0.2,
+           "3": 0.1
+       }
+       ```
+       This can be read as: a two-note chord has a 20% chance of occurring, whilst a 3-
+       note chord has a 10% chance to appear. The missing 70% is appointed towards single
+       notes.<br>It is possible to set the value for a single note (key is `"1"`), but if the
+       percentages don't add up to 1, this value will be changed and a warning
+       will be shown.<br>If the sum of all these chances is greater than 1, a warning will
+       also be issued and all values will be normalized (divided by the sum).<br>
+       Missing values in this list will be mapped to `0`, except for a single note, as
+       mentioned above.
+       - All other values are mapped to generate chords of `options.chord.amount` notes.
     - `options`: An object, representing the additional options of the above-mentioned
     algorithms.
-        - `chord-ratio`: when this object is present, it represents the chance that a chord
-        of `n` notes is played. For instance, if this object is `{"1":0.5, "2":0.5}`, there
-        is a 50/50 chance of a single note, or a two-note chord.
     - `rest-ratio`: A floating point number, representing the approximated percentage of
       notes that should be turned into rests.<br>_(**Note:** This percentage is merely an 
       approximation and thus is not a precise representation of the exact percentage.)_

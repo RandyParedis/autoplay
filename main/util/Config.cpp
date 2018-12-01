@@ -216,7 +216,7 @@ namespace autoplay {
                     auto from = sty.get<std::string>("from", "default");
 
                     // For loop to prevent circular dependencies to link to one another
-                    for(int i = 0; i < m_styles.get_child("styles").size() && from != "default"; ++i) {
+                    for(unsigned int i = 0; i < m_styles.get_child("styles").size() && from != "default"; ++i) {
                         merge(sty, m_styles.get_child("styles." + from), true);
                         from = m_styles.get_child("styles." + from).get<std::string>("from", "default");
 
@@ -236,7 +236,7 @@ namespace autoplay {
                 auto from = sty.get<std::string>("from", "default");
 
                 // For loop to prevent circular dependencies to link to one another
-                for(int i = 0; i < m_styles.get_child("styles").size() && from != "default"; ++i) {
+                for(unsigned int i = 0; i < m_styles.get_child("styles").size() && from != "default"; ++i) {
                     merge(sty, m_styles.get_child("styles." + from), true);
                     from = m_styles.get_child("styles." + from).get<std::string>("from", "default");
 

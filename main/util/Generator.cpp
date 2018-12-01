@@ -12,7 +12,8 @@
 
 namespace autoplay {
     namespace util {
-        Generator::Generator(const Config& config) : m_config(config) {
+        Generator::Generator(const Config& config, const zz::log::LoggerPtr& logger)
+            : m_config(config), m_logger(logger) {
             // Set engine
             auto engine_name = m_config.conf<std::string>("engine");
             auto seed        = m_config.conf<unsigned long>("seed");
@@ -21,7 +22,6 @@ namespace autoplay {
 
         music::Score Generator::generate() {
             // Setup default values
-            // TODO: Randomize these
             auto          length     = (unsigned)m_config.conf<int>("length", 10); // Total amount of measures
             auto          parts      = m_config.conf_child("parts");
             unsigned long part_count = parts.size(); // Number of parts
@@ -39,7 +39,7 @@ namespace autoplay {
 
                 pt::ptree options;
                 options.put("stave", i);
-                options.put("_p1fn._reinit", true);
+                options.put("_reinit", true);
                 if(pt_part.count("generation") == 0) {
                     if(m_config.conf_child("generation").count("options") == 1) {
                         BOOST_FOREACH(auto& var, m_config.conf_child("generation.options")) {
@@ -54,6 +54,7 @@ namespace autoplay {
 
                 auto pitch_algo  = getPitchAlgorithm(pt_part.get<std::string>("generation.pitch", ""));
                 auto rhythm_algo = getRhythmAlgorithm(pt_part.get<std::string>("generation.rhythm", ""));
+                auto chord_algo  = getChordNoteCountAlgorithm(pt_part.get<std::string>("generation.chord", ""));
 
                 // Set Instrument(s)
                 bool percussion;
@@ -126,21 +127,7 @@ namespace autoplay {
                     }
 
                     // Ability to do chords
-                    int          num_notes = 1;
-                    const double q         = 1.0;
-                    const double y         = 4.0;
-                    if(pt_part.count("chord-ratio") == 1) {
-                        std::function<float(const double&)> func = [&pt_part](const double& f) -> float {
-                            return pt_part.get<float>("chord-ratio." + std::to_string((int)f), 0.0f);
-                        };
-                        num_notes = (int)Randomizer::pick_weighted(m_rnengine, q, y, q, func);
-                    } else if(m_config.conf_child("generation.options").count("chord-ratio") == 1) {
-                        std::function<float(const double&)> func = [this](const double& f) -> float {
-                            return m_config.conf<float>("generation.options.chord-ratio." + std::to_string((int)f),
-                                                        0.0f);
-                        };
-                        num_notes = (int)Randomizer::pick_weighted(m_rnengine, q, y, q, func);
-                    }
+                    int          num_notes = chord_algo(m_rnengine, prev.get(), conc, options);
                     music::Chord chord;
                     for(int nn = 0; nn < num_notes; ++nn) {
                         uint8_t pitch = pitch_algo(m_rnengine, prev.get(), conc, options);
@@ -165,6 +152,8 @@ namespace autoplay {
 
                     measure.append(chord);
                     j += duration;
+
+                    options.put("_reinit", false);
                 }
 
                 part->setMeasures(measure);
@@ -227,7 +216,7 @@ namespace autoplay {
         Generator::getPitchAlgorithm(std::string algo) const {
             // Get algorithm variables
             if(algo.empty()) {
-                algo = m_config.conf<std::string>("generation.pitch");
+                algo = m_config.conf<std::string>("generation.pitch", "random");
             }
 
             m_config.getLogger()->debug("Using Pitch Algorithm '{}'", algo);
@@ -253,7 +242,6 @@ namespace autoplay {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto res = pitch1FNoise(gen, pt);
-                    pt.put("_p1fn._reinit", false);
                     return res;
                 };
             } else if(algo == "centralized") {
@@ -295,7 +283,7 @@ namespace autoplay {
         Generator::getRhythmAlgorithm(std::string algo) const {
             // Get algorithm variables
             if(algo.empty()) {
-                algo = m_config.conf<std::string>("generation.rhythm");
+                algo = m_config.conf<std::string>("generation.rhythm", "constant");
             }
 
             m_config.getLogger()->debug("Using Rhythm Algorithm '{}'", algo);
@@ -320,6 +308,82 @@ namespace autoplay {
                     try {
                         return music::Note::DURATION.at(rh);
                     } catch(std::exception& e) { return 0.25f; }
+                };
+            }
+        }
+
+        std::function<int(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt)>
+        Generator::getChordNoteCountAlgorithm(std::string algo) const {
+            // Get algorithm variables
+            if(algo.empty()) {
+                algo = m_config.conf<std::string>("generation.chord", "constant");
+            }
+
+            m_config.getLogger()->debug("Using Chord Note Count Algorithm '{}'", algo);
+
+            if(algo == "random") {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> int {
+                    auto min = pt.get<int>("chord.min", 1);
+                    auto max = pt.get<int>("chord.max", 1);
+                    return Randomizer::pick_uniform(gen, min, max + 1);
+                };
+            } else if(algo == "weighted") {
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
+                              pt::ptree& pt) -> int {
+                    static std::map<int, float> mapping;
+                    if(pt.get<bool>("_reinit", false)) {
+                        mapping.clear();
+                    }
+                    if(mapping.empty()) {
+                        float sum = 0.0f;
+                        BOOST_FOREACH(const auto& var, pt.get_child("chord")) {
+                            auto s = var.second.get<float>("");
+                            sum += s;
+                            mapping.insert({std::stoi(var.first), s});
+                        }
+
+                        int min = mapping.begin()->first;
+
+                        // Fix chances if required
+                        if(sum > 1.0f) { // Normalize
+                            m_logger->warn("Sum of all weighted elements exceeds 1! Normalizing the values...");
+                            for(auto& kv : mapping) {
+                                kv.second /= sum;
+                            }
+                            m_logger->warn("New values:");
+                            for(const auto& kv : mapping) {
+                                m_logger->warn("\t{} --> {}", kv.first, kv.second);
+                            }
+                        } else if(sum < 1.0f) {
+                            float one = 1.0f - sum;
+                            if(mapping.count(1) == 1) {
+                                one += mapping.at(1);
+                                m_logger->warn(
+                                    "Invalid sum of {}. Changing chance that a single note occurs from {} to {}.", sum,
+                                    mapping.at(1), one);
+                            }
+                            mapping[1] = one;
+                            if(min != 1) {
+                                for(int j = 2; j < min; ++j) {
+                                    mapping[j] = 0.0f;
+                                }
+                            }
+                        }
+                    }
+
+                    std::map<int, float> map_ref{mapping};
+
+                    std::function<float(const int&)> func = [&map_ref](const int& val) -> float {
+                        if(map_ref.count(val) == 1) {
+                            return map_ref.at(val);
+                        }
+                        return 0.0f;
+                    };
+                    return Randomizer::pick_weighted(gen, mapping.begin()->first, mapping.rbegin()->first + 1, 1, func);
+                };
+            } else {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> int {
+                    return pt.get<int>("chord.amount", 1);
                 };
             }
         }
@@ -444,7 +508,7 @@ namespace autoplay {
             static uint8_t state = 0;
             static std::vector<std::pair<uint8_t, uint8_t>> dice{num_dice, {0, 0}};
 
-            if(pt.get<bool>("_p1fn._reinit", false)) {
+            if(pt.get<bool>("_reinit", false)) {
                 state = 0;
                 dice.assign(num_dice, {0, 0});
 
