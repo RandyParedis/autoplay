@@ -34,6 +34,8 @@ defined beat-type.
 - `time`: The time signature of the score. Contains two fields:
   - `beats`: The amount of beats per measure.
   - `type`: The beat-type of the score.
+- `chord-progression`: A string, containing the chord progression per measure, separated
+by a `-` sign.
 - `from`: This helper field allows a user to simply identify with which style to merge. 
 
 None of the above fields are required. If they are not set, the value of the default style
@@ -46,7 +48,8 @@ of:
 - `chromatic` or `dodecatonic`: All 12 notes/pitches of a certain octave are used.
 - `diatonic.major`: The general `major` scale.
 - `diatonic.minor`: The general `minor` scale.
-- `whole-tone` or `hexatonic`: There are only whole tones in between each step in the scale.
+- `whole-tone` or `hexatonic`: There    - Add `chord-progression` option, containing a sequence of chords
+    (as list of chords, joined to a string, using the `-`) are only whole tones in between each step in the scale.
 - `heptatonic.melodic`: The melodic minor scale.
 - `heptatonic.harmonic`: The harmonic minor scale, commonly used from the 17th century to the
 20th century.

@@ -22,7 +22,7 @@
         "3": 0.1
       }
     },
-    "rest-ratio": 0.05
+    "rest-ratio": 0
   },
   "export": {
     "filename": "music.xml",
@@ -31,8 +31,8 @@
     "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
   },
   "style": {
-    "from": "C-major",
-    "bpm": 160
+    "bpm": 160,
+    "chord-progression": "E-B-C#-A"
   },
   "parts": [
     {

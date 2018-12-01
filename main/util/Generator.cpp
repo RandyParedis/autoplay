@@ -5,7 +5,9 @@
 #include "Generator.h"
 #include "Randomizer.h"
 
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 #include <bitset>
 #include <sstream>
@@ -32,6 +34,12 @@ namespace autoplay {
 
             // Get Logger
             auto logger = m_config.getLogger();
+
+            std::vector<std::string> chord_progression;
+            auto chord_progression_string = m_config.conf<std::string>("style.chord-progression", "");
+            if(!chord_progression_string.empty()) {
+                boost::split(chord_progression, chord_progression_string, boost::is_any_of("-"));
+            }
 
             music::Score score{m_config.conf_child("export")};
             for(unsigned int i = 0; i < part_count; ++i) {
@@ -108,7 +116,8 @@ namespace autoplay {
                 part->setInstrumentName(pt_part.get<std::string>("name", ""));
 
                 std::shared_ptr<music::Chord> prev;
-                for(unsigned int j = 0; j < length * measure.max_length();) {
+                auto                          mlen = measure.max_length();
+                for(unsigned int j = 0; j < length * mlen;) {
                     std::vector<music::Chord*> conc = {};
                     for(unsigned int p = 0; p < i; ++p) {
                         music::Chord* n = score.getParts().at(p)->at(j);
@@ -122,15 +131,22 @@ namespace autoplay {
                     auto duration = (unsigned)(divisions * 4 * rh);
 
                     // Prevent overflowing over final measure
-                    if(j + duration > length * measure.max_length()) {
-                        duration = length * measure.max_length() - j;
+                    if(j + duration > length * mlen) {
+                        duration = length * mlen - j;
                     }
 
                     // Ability to do chords
-                    int          num_notes = chord_algo(m_rnengine, prev.get(), conc, options);
+                    int num_notes = chord_algo(m_rnengine, prev.get(), conc, options);
+
                     music::Chord chord;
                     for(int nn = 0; nn < num_notes; ++nn) {
                         uint8_t pitch = pitch_algo(m_rnengine, prev.get(), conc, options);
+
+                        // Remap the percussion depending on the chord progression
+                        if(!percussion && !chord_progression.empty() && j % mlen == 0) {
+                            std::string value = chord_progression.at((j / mlen) % chord_progression.size());
+                            pitch             = remapPitch(pitch, value, clef.range());
+                        }
 
                         if(chord.in(pitch)) {
                             --nn;
@@ -157,35 +173,12 @@ namespace autoplay {
                 }
 
                 part->setMeasures(measure);
-                auto picked = Randomizer::pick_uniform<float>(m_rnengine, 0.0f, 1.0f);
 
                 // Change the last Note to the root note with a chance of style.chance
-                if(!percussion && picked <= m_config.conf<float>("style.chance")) {
-                    music::Note::Semitone s;
-
+                if(!percussion) {
                     auto c = part->back()->back().bottom()->getPitch();
-                    auto r = music::Note::pitchRepr(c);
-                    auto p = music::Note::splitPitch(r, s);
-
-                    // Find nearest root note.
-                    //  To do this, there are 3 possibilities: same octave, or one octave up or down.
-                    auto p1 = music::Note::pitch(m_config.conf<std::string>("style.root") + std::to_string(p.second));
-                    auto p2 =
-                        music::Note::pitch(m_config.conf<std::string>("style.root") + std::to_string(p.second - 1));
-                    auto p3 =
-                        music::Note::pitch(m_config.conf<std::string>("style.root") + std::to_string(p.second + 1));
-                    auto ap1 = std::abs(c - p1);
-                    auto ap2 = std::abs(c - p2);
-                    auto ap3 = std::abs(c - p3);
-                    if(ap1 < ap2 && ap1 < ap3) {
-                        part->back()->back().bottom()->setPitch(p1);
-                    } else if(ap2 < ap1 && ap2 < ap3) {
-                        part->back()->back().bottom()->setPitch(p2);
-                    } else if(ap3 < ap2 && ap3 < ap1) {
-                        part->back()->back().bottom()->setPitch(p3);
-                    } else {
-                        part->back()->back().bottom()->setPitch(p1);
-                    }
+                    part->back()->back().bottom()->setPitch(
+                        remapPitch(c, m_config.conf<std::string>("style.root"), clef.range()));
                 }
 
                 // Generate random rests (for this part)
@@ -461,6 +454,39 @@ namespace autoplay {
             return clef.range();
         }
 
+        uint8_t Generator::remapPitch(uint8_t pitch, const std::string& to, const std::pair<uint8_t, uint8_t>& range) {
+            auto picked = Randomizer::pick_uniform<float>(m_rnengine, 0.0f, 1.0f);
+
+            if(picked <= m_config.conf<float>("style.chance")) {
+                music::Note::Semitone s;
+
+                auto r = music::Note::pitchRepr(pitch);
+                auto p = music::Note::splitPitch(r, s);
+
+                // Find nearest "to" pitch.
+                //  To do this, there are 3 possibilities: same octave, or one octave up or down.
+                //  But, we have to be aware of the range constraint that has been set on the remapping!
+                std::vector<uint8_t> pitches;
+                for(const auto& i : {-1, 0, 1}) {
+                    auto o = music::Note::pitch(to + std::to_string(p.second + i));
+                    if(o >= range.first && o <= range.second) {
+                        pitches.emplace_back(o);
+                    }
+                }
+                if(!pitches.empty()) {
+                    uint8_t smallest = pitches.at(0);
+                    for(const auto& o : pitches) {
+                        if(std::abs(pitch - o) < std::abs(pitch - smallest)) {
+                            smallest = o;
+                        }
+                    }
+                    pitch = smallest;
+                }
+            }
+
+            return pitch;
+        }
+
         uint8_t Generator::pitchBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Chord* prev,
                                                std::vector<autoplay::music::Chord*>& conc, const pt::ptree& pt) const {
             auto stave = pt.get<int>("stave", 0);
@@ -541,6 +567,36 @@ namespace autoplay {
             state = (uint8_t)((state + 1) % num_states);
 
             return pitches.at(sum);
+        }
+
+        uint8_t Generator::pitchAccompaniment(const std::string& schematic, const std::string& chordname,
+                                              unsigned int timestep, unsigned int measure_length) const {
+            // Check the length of the schematic
+            auto  sl = (unsigned int)schematic.length();
+            float sm = std::log2((float)sl);
+            if(std::floor(sm) - sm < 0.0f) {
+                throw std::invalid_argument(
+                    "The schematic for the accompaniment has an invalid length. A power of 2 was expected, " +
+                    std::to_string(sl) + " was obtained.");
+            }
+
+            // Find the separation/group point of each new "note"
+            unsigned int group = measure_length / sl;
+            timestep %= measure_length;
+            auto idx = (unsigned int)std::floor((float)timestep / group);
+
+            char letter = schematic.at(idx);
+            switch(letter) {
+            case 'A': break;
+
+            case 'B': break;
+
+            case 'C': break;
+
+            default:
+                throw std::invalid_argument("The schematic contains an invalid letter '" + std::to_string(letter) +
+                                            "'. Only A, B and C are allowed!");
+            }
         }
 
         float Generator::rhythmBrownianMotion(autoplay::util::RNEngine& gen, autoplay::music::Chord* prev,

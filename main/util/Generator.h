@@ -74,6 +74,16 @@ namespace autoplay {
             std::pair<uint8_t, uint8_t> staveRange(int stave) const;
 
             /**
+             * Generate a new pitch according to its chance of occurring and map it to a certain Chord name
+             * @param pitch The pitch to change
+             * @param to    The letter of the Chord to change the pitch to; e.g. C, A#...
+             * @param range The range to comply with the remapping.
+             * @return A new pitch to map.
+             */
+            uint8_t remapPitch(uint8_t pitch, const std::string& to, const std::pair<uint8_t, uint8_t>& range);
+
+        private:
+            /**
              * A pitch generation algorithm, based upon the movements of small particles that are randomly bombarded by
              * molecules of the surrounding medium.
              * @param gen   The generator object.
@@ -96,6 +106,18 @@ namespace autoplay {
              * @return A new pitch.
              */
             uint8_t pitch1FNoise(RNEngine& gen, const pt::ptree& pt) const;
+
+            /**
+             * A pitch generation algorithm that tries to generate a good-sounding accompaniment of the played music.
+             * @param schematic         The string, containing the accompaniment schematic.
+             * @param chordname         The chord to generate accompaniment for. This must be taken from the chord
+             *                          progression.
+             * @param timestep          The moment when the Chord needs to be played.
+             * @param measure_length    The duration of a current measure.
+             * @return  The new pitch to be played.
+             */
+            uint8_t pitchAccompaniment(const std::string& schematic, const std::string& chordname,
+                                       unsigned int timestep, unsigned int measure_length) const;
 
             /**
              * A rhythm generation algorithm, based upon the movements of small particles that are randomly bombarded by

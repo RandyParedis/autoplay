@@ -4,12 +4,15 @@ This file describes all planned features to be added in the future
 - Algorithms
     - Melodic algorithms
         - Accompaniment
+            - Uses a repetition schema / arrangement option.
+            (based on [this site](https://chordchord.com/))
         - Centralized
         - (Gaussian) Voicing
         - Markov Chains
         - ...
     - Rhythmic algorithms
         - 1/f Noise
+        - Accompaniment
         - Most Common Structures (MCS)
         - Markov Chains
         - ...
@@ -20,12 +23,17 @@ This file describes all planned features to be added in the future
     - _(Custom algorithm parsing)_
 - MidiPlayer
     - _(Force playing at all times)_
+- Styles
+    - Add styles:
+        - `Boogie`: `C-C-F-C-G-F-C`
+        - `Pop`: `E-B-C#-A`
 - Config
     - Make it so the execution does not break on invalid input (preprocessing)
     - Allow `autoplayer` to be executed anywhere.
     - _(Ability to randomize anything)_
 - General Todo
     - Simple Installation
+    - Copyright Notices
     - Markov Chain Preparation
         - conversion from `MIDI`-files to `MusicXML`-files can be done on linux if `MuseScore 2` is installed via `musescore -o output.xml input.mid`
         - Add `MusicXML` note parser for pitch and rhythm.
