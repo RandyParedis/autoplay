@@ -241,7 +241,8 @@ namespace autoplay {
                     from = m_styles.get_child("styles." + from).get<std::string>("from", "default");
 
                     if(i == m_styles.get_child("styles").size() - 1) {
-                        m_logger->warn("Circular Style dependency suspected for '{}' and '{}'.", from, style_name);
+                        m_logger->warn("Circular Style dependency suspected for '{}' and '{}'.", from,
+                                       sty.get<std::string>("from", ""));
                     }
                 }
                 merge(sty, m_styles.get_child("styles.default"), true);
