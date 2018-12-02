@@ -1,6 +1,19 @@
-//
-// Created by red on 27/10/18.
-//
+/*
+ *  This is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *  The software is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  You should have received a copy of the GNU General Public License
+ *  along with the software. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  Copyright 2018, Randy Paredis
+ *
+ *  Created on 27/10/2018
+ */
 
 #ifndef AUTOPLAY_MIDIPLAYER_H
 #define AUTOPLAY_MIDIPLAYER_H
@@ -47,8 +60,7 @@ namespace autoplay {
              * Log all output port information.
              * @param config    The Config of the system
              *
-             * @note    The implementation of this function is based upon the midiprobe
-             * file from RtMidi,
+             * @note    The implementation of this function is based upon the midiprobe file from RtMidi,
              *          created by Gary Scavone, 2003-2012.
              */
             void probe(const util::Config& config) const;
