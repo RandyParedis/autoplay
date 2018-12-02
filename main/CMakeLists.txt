@@ -19,7 +19,13 @@ set(autoplay_SRC
         util/RNEngine.cpp
         util/RNEngine.h
         music/Clef.cpp
-        music/Score.cpp)
+        music/Score.cpp
+
+        markov/NamedMatrix.cpp
+        markov/NamedMatrix.h
+        markov/SpecialQueue.h
+        markov/MarkovChain.cpp
+        markov/MarkovChain.h)
 
 add_library(autoplay ${autoplay_SRC})
 

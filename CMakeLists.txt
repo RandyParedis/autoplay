@@ -3,7 +3,7 @@ set(PROJECT_NAME autoplay)
 set(AUTOPLAY_VERSION "0.1.4")
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS ")
 add_definitions(-DAUTOPLAY_VERSION=${AUTOPLAY_VERSION})
 
 if(APPLE)
@@ -21,7 +21,7 @@ set(BIN_INSTALL_LOCATION     bin)
 set(CONFIG_INSTALL_LOCATION  config)
 
 add_subdirectory(${DEPENDENCY_DIR})
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 set(TRNG_LOCATION /opt/trng CACHE FILEPATH "")
 message(STATUS "TRNG location: ${TRNG_LOCATION}")

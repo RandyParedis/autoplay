@@ -15,6 +15,7 @@
  *  Created on 05/10/2018
  */
 
+#include "markov/MarkovChain.h"
 #include "music/Instrument.h"
 #include "music/MIDIPlayer.h"
 #include "music/Note.h"
@@ -36,6 +37,12 @@
 using namespace autoplay;
 
 int main(int argc, char** argv) {
+    // Markov Chain
+    // auto m3 = markov::MarkovChain::generateMatrix(".");
+    // m3.at(0).toCSV("pitch.csv");
+    // m3.at(1).toCSV("rhythm.csv");
+    // m3.at(2).toCSV("chord.csv");
+
     // Create the Logger
     util::Config config{argc, argv};
     auto         logger = config.getLogger();

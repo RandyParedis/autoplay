@@ -135,3 +135,4 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 28-11-2018 | Fixed MidiPlayer to a better algorithm.
 | 01-12-2018 | Added better chord generation support (or rather: made it better).<br>Also added `chord-progression` as a style option.
 | 02-12-2018 | Added **Accompaniment** as a pitch algorithm.
+| 02-12-2018 | Started work on **Markov Chains**.

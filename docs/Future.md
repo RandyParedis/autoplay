@@ -30,7 +30,5 @@ This file describes all planned features to be added in the future
     - Simple Installation
     - Markov Chain Preparation
         - conversion from `MIDI`-files to `MusicXML`-files can be done on linux if `MuseScore 2` is installed via `musescore -o output.xml input.mid`
-        - Add `MusicXML` note parser for pitch and rhythm.
-        - Add Markov Chain file extension (csv?)
         - Do some machine learning (add commandline arguments for this, so it can be done on studento? New executable?)
         - Interpret Markov Chain files
