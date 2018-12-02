@@ -134,3 +134,4 @@ compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home dire
 | 25-11-2018 | Config file now requires `styles.json`, `instruments.json` and `clefs.json`.<br>Also added automatic beaming of notes of a type less than a quarter note.
 | 28-11-2018 | Fixed MidiPlayer to a better algorithm.
 | 01-12-2018 | Added better chord generation support (or rather: made it better).<br>Also added `chord-progression` as a style option.
+| 02-12-2018 | Added **Accompaniment** as a pitch algorithm.

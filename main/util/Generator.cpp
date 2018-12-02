@@ -139,13 +139,21 @@ namespace autoplay {
                     int num_notes = chord_algo(m_rnengine, prev.get(), conc, options);
 
                     music::Chord chord;
+                    if(!chord_progression.empty()) {
+                        options.put("_currchord", chord_progression.at((j / mlen) % chord_progression.size()));
+                    }
+                    options.put("j", j);
+                    options.put("mlen", mlen);
                     for(int nn = 0; nn < num_notes; ++nn) {
                         uint8_t pitch = pitch_algo(m_rnengine, prev.get(), conc, options);
 
                         // Remap the percussion depending on the chord progression
                         if(!percussion && !chord_progression.empty() && j % mlen == 0) {
                             std::string value = chord_progression.at((j / mlen) % chord_progression.size());
-                            pitch             = remapPitch(pitch, value, clef.range());
+                            if(value.at(value.length() - 1) == 'm') {
+                                value = value.substr(0, value.length() - 1);
+                            }
+                            pitch = remapPitch(pitch, value, clef.range());
                         }
 
                         if(chord.in(pitch)) {
@@ -249,6 +257,18 @@ namespace autoplay {
                         p2.push_back((int)v);
                     }
                     return (uint8_t)Randomizer::gaussian(gen, p2);
+                };
+            } else if(algo == "accompaniment") {
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    auto schematic = pt.get<std::string>("pitch.schematic");
+                    auto stave     = pt.get<int>("stave");
+                    auto range     = staveRange(stave);
+                    auto j         = pt.get<unsigned int>("j");
+                    auto mlen      = pt.get<unsigned int>("mlen");
+                    auto chord     = pt.get<std::string>("_currchord", m_config.conf<std::string>("style.root", "C"));
+
+                    return pitchAccompaniment(schematic, chord, j, mlen, range);
                 };
             } /*else if(algo == "gaussian-voicing") {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
@@ -569,8 +589,15 @@ namespace autoplay {
             return pitches.at(sum);
         }
 
-        uint8_t Generator::pitchAccompaniment(const std::string& schematic, const std::string& chordname,
-                                              unsigned int timestep, unsigned int measure_length) const {
+        uint8_t Generator::pitchAccompaniment(const std::string& schematic, std::string chordname,
+                                              unsigned int timestep, unsigned int measure_length,
+                                              const std::pair<uint8_t, uint8_t>&  range) const {
+            bool minor = false;
+            if(chordname.at(chordname.length() - 1) == 'm') {
+                minor     = true;
+                chordname = chordname.substr(0, chordname.length() - 1);
+            }
+
             // Check the length of the schematic
             auto  sl = (unsigned int)schematic.length();
             float sm = std::log2((float)sl);
@@ -585,13 +612,54 @@ namespace autoplay {
             timestep %= measure_length;
             auto idx = (unsigned int)std::floor((float)timestep / group);
 
+            uint8_t min   = range.first;
+            bool    found = false;
+            for(uint8_t i = 0; i < range.second - range.first; ++i) {
+                music::Note::Semitone s;
+                std::string           repr;
+                repr += music::Note::splitPitch(music::Note::pitchRepr(min + i), s).first;
+                if(s == music::Note::Semitone::SHARP) {
+                    repr += '#';
+                } else if(s == music::Note::Semitone::FLAT) {
+                    repr += 'b';
+                }
+
+                // Cast to a pitch in the first octave to check comparison between flats and sharps
+                if(music::Note::pitch(repr + std::to_string(1)) == music::Note::pitch(chordname + std::to_string(1))) {
+                    min += i;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                throw std::invalid_argument("Impossible to find the chord " + chordname + " in the range.");
+            }
+
             char letter = schematic.at(idx);
             switch(letter) {
-            case 'A': break;
+            case 'A': return min;
 
-            case 'B': break;
+            case 'B':
+                if(minor) {
+                    if(min + (uint8_t)3 < range.second) {
+                        return min + (uint8_t)3;
+                    }
+                    m_logger->error("The letter 'B' in the schematic falls outside of the range. Returning 'A'.");
+                    return min;
+                } else {
+                    if(min + (uint8_t)4 < range.second) {
+                        return min + (uint8_t)4;
+                    }
+                    m_logger->error("The letter 'B' in the schematic falls outside of the range. Returning 'A'.");
+                    return min;
+                }
 
-            case 'C': break;
+            case 'C':
+                if(min + (uint8_t)7 < range.second) {
+                    return min + (uint8_t)7;
+                }
+                m_logger->error("The letter 'C' in the schematic falls outside of the range. Returning 'A'.");
+                return min;
 
             default:
                 throw std::invalid_argument("The schematic contains an invalid letter '" + std::to_string(letter) +

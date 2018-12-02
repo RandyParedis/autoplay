@@ -81,6 +81,15 @@ The file contains of the following tree structure and fields:
        - `centralized`: Using the gaussian distribution, mapped on the stave range of
        the current stave, generate notes whose chance of being chosen corresponds with
        its value on the gauss-curve.
+       - `accompaniment`: Uses a very simple algorithm to generate good-sounding
+       music, based upon the `options.pitch.schematic` schema and the `style.chord-progression`
+       values. The schematic can be created/read as follows (it's based upon [this site](https://chordchord.com/)).
+       <br>It's a string of a power-2 length (e.g. `1`, `2`, `4`, `8`...) containing a
+       sequence of `A`s, `B`s and/or `C`s. An `A` means the bottom note needs to be
+       used, a `B` says it'll use the chord's middle and `C` uses the top note.
+       The `B` takes minor chords into a count, meaning that any chord-progression
+       may contain a minor chord (e.g. `Em`).<br>_**Note:** This algorithm actually
+       does not use any randomization._
        - Anything else will generate completely random pitches within the entire music range.
     - `rhythm`: The algorithm to use for rhythms. The `options.rhythm.smallest` and 
     `options.rhythm.largest` options allow the user to specify the minimal and maximal

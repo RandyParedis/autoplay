@@ -114,10 +114,11 @@ namespace autoplay {
              *                          progression.
              * @param timestep          The moment when the Chord needs to be played.
              * @param measure_length    The duration of a current measure.
+             * @param range             The range in which the notes must be played.
              * @return  The new pitch to be played.
              */
-            uint8_t pitchAccompaniment(const std::string& schematic, const std::string& chordname,
-                                       unsigned int timestep, unsigned int measure_length) const;
+            uint8_t pitchAccompaniment(const std::string& schematic, std::string chordname, unsigned int timestep,
+                                       unsigned int measure_length, const std::pair<uint8_t, uint8_t>& range) const;
 
             /**
              * A rhythm generation algorithm, based upon the movements of small particles that are randomly bombarded by

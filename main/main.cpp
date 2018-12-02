@@ -35,17 +35,24 @@ int main(int argc, char** argv) {
     midiPlayer->probe(config);
 
     util::Generator generator{config, logger};
-    music::Score    score = generator.generate();
 
-    if(!config.isLeaf("export")) {
-        auto fname = config.conf<std::string>("export.filename");
-        logger->debug("Exporting Score to '{}'.", fname);
-        util::FileHandler::writeMusicXML(fname, score);
+    try {
+        music::Score score = generator.generate();
+
+        if(!config.isLeaf("export")) {
+            auto fname = config.conf<std::string>("export.filename");
+            logger->debug("Exporting Score to '{}'.", fname);
+            util::FileHandler::writeMusicXML(fname, score);
+        }
+
+        if(config.conf<bool>("play")) {
+            midiPlayer->play(score, config);
+        }
+
+        logger->info("Finished autoplayer");
+
+    } catch(std::exception& e) {
+        logger->fatal(e.what());
+        exit(EXIT_FAILURE);
     }
-
-    if(config.conf<bool>("play")) {
-        midiPlayer->play(score, config);
-    }
-
-    logger->info("Finished autoplayer");
 }

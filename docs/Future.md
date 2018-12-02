@@ -3,16 +3,11 @@ This file describes all planned features to be added in the future
 
 - Algorithms
     - Melodic algorithms
-        - Accompaniment
-            - Uses a repetition schema / arrangement option.
-            (based on [this site](https://chordchord.com/))
-        - Centralized
         - (Gaussian) Voicing
         - Markov Chains
         - ...
     - Rhythmic algorithms
         - 1/f Noise
-        - Accompaniment
         - Most Common Structures (MCS)
         - Markov Chains
         - ...
