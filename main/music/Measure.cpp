@@ -103,7 +103,9 @@ namespace autoplay {
                             }
 
                             // Append to measures
-                            m->m_notes.emplace_back(v[i]);
+                            if(v[i].getDuration() > 0) {
+                                m->m_notes.emplace_back(v[i]);
+                            }
                             if(i < v.size() - 1) {
                                 res.emplace_back(std::make_shared<Measure>(m_clef, m_time, m_divisions, m_fifths));
                                 res.back()->setBPM(m_bpm);

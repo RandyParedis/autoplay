@@ -11,12 +11,16 @@
 
   "generation": {
     "pitch": "brownian-motion",
-    "rhythm": "random",
-    "chord": "weighted",
+    "rhythm": "brownian-motion",
+    "chord": "random",
     "options": {
+      "pitch": {
+        "schematic": "ABBACBBCABCAABBC"
+      },
       "rhythm": {
         "smallest": "eighth",
-        "largest": "half"
+        "largest": "half",
+        "duration": "16th"
       },
       "chord": {
         "3": 0.1
@@ -32,7 +36,7 @@
   },
   "style": {
     "bpm": 160,
-    "chord-progression": "E-B-C#-A"
+    "chord-progression": "C-F-C-G-F"
   },
   "parts": [
     {

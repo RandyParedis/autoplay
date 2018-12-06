@@ -274,42 +274,42 @@ namespace autoplay {
                                 }
 
                                 // Set beams
-                                for(unsigned int b = 1; b < 6; ++b) {
-                                    int ref     = measure->getDivisions() / (int)std::pow(2, b - 1);
-                                    int curdur  = note->getDuration();
-                                    int prevdur = -1;
-                                    if(_v_ == 0) {
-                                        if(_c_ != 0) {
-                                            auto x = measure->getNotes()
-                                                         .at(_c_ - 1)
-                                                         .splitByDivisions(prev->getDivisions(), true)
-                                                         .back();
-                                            if(!x.isPause()) {
-                                                prevdur = x.getDuration();
-                                            }
-                                        }
-                                    } else {
-                                        if(!vec.at(_v_ - 1).isPause()) {
-                                            prevdur = vec.at(_v_ - 1).getDuration();
+                                int curdur  = note->getDuration();
+                                int prevdur = -1;
+                                if(_v_ == 0) {
+                                    if(_c_ != 0) {
+                                        auto x = measure->getNotes()
+                                                     .at(_c_ - 1)
+                                                     .splitByDivisions(prev->getDivisions(), true)
+                                                     .back();
+                                        if(!x.isPause()) {
+                                            prevdur = x.getDuration();
                                         }
                                     }
+                                } else {
+                                    if(!vec.at(_v_ - 1).isPause()) {
+                                        prevdur = vec.at(_v_ - 1).getDuration();
+                                    }
+                                }
 
-                                    int nextdur = -1;
-                                    if(_v_ == vec.size() - 1) {
-                                        if(_c_ != measure->getNotes().size() - 1) {
-                                            auto x = measure->getNotes()
-                                                         .at(_c_ + 1)
-                                                         .splitByDivisions(prev->getDivisions(), true)
-                                                         .front();
-                                            if(!x.isPause()) {
-                                                nextdur = x.getDuration();
-                                            }
-                                        }
-                                    } else {
-                                        if(!vec.at(_v_ + 1).isPause()) {
-                                            nextdur = vec.at(_v_ + 1).getDuration();
+                                int nextdur = -1;
+                                if(_v_ == vec.size() - 1) {
+                                    if(_c_ != measure->getNotes().size() - 1) {
+                                        auto x = measure->getNotes()
+                                                     .at(_c_ + 1)
+                                                     .splitByDivisions(prev->getDivisions(), true)
+                                                     .front();
+                                        if(!x.isPause()) {
+                                            nextdur = x.getDuration();
                                         }
                                     }
+                                } else {
+                                    if(!vec.at(_v_ + 1).isPause()) {
+                                        nextdur = vec.at(_v_ + 1).getDuration();
+                                    }
+                                }
+                                for(unsigned int b = 1; b < 6; ++b) {
+                                    int ref = measure->getDivisions() / (int)std::pow(2, b - 1);
 
                                     if(curdur < ref && !(prevdur == -1 && nextdur == -1)) {
                                         pt::ptree beam;
