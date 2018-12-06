@@ -38,7 +38,7 @@ using namespace autoplay;
 
 int main(int argc, char** argv) {
     // Markov Chain
-    // auto m3 = markov::MarkovChain::generateMatrix(".");
+    // auto m3 = markov::MarkovChain::generateMatrices(".");
     // m3.at(0).toCSV("pitch.csv");
     // m3.at(1).toCSV("rhythm.csv");
     // m3.at(2).toCSV("chord.csv");
@@ -54,23 +54,23 @@ int main(int argc, char** argv) {
 
     util::Generator generator{config, logger};
 
-    // try {
-    music::Score score = generator.generate();
+    try {
+        music::Score score = generator.generate();
 
-    if(!config.isLeaf("export")) {
-        auto fname = config.conf<std::string>("export.filename");
-        logger->debug("Exporting Score to '{}'.", fname);
-        util::FileHandler::writeMusicXML(fname, score);
+        if(!config.isLeaf("export")) {
+            auto fname = config.conf<std::string>("export.filename");
+            logger->debug("Exporting Score to '{}'.", fname);
+            util::FileHandler::writeMusicXML(fname, score);
+        }
+
+        if(config.conf<bool>("play")) {
+            midiPlayer->play(score, config);
+        }
+
+        logger->info("Finished autoplayer");
+
+    } catch(std::exception& e) {
+        logger->fatal(e.what());
+        exit(EXIT_FAILURE);
     }
-
-    if(config.conf<bool>("play")) {
-        midiPlayer->play(score, config);
-    }
-
-    logger->info("Finished autoplayer");
-
-    // } catch(std::exception& e) {
-    //     logger->fatal(e.what());
-    //     exit(EXIT_FAILURE);
-    // }
 }

@@ -108,6 +108,20 @@ namespace autoplay {
             const std::vector<float>& at(const std::string& row) const;
 
             /**
+             * Fetch a row of the matrix.
+             * @param row       The row name to access.
+             * @return A row, by a pair, e.g. <column, row-element>
+             */
+            std::vector<std::pair<std::string, float>> get(const std::string& row);
+
+            /**
+             * Fetch a row of the matrix.
+             * @param row       The row name to access.
+             * @return A row, by a pair, e.g. <column, row-element>
+             */
+            const std::vector<std::pair<std::string, float>> get(const std::string& row) const;
+
+            /**
              * Compute the sum of a row
              * @param row   The name of the row to compute the sum for.
              * @return The sum of the row.

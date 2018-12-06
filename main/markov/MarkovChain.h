@@ -18,6 +18,7 @@
 #ifndef AUTOPLAY_MARKOVCHAIN_H
 #define AUTOPLAY_MARKOVCHAIN_H
 
+#include "../util/RNEngine.h"
 #include "NamedMatrix.h"
 
 #include <boost/filesystem.hpp>
@@ -33,13 +34,64 @@ namespace autoplay {
         class MarkovChain
         {
         public:
+            using State = std::string;
+
+            /**
+             * Constructor of a MarkovChain that is created from a CSV file.
+             * @param filename  The file to read from.
+             * @param engine    The random engine to use.
+             * @param begin     The initial State.
+             */
+            explicit MarkovChain(const std::string& filename, const util::RNEngine& engine,
+                                 const State& begin = "begin");
+
+            /**
+             * Constructor of a MarkovChain that is created from a NamedMatrix
+             * @param namedMatrix The matrix to create the chain from.
+             * @param engine    The random engine to use.
+             * @param begin     The initial State.
+             */
+            explicit MarkovChain(const NamedMatrix& namedMatrix, const util::RNEngine& engine,
+                                 const State& begin = "begin");
+
+            /**
+             * Resets the MarkovChain to its initial State.
+             */
+            inline void reset() { m_current = m_begin; }
+
+            /**
+             * Gets the current State of the chain.
+             * @return The State of the chain.
+             */
+            inline State getState() const { return m_current; }
+
+            /**
+             * Go to the next State.
+             * @return The new State.
+             */
+            State next();
+
+        private:
+            NamedMatrix    m_matrix;  ///< The transition matrix
+            util::RNEngine m_engine;  ///< The random engine to use
+            State          m_current; ///< The current State
+            State          m_begin;   ///< The begin/start State
+
+            /**
+             * Fetches a map of all possible States to go to.
+             * @return A map in the form of < State, chance to get there from current state >
+             */
+            std::map<State, float> fetchPossibilities() const;
+
+            /// Special functions for machine-learning itself
+        public:
             /**
              * Generate a matrix from a list of MusicXML files in a certain directory.
              * @param directory The directory to read from.
              * @param recursive When true, it continues to look for files in subdirectories.
              * @return A vector of three NamedMatrix that represent the Markov Chains.
              */
-            static std::vector<NamedMatrix> generateMatrix(const path& directory, bool recursive = true);
+            static std::vector<NamedMatrix> generateMatrices(const path& directory, bool recursive = true);
 
         private:
             /**
@@ -49,8 +101,8 @@ namespace autoplay {
              * @param matRhythm The rhythm matrix to update.
              * @param matChord  The chord matrix to update.
              */
-            static void generateMatrix(const std::string& filename, NamedMatrix& matPitch, NamedMatrix& matRhythm,
-                                       NamedMatrix& matChord);
+            static void generateMatrices(const std::string& filename, NamedMatrix& matPitch, NamedMatrix& matRhythm,
+                                         NamedMatrix& matChord);
         };
     }
 }

@@ -17,6 +17,7 @@
 
 #include "MarkovChain.h"
 #include "../util/FileHandler.h"
+#include "../util/Randomizer.h"
 #include "SpecialQueue.h"
 
 #include <boost/property_tree/xml_parser.hpp>
@@ -25,7 +26,42 @@
 namespace autoplay {
     namespace markov {
 
-        std::vector<NamedMatrix> MarkovChain::generateMatrix(const path& directory, bool recursive) {
+        MarkovChain::MarkovChain(const std::string& filename, const util::RNEngine& engine,
+                                 const MarkovChain::State& begin)
+            : m_engine(engine), m_current(begin), m_begin(begin) {
+            m_matrix = NamedMatrix::fromCSV(filename);
+        }
+
+        MarkovChain::MarkovChain(const markov::NamedMatrix& namedMatrix, const util::RNEngine& engine,
+                                 const MarkovChain::State& begin)
+            : m_matrix(namedMatrix), m_engine(engine), m_current(begin), m_begin(begin) {}
+
+        MarkovChain::State MarkovChain::next() {
+            auto poss = fetchPossibilities();
+
+            std::vector<MarkovChain::State> states;
+            for(const auto& p : poss) {
+                states.emplace_back(p.first);
+            }
+
+            std::function<float(const State&)> func = [&poss](const State& state) -> float { return poss.at(state); };
+
+            State s = util::Randomizer::pick_weighted(m_engine, states, func);
+
+            m_current = s;
+            return s;
+        }
+
+        std::map<MarkovChain::State, float> MarkovChain::fetchPossibilities() const {
+            auto vec = m_matrix.get(m_current);
+            std::map<MarkovChain::State, float> poss;
+            for(const auto& pr : vec) {
+                poss.insert(pr);
+            }
+            return poss;
+        }
+
+        std::vector<NamedMatrix> MarkovChain::generateMatrices(const path& directory, bool recursive) {
             if(!is_directory(directory)) {
                 throw std::runtime_error("The given path is not a directory.");
             }
@@ -47,7 +83,7 @@ namespace autoplay {
                             q.push(entry.path());
                         }
                     } else if(entry.path().extension().string() == ".xml") {
-                        generateMatrix(entry.path().string(), matPitch, matRhythm, matChord);
+                        generateMatrices(entry.path().string(), matPitch, matRhythm, matChord);
                     }
                 }
                 q.pop();
@@ -55,8 +91,8 @@ namespace autoplay {
             return {matPitch, matRhythm, matChord};
         }
 
-        void MarkovChain::generateMatrix(const std::string& filename, NamedMatrix& matPitch, NamedMatrix& matRhythm,
-                                         NamedMatrix& matChord) {
+        void MarkovChain::generateMatrices(const std::string& filename, NamedMatrix& matPitch, NamedMatrix& matRhythm,
+                                           NamedMatrix& matChord) {
             std::cout << "PATH: " << filename << std::endl;
 
             pt::ptree score;

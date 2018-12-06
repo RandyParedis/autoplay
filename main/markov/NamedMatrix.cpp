@@ -85,6 +85,22 @@ namespace autoplay {
 
         const std::vector<float>& NamedMatrix::at(const std::string& row) const { return m_matrix[m_rowmap.at(row)]; }
 
+        const std::vector<std::pair<std::string, float>> NamedMatrix::get(const std::string& row) const {
+            std::vector<std::pair<std::string, float>> res;
+            for(const auto& col : m_colmap) {
+                res.emplace_back(std::pair<std::string, float>(col.first, at(row, col.first)));
+            }
+            return res;
+        }
+
+        std::vector<std::pair<std::string, float>> NamedMatrix::get(const std::string& row) {
+            std::vector<std::pair<std::string, float>> res;
+            for(const auto& col : m_colmap) {
+                res.emplace_back(std::pair<std::string, float>(col.first, at(row, col.first)));
+            }
+            return res;
+        }
+
         float NamedMatrix::rowSum(unsigned long row) const {
             float sum = 0.0f;
             auto& r   = at(row);
