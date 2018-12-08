@@ -134,12 +134,26 @@ namespace autoplay {
              */
             music::Clef getClef(const std::string& name) const;
 
+            /**
+             * Check if the config for generating the Markov Chains is used.
+             * @return True if it is.
+             */
+            inline bool isMarkov() const { return !m_markov.empty(); }
+
+            /**
+             * Fetches the values for the Markov Chains
+             * @return A map, containing 4 keys: (directory, pitch, rhythm and chord)
+             */
+            inline std::map<std::string, std::string> getMarkov() const { return m_markov; }
+
         private:
             pt::ptree          m_ptree;       ///< The ptree that holds all configuration data
             pt::ptree          m_instruments; ///< The ptree that holds all Instruments
             pt::ptree          m_styles;      ///< The ptree that holds all styles
             pt::ptree          m_clefs;       ///< The ptree that holds all Clefs
             zz::log::LoggerPtr m_logger;      ///< The system logger that's used everywhere
+
+            std::map<std::string, std::string> m_markov; ///< Stores the markov data
         };
 
         template <typename T>

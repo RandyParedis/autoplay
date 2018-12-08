@@ -19,9 +19,12 @@
 #include "FileHandler.h"
 #include <version_config.h>
 
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+
+namespace fs = boost::filesystem;
 
 namespace autoplay {
     namespace util {
@@ -39,9 +42,16 @@ namespace autoplay {
             zz::log::LogConfig::instance().set_format("[%datetime][%level]\t%msg");
             m_logger = zz::log::get_logger("system_logger");
 
+            // Execute autoplay anywhere
+            fs::path exec          = fs::system_complete(argv[0]);
+            exec                   = exec.parent_path();
+            fs::path config_folder = exec / "../config";
+            config_folder          = boost::filesystem::canonical(config_folder);
+            std::string conf       = config_folder.string();
+
             // Read default configuration file
             FileHandler fileHandler;
-            std::string filename = "../config/default.json";
+            std::string filename = conf + "/default.json";
             try {
                 fileHandler.readConfig(filename);
                 m_ptree = *fileHandler.getRoot();
@@ -59,19 +69,28 @@ namespace autoplay {
             parser.add_opt_flag('v', "verbose", "how much logging should happen", &verbose);
             bool play;
             parser.add_opt_flag('p', "play", "should the music be played life", &play);
-            parser.add_opt_value<std::string>('c', "config", filename, "", "load a config file", "filename");
-            std::string instrument_file;
-            parser.add_opt_value<std::string>(
-                'i', "instruments", instrument_file, "",
-                "load an instrument config file; when omitted, the default instruments.json is used", "filename");
-            std::string styles_file;
-            parser.add_opt_value<std::string>(
-                's', "styles", styles_file, "",
-                "load a styles config file; when omitted, the default styles.json is used", "filename");
-            std::string clefs_file;
-            parser.add_opt_value<std::string>('k', "clefs", clefs_file, "",
-                                              "load a clefs config file; when omitted, the default clefs.json is used",
+            parser.add_opt_value<std::string>('c', "config", filename, filename, "load a config file ", "filename");
+
+            std::string instrument_file = conf + "/instruments.json";
+            parser.add_opt_value<std::string>('i', "instruments", instrument_file, instrument_file,
+                                              "load an instrument config file ", "filename");
+
+            std::string styles_file = conf + "/styles.json";
+            parser.add_opt_value<std::string>('s', "styles", styles_file, styles_file, "load a styles config file ",
                                               "filename");
+
+            std::string clefs_file = conf + "/clefs.json";
+            parser.add_opt_value<std::string>('k', "clefs", clefs_file, clefs_file, "load a clefs config file ",
+                                              "filename");
+
+            // Allow for Markov Training
+            std::vector<std::string> markov;
+            parser
+                .add_opt_value<std::vector<std::string>>(
+                    'm', "markov", markov, {}, "Do some Markov training on a given directory and output it to 3 files")
+                .set_type("directory file_pitch file_rhythm file_chord")
+                .set_min(4)
+                .set_max(4);
 
             parser.parse(argc, argv);
 
@@ -81,72 +100,68 @@ namespace autoplay {
                 exit(EXIT_FAILURE);
             }
 
-            if(!filename.empty()) {
-                FileHandler fh;
-                try {
-                    fh.readConfig(filename);
-                    auto mpt = *fh.getRoot();
-                    merge(m_ptree, mpt);
-                } catch(std::invalid_argument& e) { m_logger->error(e.what()); }
-            }
+            if(markov.empty()) {
+                if(!filename.empty()) {
+                    FileHandler fh;
+                    try {
+                        fh.readConfig(filename);
+                        auto mpt = *fh.getRoot();
+                        merge(m_ptree, mpt);
+                    } catch(std::invalid_argument& e) { m_logger->error(e.what()); }
+                }
 
-            if(m_ptree.count("verbose") == 1 && !verbose) {
-                verbose = m_ptree.get<bool>("verbose");
-            } else if(m_ptree.count("verbose") > 1) {
-                m_logger->error("Invalid amount of 'verbose' attributes found!");
-            }
+                if(m_ptree.count("verbose") == 1 && !verbose) {
+                    verbose = m_ptree.get<bool>("verbose");
+                } else if(m_ptree.count("verbose") > 1) {
+                    m_logger->error("Invalid amount of 'verbose' attributes found!");
+                }
 
-            if(m_ptree.count("play") == 1 && !play) {
-                play = m_ptree.get<bool>("play");
-            } else if(m_ptree.count("play") > 1) {
-                m_logger->error("Invalid amount of 'play' attributes found!");
-            }
+                if(m_ptree.count("play") == 1 && !play) {
+                    play = m_ptree.get<bool>("play");
+                } else if(m_ptree.count("play") > 1) {
+                    m_logger->error("Invalid amount of 'play' attributes found!");
+                }
 
-            if(m_ptree.count("instruments") == 1) {
-                instrument_file = m_ptree.get<std::string>("instruments");
-            } else if(m_ptree.count("instruments") > 1) {
-                m_logger->error("Invalid amount of 'instruments' attributes found!");
-            }
+                if(m_ptree.count("instruments") == 1) {
+                    instrument_file = m_ptree.get<std::string>("instruments");
+                } else if(m_ptree.count("instruments") > 1) {
+                    m_logger->error("Invalid amount of 'instruments' attributes found!");
+                }
 
-            if(m_ptree.count("styles") == 1) {
-                styles_file = m_ptree.get<std::string>("styles");
-            } else if(m_ptree.count("styles") > 1) {
-                m_logger->error("Invalid amount of 'styles' attributes found!");
-            }
+                if(m_ptree.count("styles") == 1) {
+                    styles_file = m_ptree.get<std::string>("styles");
+                } else if(m_ptree.count("styles") > 1) {
+                    m_logger->error("Invalid amount of 'styles' attributes found!");
+                }
 
-            if(m_ptree.count("clefs") == 1) {
-                clefs_file = m_ptree.get<std::string>("clefs");
-            } else if(m_ptree.count("clefs") > 1) {
-                m_logger->error("Invalid amount of 'clefs' attributes found!");
-            }
+                if(m_ptree.count("clefs") == 1) {
+                    clefs_file = m_ptree.get<std::string>("clefs");
+                } else if(m_ptree.count("clefs") > 1) {
+                    m_logger->error("Invalid amount of 'clefs' attributes found!");
+                }
 
-            if(!verbose) {
-                m_logger->set_level_mask(0x3c);
-            }
+                if(!verbose) {
+                    m_logger->set_level_mask(0x3c);
+                }
 
-            m_ptree.put("verbose", verbose);
-            m_ptree.put("play", play);
+                m_ptree.put("verbose", verbose);
+                m_ptree.put("play", play);
 
-            if(instrument_file.empty()) {
-                instrument_file = "../config/instruments.json";
-            }
-            loadInstruments(instrument_file);
+                loadInstruments(instrument_file);
+                loadStyles(styles_file);
+                loadClefs(clefs_file);
 
-            if(styles_file.empty()) {
-                styles_file = "../config/styles.json";
+                m_logger->debug("Parsed Options:");
+                if(!filename.empty()) {
+                    m_logger->debug("\tConfig File: ") << filename;
+                }
+                print_options(m_ptree, m_logger);
+            } else {
+                m_markov["directory"] = markov.at(0);
+                m_markov["pitch"]     = markov.at(1);
+                m_markov["rhythm"]    = markov.at(2);
+                m_markov["chord"]     = markov.at(3);
             }
-            loadStyles(styles_file);
-
-            if(clefs_file.empty()) {
-                clefs_file = "../config/clefs.json";
-            }
-            loadClefs(clefs_file);
-
-            m_logger->debug("Parsed Options:");
-            if(!filename.empty()) {
-                m_logger->debug("\tConfig File: ") << filename;
-            }
-            print_options(m_ptree, m_logger);
         }
 
         pt::ptree Config::conf_child(const std::string& path) const {

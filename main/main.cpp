@@ -32,45 +32,48 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define SLEEP(milliseconds) usleep((unsigned long)((milliseconds)*1000.0))
-
 using namespace autoplay;
 
 int main(int argc, char** argv) {
-    // Markov Chain
-    // auto m3 = markov::MarkovChain::generateMatrices(".");
-    // m3.at(0).toCSV("pitch.csv");
-    // m3.at(1).toCSV("rhythm.csv");
-    // m3.at(2).toCSV("chord.csv");
-
     // Create the Logger
     util::Config config{argc, argv};
     auto         logger = config.getLogger();
-    logger->info("Started autoplayer");
 
-    // Probe information
-    std::shared_ptr<music::MIDIPlayer> midiPlayer = music::MIDIPlayer::instance();
-    midiPlayer->probe(config);
+    if(config.isMarkov()) {
+        logger->info("Started Markov Chain Learning");
+        auto mv = config.getMarkov();
+        auto m3 = markov::MarkovChain::generateMatrices(mv.at("directory"));
+        m3.at(0).toCSV(mv.at("pitch"));
+        m3.at(1).toCSV(mv.at("rhythm"));
+        m3.at(2).toCSV(mv.at("chord"));
+        logger->info("Finished Markov Chain Learning");
+    } else {
+        logger->info("Started autoplayer");
 
-    util::Generator generator{config, logger};
+        // Probe information
+        std::shared_ptr<music::MIDIPlayer> midiPlayer = music::MIDIPlayer::instance();
+        midiPlayer->probe(config);
 
-    try {
-        music::Score score = generator.generate();
+        util::Generator generator{config, logger};
 
-        if(!config.isLeaf("export")) {
-            auto fname = config.conf<std::string>("export.filename");
-            logger->debug("Exporting Score to '{}'.", fname);
-            util::FileHandler::writeMusicXML(fname, score);
+        try {
+            music::Score score = generator.generate();
+
+            if(!config.isLeaf("export")) {
+                auto fname = config.conf<std::string>("export.filename");
+                logger->debug("Exporting Score to '{}'.", fname);
+                util::FileHandler::writeMusicXML(fname, score);
+            }
+
+            if(config.conf<bool>("play")) {
+                midiPlayer->play(score, config);
+            }
+
+            logger->info("Finished autoplayer");
+
+        } catch(std::exception& e) {
+            logger->fatal(e.what());
+            exit(EXIT_FAILURE);
         }
-
-        if(config.conf<bool>("play")) {
-            midiPlayer->play(score, config);
-        }
-
-        logger->info("Finished autoplayer");
-
-    } catch(std::exception& e) {
-        logger->fatal(e.what());
-        exit(EXIT_FAILURE);
     }
 }

@@ -3,11 +3,7 @@
   "play": false,
   "engine": "lcg64",
   "seed": 0,
-  "length": 25,
-
-  "instruments": "../config/instruments.json",
-  "styles": "../config/styles.json",
-  "clefs": "../config/clefs.json",
+  "length": 5,
 
   "generation": {
     "pitch": "brownian-motion",
