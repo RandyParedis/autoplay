@@ -21,7 +21,7 @@
 namespace autoplay {
     namespace music {
         std::pair<uint8_t, uint8_t> music::Clef::range() {
-            auto minmax = std::make_pair(0, 0);
+            auto minmax = std::make_pair<uint8_t, uint8_t>(0, 0);
             if(m_sign == 'G') {
                 std::vector<std::string> signs = {"E", "C", "A", "F", "D"};
                 unsigned long            idx   = (unsigned long)m_line - 1;

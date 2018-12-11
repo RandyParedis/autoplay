@@ -88,7 +88,7 @@ namespace autoplay {
             parser
                 .add_opt_value<std::vector<std::string>>(
                     'm', "markov", markov, {}, "Do some Markov training on a given directory and output it to 3 files")
-                .set_type("directory file_pitch file_rhythm file_chord")
+                .set_type("directory\nfile_pitch\nfile_rhythm\nfile_chord")
                 .set_min(4)
                 .set_max(4);
 

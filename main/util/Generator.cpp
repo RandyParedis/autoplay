@@ -57,6 +57,11 @@ namespace autoplay {
             music::Score score{m_config.conf_child("export")};
             for(unsigned int i = 0; i < part_count; ++i) {
                 auto pt_part = ptree_at(parts, i);
+                if(pt_part.count("generation") == 0) {
+                    pt_part.put_child("generation", m_config.conf_child("generation"));
+                } else {
+                    merge(pt_part.get_child("generation"), m_config.conf_child("generation"), true);
+                }
 
                 pt::ptree options;
                 options.put("stave", i);
@@ -170,7 +175,7 @@ namespace autoplay {
                         }
 
                         if(chord.in(pitch)) {
-                            --nn;
+                            // --nn; ///< Infinite loop possible!
                             continue;
                         }
 
@@ -203,10 +208,10 @@ namespace autoplay {
                 }
 
                 // Generate random rests (for this part)
-                auto rests = m_config.conf<float>("generation.rest-ratio", 0.0f);
-                if(pt_part.count("generation.rest-ratio") != 0) {
-                    rests = pt_part.get<float>("generation.rest-ratio", 0.0f);
-                }
+                auto rests = pt_part.get<float>("generation.rest-ratio", 0.0f);
+                // if(pt_part.count("generation.rest-ratio") != 0) {
+                //     rests = pt_part.get<float>("generation.rest-ratio", 0.0f);
+                // }
                 if(rests < 0.0f) {
                     logger->warn("The rest-ratio is less than 0. Changing it to 0.");
                     rests = std::fabs(rests);
@@ -532,9 +537,14 @@ namespace autoplay {
                                     .at((unsigned long)Randomizer::pick_uniform(gen, 0, (int)prev->getNotes().size()))
                                     ->getPitch();
                 auto it = std::find(pitches.begin(), pitches.end(), pitch);
-                if(it == pitches.end()) {
-                    throw std::invalid_argument("Note '" + std::to_string(pitch) + "' not in scale!");
-                }
+
+                /// Don't test if the pitch is out of range!
+                /// It shouldn't be, but the chord does not take the pitches into a count.
+                /// TODO: chord algorithm should take pitches into a count.
+                // if(it == pitches.end()) {
+                //     throw std::invalid_argument("Note '" + std::to_string(pitch) + "' not in scale!");
+                // }
+
                 auto idx = std::distance(pitches.begin(), it);
                 auto min = pt.get<long>("pitch.min", -3);
                 auto max = pt.get<long>("pitch.max", 3);

@@ -3,12 +3,12 @@
   "play": false,
   "engine": "lcg64",
   "seed": 0,
-  "length": 5,
+  "length": 25,
 
   "generation": {
     "pitch": "brownian-motion",
     "rhythm": "brownian-motion",
-    "chord": "random",
+    "chord": "weighted",
     "options": {
       "pitch": {
         "schematic": "ABBACBBCABCAABBC"
@@ -22,7 +22,7 @@
         "3": 0.1
       }
     },
-    "rest-ratio": 0
+    "rest-ratio": 0.1
   },
   "export": {
     "filename": "music.xml",
@@ -37,7 +37,12 @@
   "parts": [
     {
       "instrument": "Acoustic Grand Piano",
-      "clef": "Treble"
+      "clef": "Treble",
+      "generation": {
+        "pitch": "accompaniment",
+        "rhythm": "brownian-motion",
+        "chord": "random"
+      }
     }
   ]
 }

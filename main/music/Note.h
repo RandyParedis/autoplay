@@ -93,7 +93,7 @@ namespace autoplay {
              * Copy constructor
              * @param n The Note to copy
              */
-            Note(const Note& n) {
+            Note(const Note& n) : std::enable_shared_from_this<Note>(n) {
                 m_pitch        = n.m_pitch;
                 m_velocity_on  = n.m_velocity_on;
                 m_velocity_off = n.m_velocity_off;

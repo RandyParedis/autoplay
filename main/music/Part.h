@@ -47,7 +47,7 @@ namespace autoplay {
              * objects.
              */
             explicit Part(const std::vector<std::shared_ptr<Instrument>>& instruments, const MeasureList& measures = {})
-                : m_measures(measures), m_instruments(instruments), m_instrument_name("") {}
+                : m_measures(measures), m_instruments(instruments), m_instrument_name(""), m_lines(5) {}
 
             /**
              * Adds an Instrument
