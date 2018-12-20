@@ -18,6 +18,8 @@ This file describes all planned features to be added in the future
     - _(Custom algorithm parsing)_
 - MidiPlayer
     - _(Force playing at all times)_
+- Export
+    - Add export for [**LilyPond**](https://www.lilypond.org) (Music in e.g. TeX documents)
 - Styles
     - Add styles:
         - `Boogie`: `C-C-F-C-G-F-C`
@@ -30,8 +32,4 @@ This file describes all planned features to be added in the future
     - Markov Chain Preparation
         - conversion from `MIDI`-files to `MusicXML`-files can be done on linux if `MuseScore 2` is installed via `musescore -o output.xml input.mid`
         - Interpret Markov Chain files
-
-
-- Dependencies:
-    - Wait for zupply to send custom PR to fix some bugs (mainly an inconvenience).
     
