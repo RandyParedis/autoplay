@@ -10,3 +10,6 @@
     path = dependencies/zupply
     url = https://github.com/zhreshold/zupply.git
     ignore = untracked
+[submodule "wiki"]
+    path = wiki
+    url = https://github.com/RandyParedis/autoplay.wiki.git
