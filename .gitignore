@@ -1,2 +1,5 @@
-/cmake-build-*/*
-/.idea/*
+cmake-build-*/*
+.idea/*
+learning/musicxml/*
+learning/SOD/*
+learning/LOP_database_06_09_17/*
