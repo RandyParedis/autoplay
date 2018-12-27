@@ -203,8 +203,10 @@ namespace autoplay {
                 // Change the last Note to the root note with a chance of style.chance
                 if(!percussion) {
                     auto c = part->back()->back().bottom()->getPitch();
-                    part->back()->back().bottom()->setPitch(
-                        remapPitch(c, m_config.conf<std::string>("style.root"), clef.range()));
+                    if(!part->back()->back().bottom()->getTieEnd()) {
+                        part->back()->back().bottom()->setPitch(
+                                remapPitch(c, m_config.conf<std::string>("style.root"), clef.range()));
+                    }
                 }
 
                 // Generate random rests (for this part)
@@ -223,6 +225,9 @@ namespace autoplay {
                 auto amount = (unsigned int)std::round(ntcnt * rests);
                 for(unsigned int w = 0; w < amount; ++w) {
                     auto idx = (unsigned)Randomizer::pick_uniform(m_rnengine, 0, ntcnt - 1);
+                    if(part->noteAt(idx)->getTieStart() || part->noteAt(idx)->getTieEnd()) {
+                        continue;
+                    }
                     part->toPause(idx);
                 }
                 score.addPart(part);

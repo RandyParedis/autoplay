@@ -6,11 +6,12 @@ algorithms (`autoplayer` is the executable for it). The target of this project i
 automatically generate good melodies in a lovely rhythm with a gentle dynamic,
 using advanced programming techniques.
 
-For more information on how this project works, please take a look at the `docs` folder.
+For more information on how this project works, please take a look at the `wiki` pages.
 I'm sure you'll find what you're looking for there.
 
 ## Functionality
-By setting the right values and commandline arguments, you are currently able to generate okay-sounding multi-part scores and get a [MusicXML](https://www.musicxml.com/) representation of the score. At the moment, merely single-notes are generated per part.
+By setting the right values and commandline arguments, you are currently able to generate okay-sounding
+multi-part scores and get a [MusicXML](https://www.musicxml.com/) representation of the score.
 
 Triplet-like structures lie outside the scope of this project, wherefore they are not generated.
 
@@ -18,19 +19,20 @@ Triplet-like structures lie outside the scope of this project, wherefore they ar
 Because most people like lists, I've listed the possibilities of `autoplay` below.
 - Customizable!
 - Pseudo-random (with a wide range of possible engines)!
-- A wide range of pitch and rhythm generation algorithms!
+- A wide range of _pitch_, _rhythm_ and _chord note count_ generation algorithms!
 - Exports to MusicXML, a format used in many score-writing software!
 - Integratable in other projects!
 
 ## Execution
 To execute `autoplay`, one simply has to execute the executable `autoplayer`.
 This will allow the user to add certain flags and fetch some options. For more
-info, please execute `autoplayer` with the flag `-h` or `--help`.
+info, please execute `autoplayer` with the flag `-h` or `--help`, or take a look
+at the `Configuration` wiki.
 
 ## Installation
 The installation of the project is rather simple. Just clone this repository and compile
-via `cmake`. That's all there is to it. Oh, don't forget to clone the dependencies (
-submodules) as well.
+via `cmake`. That's all there is to it. Oh, don't forget to clone the dependencies
+(submodules) as well.
 
 ## Dependencies
 #### RtMidi 3.0.0

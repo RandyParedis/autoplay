@@ -66,22 +66,29 @@ namespace autoplay {
             parser.add_opt_version(-1, "version",
                                    "autoplay version " + getAutoplayVersion() + "\n\tCreated by Randy Paredis");
             bool verbose;
-            parser.add_opt_flag('v', "verbose", "how much logging should happen", &verbose);
+            parser.add_opt_flag('v', "verbose", "how much logging should happen", &verbose).set_once();
             bool play;
-            parser.add_opt_flag('p', "play", "should the music be played life", &play);
-            parser.add_opt_value<std::string>('c', "config", filename, filename, "load a config file ", "filename");
+            parser.add_opt_flag('p', "play", "should the music be played life", &play).set_once();
+            parser.add_opt_value<std::string>('c', "config", filename, filename, "load a config file ", "filename")
+                .set_once();
 
             std::string instrument_file = conf + "/instruments.json";
-            parser.add_opt_value<std::string>('i', "instruments", instrument_file, instrument_file,
-                                              "load an instrument config file ", "filename");
+            parser
+                .add_opt_value<std::string>('i', "instruments", instrument_file, instrument_file,
+                                            "load an instrument config file ", "filename")
+                .set_once();
 
             std::string styles_file = conf + "/styles.json";
-            parser.add_opt_value<std::string>('s', "styles", styles_file, styles_file, "load a styles config file ",
-                                              "filename");
+            parser
+                .add_opt_value<std::string>('s', "styles", styles_file, styles_file, "load a styles config file ",
+                                            "filename")
+                .set_once();
 
             std::string clefs_file = conf + "/clefs.json";
-            parser.add_opt_value<std::string>('k', "clefs", clefs_file, clefs_file, "load a clefs config file ",
-                                              "filename");
+            parser
+                .add_opt_value<std::string>('k', "clefs", clefs_file, clefs_file, "load a clefs config file ",
+                                            "filename")
+                .set_once();
 
             // Allow for Markov Training
             std::vector<std::string> markov;
@@ -90,7 +97,8 @@ namespace autoplay {
                     'm', "markov", markov, {}, "Do some Markov training on a given directory and output it to 3 files")
                 .set_type("directory\nfile_pitch\nfile_rhythm\nfile_chord")
                 .set_min(4)
-                .set_max(4);
+                .set_max(4)
+                .set_once();
 
             parser.parse(argc, argv);
 
