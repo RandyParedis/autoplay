@@ -79,11 +79,9 @@ namespace autoplay {
                     q.pop();
                     continue;
                 }
-                std::cout << "QUEUE: " << q.size() << ", PATH: " << p.string() << std::endl;
                 for(auto& entry : boost::make_iterator_range(directory_iterator(p), {})) {
                     if(is_directory(entry.path())) {
                         if(recursive) {
-                            std::cout << "APPENDING " << entry.path().string() << std::endl;
                             q.push(entry.path());
                         }
                     } else if(entry.path().extension().string() == ".xml") {
@@ -106,8 +104,7 @@ namespace autoplay {
                 std::cerr << "error in " << ex.filename() << ":" << ex.line() << "\n\t=> " << ex.what() << std::endl;
                 return;
             }
-            if(score.count("score-partwise") != 1 ||
-               score.get<std::string>("score-partwise.<xmlattr>.version", "1.0") != "3.0") {
+            if(score.count("score-partwise") != 1) {
                 return;
             }
 
@@ -138,24 +135,28 @@ namespace autoplay {
                             for(const auto& m : p.second) {
                                 if(m.first == "note") {
                                     if(m.second.count("rest") == 0) {
-                                        /// Pitch
-                                        auto prepr = m.second.get<std::string>("pitch.step");
-                                        if(m.second.get<int>("pitch.alter", 0) == -1) {
-                                            prepr += "b";
-                                        } else if(m.second.get<int>("pitch.alter", 0) == 1) {
-                                            prepr += "#";
-                                        }
-                                        prepr += m.second.get<std::string>("pitch.octave");
-                                        // auto pitch = (int)music::Note::pitch(prepr);
-                                        if(!matPitch.isColumn(prepr)) {
-                                            matPitch.addColumn(prepr);
-                                        }
-                                        if(!matPitch.isRow(prepr)) {
-                                            matPitch.addRow(prepr);
-                                        }
+                                        bool unp = (m.second.count("unpitched") == 0);
 
-                                        for(const auto& note : history_pitch.front()) {
-                                            matPitch.at(note, prepr) += 1;
+                                        /// Pitch
+                                        auto prepr = m.second.get<std::string>("pitch.step", "");
+                                        if(unp) {
+                                            if(m.second.get<int>("pitch.alter", 0) == -1) {
+                                                prepr += "b";
+                                            } else if(m.second.get<int>("pitch.alter", 0) == 1) {
+                                                prepr += "#";
+                                            }
+                                            prepr += m.second.get<std::string>("pitch.octave");
+                                            // auto pitch = (int)music::Note::pitch(prepr);
+                                            if(!matPitch.isColumn(prepr)) {
+                                                matPitch.addColumn(prepr);
+                                            }
+                                            if(!matPitch.isRow(prepr)) {
+                                                matPitch.addRow(prepr);
+                                            }
+
+                                            for(const auto& note : history_pitch.front()) {
+                                                matPitch.at(note, prepr) += 1;
+                                            }
                                         }
 
                                         /// Rhythm
@@ -175,10 +176,14 @@ namespace autoplay {
                                         /// Control History
                                         if(m.second.count("chord") == 1) {
                                             chord_size += 1;
-                                            history_pitch.enqueue(prepr, true);
+                                            if(unp) {
+                                                history_pitch.enqueue(prepr, true);
+                                            }
                                         } else {
-                                            history_pitch.enqueue(prepr);
-                                            history_pitch.dequeue();
+                                            if(unp) {
+                                                history_pitch.enqueue(prepr);
+                                                history_pitch.dequeue();
+                                            }
 
                                             history_rhythm.enqueue(new_length);
                                             history_rhythm.dequeue();

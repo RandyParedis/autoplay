@@ -208,7 +208,7 @@ namespace autoplay {
                 while(getline_safe(file, line)) {
                     std::vector<std::string> values;
                     boost::split(values, line, boost::is_any_of(std::to_string(sep)));
-                    std::string name = values.at(0);
+                    std::string name = values.at(0); // TODO: Remove quotes?
                     nm.addRow(name);
                     values.erase(values.begin()); // remove name from sequence
                     for(unsigned int col = 0; col < values.size(); ++col) {
