@@ -43,9 +43,14 @@ int main(int argc, char** argv) {
         logger->info("Started Markov Chain Learning");
         auto mv = config.getMarkov();
         auto m3 = markov::MarkovChain::generateMatrices(mv.at("directory"));
-        m3.at(0).toCSV(mv.at("pitch"));
-        m3.at(1).toCSV(mv.at("rhythm"));
-        m3.at(2).toCSV(mv.at("chord"));
+        try {
+            m3.at(0).toCSV(mv.at("pitch"));
+            m3.at(1).toCSV(mv.at("rhythm"));
+            m3.at(2).toCSV(mv.at("chord"));
+        } catch(std::runtime_error& e) {
+            logger->fatal(e.what());
+            exit(EXIT_FAILURE);
+        }
         logger->info("Finished Markov Chain Learning");
     } else {
         logger->info("Started autoplayer");

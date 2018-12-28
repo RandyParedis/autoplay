@@ -160,7 +160,18 @@ namespace autoplay {
         }
 
         void NamedMatrix::toCSV(const std::string& filename, char sep) const {
+            // Check if file exists
+            std::ifstream f(filename);
+            bool          exists = f.good();
+            f.close();
+            if(exists) {
+                throw std::runtime_error("Undefined behaviour for writing a CSV to an existing file '" + filename +
+                                         "'.");
+            }
+
+            // Create file
             std::ofstream file(filename);
+
             if(file.is_open()) {
                 file << "x";
                 for(const auto& kv : m_colmap) {

@@ -20,6 +20,7 @@
 #include "../util/Randomizer.h"
 #include "SpecialQueue.h"
 
+#include <boost/property_tree/exceptions.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <queue>
 
@@ -74,12 +75,15 @@ namespace autoplay {
             while(!q.empty()) {
                 path p = q.front();
                 if(!is_directory(p)) {
+                    std::cout << p.string() << " is not a directory!" << std::endl;
                     q.pop();
                     continue;
                 }
+                std::cout << "QUEUE: " << q.size() << ", PATH: " << p.string() << std::endl;
                 for(auto& entry : boost::make_iterator_range(directory_iterator(p), {})) {
                     if(is_directory(entry.path())) {
                         if(recursive) {
+                            std::cout << "APPENDING " << entry.path().string() << std::endl;
                             q.push(entry.path());
                         }
                     } else if(entry.path().extension().string() == ".xml") {
@@ -96,7 +100,12 @@ namespace autoplay {
             std::cout << "PATH: " << filename << std::endl;
 
             pt::ptree score;
-            pt::read_xml(filename, score);
+            try {
+                pt::read_xml(filename, score);
+            } catch(const boost::property_tree::xml_parser_error& ex) {
+                std::cerr << "error in " << ex.filename() << ":" << ex.line() << "\n\t=> " << ex.what() << std::endl;
+                return;
+            }
             if(score.count("score-partwise") != 1 ||
                score.get<std::string>("score-partwise.<xmlattr>.version", "1.0") != "3.0") {
                 return;

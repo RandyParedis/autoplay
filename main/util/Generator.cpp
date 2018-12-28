@@ -205,7 +205,7 @@ namespace autoplay {
                     auto c = part->back()->back().bottom()->getPitch();
                     if(!part->back()->back().bottom()->getTieEnd()) {
                         part->back()->back().bottom()->setPitch(
-                                remapPitch(c, m_config.conf<std::string>("style.root"), clef.range()));
+                            remapPitch(c, m_config.conf<std::string>("style.root"), clef.range()));
                     }
                 }
 
