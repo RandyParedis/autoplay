@@ -31,11 +31,14 @@ namespace autoplay {
                                  const MarkovChain::State& begin)
             : m_engine(engine), m_current(begin), m_begin(begin) {
             m_matrix = NamedMatrix::fromCSV(filename);
+            m_matrix.normalizeRows();
         }
 
         MarkovChain::MarkovChain(const markov::NamedMatrix& namedMatrix, const util::RNEngine& engine,
                                  const MarkovChain::State& begin)
-            : m_matrix(namedMatrix), m_engine(engine), m_current(begin), m_begin(begin) {}
+            : m_matrix(namedMatrix), m_engine(engine), m_current(begin), m_begin(begin) {
+            m_matrix.normalizeRows();
+        }
 
         MarkovChain::State MarkovChain::next() {
             auto poss = fetchPossibilities();

@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 
         util::Generator generator{config, logger};
 
-        try {
+        //try {
             music::Score score = generator.generate();
 
             if(!config.isLeaf("export")) {
@@ -76,9 +76,9 @@ int main(int argc, char** argv) {
 
             logger->info("Finished autoplayer");
 
-        } catch(std::exception& e) {
-            logger->fatal(e.what());
-            exit(EXIT_FAILURE);
-        }
+        //} catch(std::exception& e) {
+        //    logger->fatal(e.what());
+        //    exit(EXIT_FAILURE);
+        //}
     }
 }

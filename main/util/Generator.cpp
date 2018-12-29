@@ -17,6 +17,7 @@
 
 #include "Generator.h"
 #include "Randomizer.h"
+#include "../markov/MarkovChain.h"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -181,6 +182,11 @@ namespace autoplay {
 
                         music::Note note{pitch, duration};
 
+                        if(options.get<bool>("pitch._rest", false)) {
+                            note.toPause();
+                            options.put("pitch._rest", false);
+                        }
+
                         auto prepr = music::Note::pitchRepr(pitch);
                         if(pt_part.count("instrument") == 0 || percussion) {
                             note.setHead(repr_to_head.at(prepr));
@@ -293,7 +299,24 @@ namespace autoplay {
 
                     return pitchAccompaniment(schematic, chord, j, mlen, range);
                 };
-            } /*else if(algo == "gaussian-voicing") {
+            } else if(algo == "markov-chain") {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    static std::shared_ptr<markov::MarkovChain> mc;
+                    if(!mc) {
+                        mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("pitch.chain"), gen);
+                    }
+                    if(pt.get<bool>("_reinit", false)) {
+                        mc->reset();
+                    }
+                    markov::MarkovChain::State next = mc->next();
+                    if(next == "rest") {
+                        pt.put("pitch._rest", true);
+                        next = "C-1";
+                    }
+                    return music::Note::pitch(next);
+                };
+            }/*else if(algo == "gaussian-voicing") {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
@@ -338,6 +361,19 @@ namespace autoplay {
             } else if(algo == "brownian-motion") {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> float { return rhythmBrownianMotion(gen, prev, conc, pt); };
+            } else if(algo == "markov-chain") {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
+                              pt::ptree& pt) -> float {
+                    static std::shared_ptr<markov::MarkovChain> mc;
+                    if(!mc) {
+                        mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("rhythm.chain"), gen);
+                    }
+                    if(pt.get<bool>("_reinit", false)) {
+                        mc->reset();
+                    }
+                    markov::MarkovChain::State next = mc->next();
+                    return std::stof(next) / (4 * 64);
+                };
             } else {
                 return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> float {
                     auto rh = pt.get<std::string>("rhythm.duration", "quarter");

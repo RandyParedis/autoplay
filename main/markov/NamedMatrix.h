@@ -273,6 +273,14 @@ namespace autoplay {
         };
 
         /**
+         * Splits a string into a vector of substrings on a character.
+         * @param s     The string to split.
+         * @param c     The character to split on.
+         * @return A vector, containing the splitted string.
+         */
+        std::vector<std::string> split_on(const std::string& s, const char& c = ',');
+
+        /**
          * Code taken from StackOverflow in order to support MAC-line endings (\r),
          * as well as UNIX-line endings (\n) when getting a line from a file.
          * @param is    The input stream to read from.

@@ -196,9 +196,8 @@ namespace autoplay {
                 std::string line;
                 if(getline_safe(file, line)) {
                     // Header
-                    std::vector<std::string> names;
-                    boost::split(names, line, boost::is_any_of(std::to_string(sep)));
-                    names.erase(names.begin()); // remove useless column
+                    std::vector<std::string> names = split_on(line, sep);
+                    names.erase(names.begin()); // remove useless header column
                     // remove surrounding quotes and insert as column
                     for(auto& name : names) {
                         name = name.substr(1, name.length() - 2);
@@ -206,9 +205,10 @@ namespace autoplay {
                     }
                 }
                 while(getline_safe(file, line)) {
-                    std::vector<std::string> values;
-                    boost::split(values, line, boost::is_any_of(std::to_string(sep)));
-                    std::string name = values.at(0); // TODO: Remove quotes?
+                    if(line.empty()) { continue; }
+                    std::vector<std::string> values = split_on(line, sep);
+                    std::string name = values.at(0);
+                    name = name.substr(1, name.length() - 2);
                     nm.addRow(name);
                     values.erase(values.begin()); // remove name from sequence
                     for(unsigned int col = 0; col < values.size(); ++col) {
@@ -220,6 +220,36 @@ namespace autoplay {
             } else {
                 throw std::runtime_error("Unable to open file with filename '" + filename + "'");
             }
+        }
+
+        bool in_vector(const char& needle, std::vector<char> haystack) {
+            for(char n: haystack) {
+                if(n == needle) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        std::vector<std::string> split_on(const std::string& s, const char& c) {
+            std::vector<std::string> result;
+            bool string = false;
+            std::string current;
+            for(const auto& k: s) {
+                if(k == c) {
+                    if (!string) {
+                        result.emplace_back(current);
+                        current = "";
+                        continue;
+                    }
+                } else if(k == '"') {
+                    string = current.empty();
+                }
+                if(!(!string && in_vector(k, {' ', '\t', '\n', '\r'}))) {
+                    current += k;
+                }
+            }
+            return result;
         }
 
         std::istream& getline_safe(std::istream& is, std::string& t) {

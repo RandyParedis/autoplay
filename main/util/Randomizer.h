@@ -117,14 +117,19 @@ namespace autoplay {
              */
             template <template <typename...> class C, typename T, typename... Ts>
             static T pick_weighted(RNEngine& gen, const C<T, Ts...>& elements, std::function<float(const T&)> weight) {
+                C<T, Ts...> sorted{elements};
+                std::sort(sorted.begin(), sorted.end(), [&weight](const T& a, const T& b) -> bool {
+                    return weight(a) > weight(b);
+                });
+
                 float ws = 0.0f;
-                for(const auto& w : elements) {
+                for(const auto& w : sorted) {
                     ws += weight(w);
                 }
                 trng::uniform_dist<float> U(0, ws);
 
                 auto rw = gen.callOnMe<float>(U);
-                for(const auto& w : elements) {
+                for(const auto& w : sorted) {
                     rw -= weight(w);
                     if(rw <= 0) {
                         return w;

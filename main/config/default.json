@@ -2,27 +2,26 @@
   "verbose": false,
   "play": false,
   "engine": "lcg64",
-  "seed": 0,
+  "seed": 10,
   "length": 25,
 
   "generation": {
-    "pitch": "brownian-motion",
-    "rhythm": "brownian-motion",
-    "chord": "weighted",
+    "pitch": "markov-chain",
+    "rhythm": "markov-chain",
+    "chord": "constant",
     "options": {
       "pitch": {
-        "schematic": "ABBACBBCABCAABBC"
+        "schematic": "ABBACBBCABCAABBC",
+        "chain": "/home/red/git/autoplay/learning/pitch.csv"
       },
       "rhythm": {
         "smallest": "eighth",
         "largest": "half",
-        "duration": "16th"
-      },
-      "chord": {
-        "3": 0.1
+        "duration": "16th",
+        "chain": "/home/red/git/autoplay/learning/rhythm.csv"
       }
     },
-    "rest-ratio": 0.1
+    "rest-ratio": 0
   },
   "export": {
     "filename": "music.xml",
@@ -37,12 +36,7 @@
   "parts": [
     {
       "instrument": "Acoustic Grand Piano",
-      "clef": "Treble",
-      "generation": {
-        "pitch": "accompaniment",
-        "rhythm": "brownian-motion",
-        "chord": "random"
-      }
+      "clef": "Treble"
     }
   ]
 }
