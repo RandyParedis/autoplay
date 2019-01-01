@@ -300,22 +300,34 @@ namespace autoplay {
                     return pitchAccompaniment(schematic, chord, j, mlen, range);
                 };
             } else if(algo == "markov-chain") {
-                return
-                    [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> uint8_t {
-                        static std::shared_ptr<markov::MarkovChain> mc;
-                        if(!mc) {
-                            mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("pitch.chain"), gen);
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
+                              pt::ptree& pt) -> uint8_t {
+                    static std::shared_ptr<markov::MarkovChain> mc;
+                    if(!mc) {
+                        mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("pitch.chain"), gen);
+
+                        // Remove all states that cannot be reached in our algorithm
+                        auto stave = pt.get<int>("stave");
+                        auto range = staveRange(stave);
+                        auto p     = getPitches(range.first, range.second, stave);
+
+                        std::vector<std::string> non_erasables;
+                        for(const auto& v : p) {
+                            non_erasables.emplace_back(music::Note::pitchRepr(v));
                         }
-                        if(pt.get<bool>("_reinit", false)) {
-                            mc->reset();
-                        }
-                        markov::MarkovChain::State next = mc->next();
-                        if(next == "rest") {
-                            pt.put("pitch._rest", true);
-                            next = "C-1";
-                        }
-                        return music::Note::pitch(next);
-                    };
+
+                        mc->keep(non_erasables);
+                    }
+                    if(pt.get<bool>("_reinit", false)) {
+                        mc->reset();
+                    }
+                    markov::MarkovChain::State next = mc->next();
+                    if(next == "rest") {
+                        pt.put("pitch._rest", true);
+                        next = "C-1";
+                    }
+                    return music::Note::pitch(next);
+                };
             } else if(algo == "gaussian-voicing") {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
@@ -454,6 +466,18 @@ namespace autoplay {
                         return 0.0f;
                     };
                     return Randomizer::pick_weighted(gen, mapping.begin()->first, mapping.rbegin()->first + 1, 1, func);
+                };
+            } else if(algo == "markov-chain") {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> int {
+                    static std::shared_ptr<markov::MarkovChain> mc;
+                    if(!mc) {
+                        mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("chord.chain"), gen);
+                    }
+                    if(pt.get<bool>("_reinit", false)) {
+                        mc->reset();
+                    }
+                    markov::MarkovChain::State next = mc->next();
+                    return std::stoi(next);
                 };
             } else {
                 return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> int {

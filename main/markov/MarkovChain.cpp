@@ -22,6 +22,7 @@
 
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <algorithm>
 #include <queue>
 
 namespace autoplay {
@@ -40,6 +41,29 @@ namespace autoplay {
             m_matrix.normalizeRows();
         }
 
+        void MarkovChain::erase(const std::vector<autoplay::markov::MarkovChain::State>& erasables) {
+            for(const auto& state : erasables) {
+                bool b = m_matrix.dropColumn(state);
+                if(b) {
+                    std::cout << "Dropped '" << state << "'!" << std::endl;
+                } else {
+                    std::cerr << "Could not drop '" << state << "'!" << std::endl;
+                }
+            }
+        }
+
+        void MarkovChain::keep(const std::vector<autoplay::markov::MarkovChain::State>& non_erasables) {
+            // Columns
+            auto erasables = m_matrix.getColumns();
+            for(const auto& state : non_erasables) {
+                erasables.erase(std::remove(erasables.begin(), erasables.end(), state), erasables.end());
+            }
+            for(const auto& state : erasables) {
+                m_matrix.dropColumn(state);
+                m_matrix.dropRow(state);
+            }
+        }
+
         MarkovChain::State MarkovChain::next() {
             auto poss = fetchPossibilities();
 
@@ -48,7 +72,7 @@ namespace autoplay {
                 states.emplace_back(p.first);
             }
 
-            std::function<float(const State&)> func = [&poss](const State& state) -> float { return poss.at(state); };
+            std::function<double(const State&)> func = [&poss](const State& state) -> double { return poss.at(state); };
 
             State s = util::Randomizer::pick_weighted(m_engine, states, func);
 
@@ -56,9 +80,9 @@ namespace autoplay {
             return s;
         }
 
-        std::map<MarkovChain::State, float> MarkovChain::fetchPossibilities() const {
+        std::map<MarkovChain::State, double> MarkovChain::fetchPossibilities() const {
             auto vec = m_matrix.get(m_current);
-            std::map<MarkovChain::State, float> poss;
+            std::map<MarkovChain::State, double> poss;
             for(const auto& pr : vec) {
                 poss.insert(pr);
             }

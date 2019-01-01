@@ -45,7 +45,7 @@ namespace autoplay {
              * @param value     The value to fill the matrix with
              */
             NamedMatrix(const std::vector<std::string>& rownames, const std::vector<std::string>& colnames,
-                        float value = 0.0f);
+                        double value = 0.0f);
 
             /**
              * Access an element of the matrix.
@@ -53,7 +53,7 @@ namespace autoplay {
              * @param column    The column name to access
              * @return A reference to the accessed element.
              */
-            float& operator()(const std::string& row, const std::string& column);
+            double& operator()(const std::string& row, const std::string& column);
 
             /**
              * Access an element of the matrix.
@@ -61,7 +61,7 @@ namespace autoplay {
              * @param column    The column name to access
              * @return A reference to the accessed element.
              */
-            const float& operator()(const std::string& row, const std::string& column) const;
+            const double& operator()(const std::string& row, const std::string& column) const;
 
             /**
              * Access an element of the matrix.
@@ -69,7 +69,7 @@ namespace autoplay {
              * @param column    The column name to access
              * @return A reference to the accessed element.
              */
-            float& at(const std::string& row, const std::string& column);
+            double& at(const std::string& row, const std::string& column);
 
             /**
              * Access an element of the matrix.
@@ -77,56 +77,56 @@ namespace autoplay {
              * @param column    The column name to access
              * @return A reference to the accessed element.
              */
-            const float& at(const std::string& row, const std::string& column) const;
+            const double& at(const std::string& row, const std::string& column) const;
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row name to access.
              * @return A reference to the row.
              */
-            std::vector<float>& operator[](const std::string& row);
+            std::vector<double>& operator[](const std::string& row);
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row name to access.
              * @return A reference to the row.
              */
-            const std::vector<float>& operator[](const std::string& row) const;
+            const std::vector<double>& operator[](const std::string& row) const;
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row name to access.
              * @return A reference to the row.
              */
-            std::vector<float>& at(const std::string& row);
+            std::vector<double>& at(const std::string& row);
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row name to access.
              * @return A reference to the row.
              */
-            const std::vector<float>& at(const std::string& row) const;
+            const std::vector<double>& at(const std::string& row) const;
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row name to access.
              * @return A row, by a pair, e.g. <column, row-element>
              */
-            std::vector<std::pair<std::string, float>> get(const std::string& row);
+            std::vector<std::pair<std::string, double>> get(const std::string& row);
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row name to access.
              * @return A row, by a pair, e.g. <column, row-element>
              */
-            const std::vector<std::pair<std::string, float>> get(const std::string& row) const;
+            const std::vector<std::pair<std::string, double>> get(const std::string& row) const;
 
             /**
              * Compute the sum of a row
              * @param row   The name of the row to compute the sum for.
              * @return The sum of the row.
              */
-            float rowSum(const std::string& row) const;
+            double rowSum(const std::string& row) const;
 
             /**
              * Normalize all rows, e.g. divide all elements in each row by the sum of the row
@@ -158,14 +158,40 @@ namespace autoplay {
              * @param row       The row name of the new row.
              * @param value     The value to fill all elements with.
              */
-            void addRow(const std::string& row, float value = 0.0f);
+            void addRow(const std::string& row, double value = 0.0f);
 
             /**
              * Adds a column to the matrix
              * @param column    The column name of the new column.
              * @param value     The value to fill all elements with.
              */
-            void addColumn(const std::string& column, float value = 0.0f);
+            void addColumn(const std::string& column, double value = 0.0f);
+
+            /**
+             * Drops a column from the matrix
+             * @param column The column to drop.
+             * @return True if the columns could be dropped, false otherwise.
+             */
+            bool dropColumn(const std::string& column);
+
+            /**
+             * Drops a row from the matrix
+             * @param row The row to drop.
+             * @return True if the rows could be dropped, false otherwise.
+             */
+            bool dropRow(const std::string& row);
+
+            /**
+             * Fetch all the column headers
+             * @return A list of all the columns
+             */
+            std::vector<std::string> getColumns() const;
+
+            /**
+             * Fetch all the row headers
+             * @return A list of all the rows
+             */
+            std::vector<std::string> getRows() const;
 
             /**
              * Write the matrix to a CSV-file
@@ -191,7 +217,7 @@ namespace autoplay {
              * @param column    The column index to access
              * @return A reference to the accessed element.
              */
-            float& operator()(unsigned long row, unsigned long column);
+            double& operator()(unsigned long row, unsigned long column);
 
             /**
              * Access an element of the matrix.
@@ -199,7 +225,7 @@ namespace autoplay {
              * @param column    The column index to access
              * @return A reference to the accessed element.
              */
-            const float& operator()(unsigned long row, unsigned long column) const;
+            const double& operator()(unsigned long row, unsigned long column) const;
 
             /**
              * Access an element of the matrix.
@@ -207,7 +233,7 @@ namespace autoplay {
              * @param column    The column index to access
              * @return A reference to the accessed element.
              */
-            float& at(unsigned long row, unsigned long column);
+            double& at(unsigned long row, unsigned long column);
 
             /**
              * Access an element of the matrix.
@@ -215,41 +241,41 @@ namespace autoplay {
              * @param column    The column index to access
              * @return A reference to the accessed element.
              */
-            const float& at(unsigned long row, unsigned long column) const;
+            const double& at(unsigned long row, unsigned long column) const;
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row index to access.
              * @return A reference to the row.
              */
-            std::vector<float>& operator[](unsigned long row);
+            std::vector<double>& operator[](unsigned long row);
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row index to access.
              * @return A reference to the row.
              */
-            const std::vector<float>& operator[](unsigned long row) const;
+            const std::vector<double>& operator[](unsigned long row) const;
 
             /**
              * Fetch a row of the matrix.
              * @param row       The row index to access.
              * @return A reference to the row.
              */
-            std::vector<float>& at(unsigned long row);
+            std::vector<double>& at(unsigned long row);
             /**
              * Fetch a row of the matrix.
              * @param row       The row index to access.
              * @return A reference to the row.
              */
-            const std::vector<float>& at(unsigned long row) const;
+            const std::vector<double>& at(unsigned long row) const;
 
             /**
              * Compute the sum of a row
              * @param row   The index of the row to compute the sum for.
              * @return The sum of the row.
              */
-            float rowSum(unsigned long row) const;
+            double rowSum(unsigned long row) const;
 
             /**
              * Checks if a certain row exists.
@@ -266,7 +292,7 @@ namespace autoplay {
             bool isColumn(unsigned long column) const;
 
         private:
-            std::vector<std::vector<float>> m_matrix;      ///< The actual matrix
+            std::vector<std::vector<double>> m_matrix;     ///< The actual matrix
             std::map<std::string, unsigned long> m_rowmap; ///< A map for efficient name -> index mapping for the rows
             std::map<std::string, unsigned long>
                 m_colmap; ///< A map for efficient name -> index mapping for the columns

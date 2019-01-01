@@ -8,7 +8,7 @@
   "generation": {
     "pitch": "markov-chain",
     "rhythm": "1/f-noise",
-    "chord": "constant",
+    "chord": "markov-chain",
     "options": {
       "pitch": {
         "schematic": "ABBACBBCABCAABBC",
@@ -19,6 +19,9 @@
         "largest": "half",
         "duration": "16th",
         "chain": "/home/red/git/autoplay/learning/rhythm.csv"
+      },
+      "chord": {
+        "chain": "/home/red/git/autoplay/learning/chord.csv"
       }
     },
     "rest-ratio": 0

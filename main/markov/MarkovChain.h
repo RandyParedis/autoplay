@@ -55,6 +55,18 @@ namespace autoplay {
                                  const State& begin = "begin");
 
             /**
+             * Erases a set of States from the MarkovChain
+             * @param erasables The set of elements that must be erased.
+             */
+            void erase(const std::vector<State>& erasables);
+
+            /**
+             * Erases all States from the MarkovChain that do not appear in the set
+             * @param non_erasables The set of elements that must be erased.
+             */
+            void keep(const std::vector<State>& non_erasables);
+
+            /**
              * Resets the MarkovChain to its initial State.
              */
             inline void reset() { m_current = m_begin; }
@@ -81,7 +93,7 @@ namespace autoplay {
              * Fetches a map of all possible States to go to.
              * @return A map in the form of < State, chance to get there from current state >
              */
-            std::map<State, float> fetchPossibilities() const;
+            std::map<State, double> fetchPossibilities() const;
 
             /// Special functions for machine-learning itself
         public:

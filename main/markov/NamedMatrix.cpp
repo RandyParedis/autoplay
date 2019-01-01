@@ -27,7 +27,7 @@ namespace autoplay {
         NamedMatrix::NamedMatrix() : m_matrix(), m_rowmap(), m_colmap() {}
 
         NamedMatrix::NamedMatrix(const std::vector<std::string>& rownames, const std::vector<std::string>& colnames,
-                                 float value)
+                                 double value)
             : NamedMatrix() {
 
             // First do the columns, because that's a little bit more efficient.
@@ -39,80 +39,80 @@ namespace autoplay {
             }
         }
 
-        float& NamedMatrix::operator()(unsigned long row, unsigned long column) { return m_matrix[row][column]; }
+        double& NamedMatrix::operator()(unsigned long row, unsigned long column) { return m_matrix[row][column]; }
 
-        float& NamedMatrix::operator()(const std::string& row, const std::string& column) {
+        double& NamedMatrix::operator()(const std::string& row, const std::string& column) {
             return m_matrix[m_rowmap.at(row)][m_colmap.at(column)];
         }
 
-        const float& NamedMatrix::operator()(unsigned long row, unsigned long column) const {
+        const double& NamedMatrix::operator()(unsigned long row, unsigned long column) const {
             return m_matrix[row][column];
         }
 
-        const float& NamedMatrix::operator()(const std::string& row, const std::string& column) const {
+        const double& NamedMatrix::operator()(const std::string& row, const std::string& column) const {
             return m_matrix[m_rowmap.at(row)][m_colmap.at(column)];
         }
 
-        float& NamedMatrix::at(unsigned long row, unsigned long column) { return m_matrix.at(row).at(column); }
+        double& NamedMatrix::at(unsigned long row, unsigned long column) { return m_matrix.at(row).at(column); }
 
-        float& NamedMatrix::at(const std::string& row, const std::string& column) {
+        double& NamedMatrix::at(const std::string& row, const std::string& column) {
             return m_matrix.at(m_rowmap.at(row)).at(m_colmap.at(column));
         }
 
-        const float& NamedMatrix::at(unsigned long row, unsigned long column) const {
+        const double& NamedMatrix::at(unsigned long row, unsigned long column) const {
             return m_matrix.at(row).at(column);
         }
 
-        const float& NamedMatrix::at(const std::string& row, const std::string& column) const {
+        const double& NamedMatrix::at(const std::string& row, const std::string& column) const {
             return m_matrix.at(m_rowmap.at(row)).at(m_colmap.at(column));
         }
 
-        std::vector<float>& NamedMatrix::operator[](unsigned long row) { return m_matrix[row]; }
+        std::vector<double>& NamedMatrix::operator[](unsigned long row) { return m_matrix[row]; }
 
-        const std::vector<float>& NamedMatrix::operator[](unsigned long row) const { return m_matrix[row]; }
+        const std::vector<double>& NamedMatrix::operator[](unsigned long row) const { return m_matrix[row]; }
 
-        std::vector<float>& NamedMatrix::operator[](const std::string& row) { return m_matrix[m_rowmap.at(row)]; }
+        std::vector<double>& NamedMatrix::operator[](const std::string& row) { return m_matrix[m_rowmap.at(row)]; }
 
-        const std::vector<float>& NamedMatrix::operator[](const std::string& row) const {
+        const std::vector<double>& NamedMatrix::operator[](const std::string& row) const {
             return m_matrix[m_rowmap.at(row)];
         }
 
-        std::vector<float>& NamedMatrix::at(unsigned long row) { return m_matrix[row]; }
+        std::vector<double>& NamedMatrix::at(unsigned long row) { return m_matrix[row]; }
 
-        const std::vector<float>& NamedMatrix::at(unsigned long row) const { return m_matrix[row]; }
+        const std::vector<double>& NamedMatrix::at(unsigned long row) const { return m_matrix[row]; }
 
-        std::vector<float>& NamedMatrix::at(const std::string& row) { return m_matrix[m_rowmap.at(row)]; }
+        std::vector<double>& NamedMatrix::at(const std::string& row) { return m_matrix[m_rowmap.at(row)]; }
 
-        const std::vector<float>& NamedMatrix::at(const std::string& row) const { return m_matrix[m_rowmap.at(row)]; }
+        const std::vector<double>& NamedMatrix::at(const std::string& row) const { return m_matrix[m_rowmap.at(row)]; }
 
-        const std::vector<std::pair<std::string, float>> NamedMatrix::get(const std::string& row) const {
-            std::vector<std::pair<std::string, float>> res;
+        const std::vector<std::pair<std::string, double>> NamedMatrix::get(const std::string& row) const {
+            std::vector<std::pair<std::string, double>> res;
             for(const auto& col : m_colmap) {
-                res.emplace_back(std::pair<std::string, float>(col.first, at(row, col.first)));
+                res.emplace_back(std::pair<std::string, double>(col.first, at(row, col.first)));
             }
             return res;
         }
 
-        std::vector<std::pair<std::string, float>> NamedMatrix::get(const std::string& row) {
-            std::vector<std::pair<std::string, float>> res;
+        std::vector<std::pair<std::string, double>> NamedMatrix::get(const std::string& row) {
+            std::vector<std::pair<std::string, double>> res;
             for(const auto& col : m_colmap) {
-                res.emplace_back(std::pair<std::string, float>(col.first, at(row, col.first)));
+                res.emplace_back(std::pair<std::string, double>(col.first, at(row, col.first)));
             }
             return res;
         }
 
-        float NamedMatrix::rowSum(unsigned long row) const {
-            float sum = 0.0f;
-            auto& r   = at(row);
+        double NamedMatrix::rowSum(unsigned long row) const {
+            double sum = 0.0;
+            auto&  r   = at(row);
             for(const auto& elm : r) {
                 sum += elm;
             }
             return sum;
         }
 
-        float NamedMatrix::rowSum(const std::string& row) const {
-            float sum = 0.0f;
-            auto& r   = at(row);
+        double NamedMatrix::rowSum(const std::string& row) const {
+            double sum = 0.0;
+            auto&  r   = at(row);
             for(const auto& elm : r) {
                 sum += elm;
             }
@@ -121,7 +121,7 @@ namespace autoplay {
 
         void NamedMatrix::normalizeRows() {
             for(unsigned long r = 0; r < m_matrix.size(); ++r) {
-                float sum = rowSum(r);
+                double sum = rowSum(r);
                 for(unsigned long c = 0; c < at(r).size(); ++c) {
                     at(r, c) /= sum;
                 }
@@ -147,16 +147,64 @@ namespace autoplay {
 
         bool NamedMatrix::isColumn(const std::string& column) const { return m_colmap.find(column) != m_colmap.end(); }
 
-        void NamedMatrix::addRow(const std::string& row, float value) {
+        void NamedMatrix::addRow(const std::string& row, double value) {
             m_rowmap.insert({row, m_rowmap.size()});
-            m_matrix.emplace_back(std::vector<float>(m_colmap.size(), value));
+            m_matrix.emplace_back(std::vector<double>(m_colmap.size(), value));
         }
 
-        void NamedMatrix::addColumn(const std::string& column, float value) {
+        void NamedMatrix::addColumn(const std::string& column, double value) {
             m_colmap.insert({column, m_colmap.size()});
             for(auto& row : m_matrix) {
                 row.emplace_back(value);
             }
+        }
+
+        bool NamedMatrix::dropColumn(const std::string& column) {
+            try {
+                auto colidx = m_colmap.at(column);
+                for(auto& row : m_matrix) {
+                    row.erase(row.begin() + colidx);
+                }
+                m_colmap.erase(column);
+                for(auto& col: m_colmap) {
+                    // Update all indexes
+                    if(col.second > colidx) {
+                        --col.second;
+                    }
+                }
+                return true;
+            } catch(std::out_of_range& e) { return false; }
+        }
+
+        bool NamedMatrix::dropRow(const std::string& row) {
+            try {
+                auto rowidx = m_rowmap.at(row);
+                m_matrix.erase(m_matrix.begin() + rowidx);
+                m_rowmap.erase(row);
+                for(auto& r: m_rowmap) {
+                    // Update all indexes
+                    if(r.second > rowidx) {
+                        --r.second;
+                    }
+                }
+                return true;
+            } catch(std::out_of_range& e) { return false; }
+        }
+
+        std::vector<std::string> NamedMatrix::getColumns() const {
+            std::vector<std::string> res;
+            for(const auto& col : m_colmap) {
+                res.emplace_back(col.first);
+            }
+            return res;
+        }
+
+        std::vector<std::string> NamedMatrix::getRows() const {
+            std::vector<std::string> res;
+            for(const auto& row : m_rowmap) {
+                res.emplace_back(row.first);
+            }
+            return res;
         }
 
         void NamedMatrix::toCSV(const std::string& filename, char sep) const {
@@ -235,8 +283,9 @@ namespace autoplay {
 
         std::vector<std::string> split_on(const std::string& s, const char& c) {
             std::vector<std::string> result;
-            bool                     string = false;
-            std::string              current;
+
+            bool        string = false;
+            std::string current;
             for(const auto& k : s) {
                 if(k == c) {
                     if(!string) {
