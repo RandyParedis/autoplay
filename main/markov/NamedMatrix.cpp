@@ -205,10 +205,12 @@ namespace autoplay {
                     }
                 }
                 while(getline_safe(file, line)) {
-                    if(line.empty()) { continue; }
+                    if(line.empty()) {
+                        continue;
+                    }
                     std::vector<std::string> values = split_on(line, sep);
-                    std::string name = values.at(0);
-                    name = name.substr(1, name.length() - 2);
+                    std::string              name   = values.at(0);
+                    name                            = name.substr(1, name.length() - 2);
                     nm.addRow(name);
                     values.erase(values.begin()); // remove name from sequence
                     for(unsigned int col = 0; col < values.size(); ++col) {
@@ -223,7 +225,7 @@ namespace autoplay {
         }
 
         bool in_vector(const char& needle, std::vector<char> haystack) {
-            for(char n: haystack) {
+            for(char n : haystack) {
                 if(n == needle) {
                     return true;
                 }
@@ -233,11 +235,11 @@ namespace autoplay {
 
         std::vector<std::string> split_on(const std::string& s, const char& c) {
             std::vector<std::string> result;
-            bool string = false;
-            std::string current;
-            for(const auto& k: s) {
+            bool                     string = false;
+            std::string              current;
+            for(const auto& k : s) {
                 if(k == c) {
-                    if (!string) {
+                    if(!string) {
                         result.emplace_back(current);
                         current = "";
                         continue;

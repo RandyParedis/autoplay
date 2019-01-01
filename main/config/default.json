@@ -7,7 +7,7 @@
 
   "generation": {
     "pitch": "markov-chain",
-    "rhythm": "markov-chain",
+    "rhythm": "1/f-noise",
     "chord": "constant",
     "options": {
       "pitch": {

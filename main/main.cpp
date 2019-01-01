@@ -61,20 +61,20 @@ int main(int argc, char** argv) {
 
         util::Generator generator{config, logger};
 
-        //try {
-            music::Score score = generator.generate();
+        // try {
+        music::Score score = generator.generate();
 
-            if(!config.isLeaf("export")) {
-                auto fname = config.conf<std::string>("export.filename");
-                logger->debug("Exporting Score to '{}'.", fname);
-                util::FileHandler::writeMusicXML(fname, score);
-            }
+        if(!config.isLeaf("export")) {
+            auto fname = config.conf<std::string>("export.filename");
+            logger->debug("Exporting Score to '{}'.", fname);
+            util::FileHandler::writeMusicXML(fname, score);
+        }
 
-            if(config.conf<bool>("play")) {
-                midiPlayer->play(score, config);
-            }
+        if(config.conf<bool>("play")) {
+            midiPlayer->play(score, config);
+        }
 
-            logger->info("Finished autoplayer");
+        logger->info("Finished autoplayer");
 
         //} catch(std::exception& e) {
         //    logger->fatal(e.what());

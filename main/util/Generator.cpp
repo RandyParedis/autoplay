@@ -16,8 +16,8 @@
  */
 
 #include "Generator.h"
-#include "Randomizer.h"
 #include "../markov/MarkovChain.h"
+#include "Randomizer.h"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -300,23 +300,23 @@ namespace autoplay {
                     return pitchAccompaniment(schematic, chord, j, mlen, range);
                 };
             } else if(algo == "markov-chain") {
-                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
-                              pt::ptree& pt) -> uint8_t {
-                    static std::shared_ptr<markov::MarkovChain> mc;
-                    if(!mc) {
-                        mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("pitch.chain"), gen);
-                    }
-                    if(pt.get<bool>("_reinit", false)) {
-                        mc->reset();
-                    }
-                    markov::MarkovChain::State next = mc->next();
-                    if(next == "rest") {
-                        pt.put("pitch._rest", true);
-                        next = "C-1";
-                    }
-                    return music::Note::pitch(next);
-                };
-            }/*else if(algo == "gaussian-voicing") {
+                return
+                    [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> uint8_t {
+                        static std::shared_ptr<markov::MarkovChain> mc;
+                        if(!mc) {
+                            mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("pitch.chain"), gen);
+                        }
+                        if(pt.get<bool>("_reinit", false)) {
+                            mc->reset();
+                        }
+                        markov::MarkovChain::State next = mc->next();
+                        if(next == "rest") {
+                            pt.put("pitch._rest", true);
+                            next = "C-1";
+                        }
+                        return music::Note::pitch(next);
+                    };
+            } else if(algo == "gaussian-voicing") {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
@@ -325,11 +325,11 @@ namespace autoplay {
 
                     std::vector<float> p2;
                     for(const auto& v : p) {
-                        p2.push_back((int)v);
+                        p2.push_back((float)((int)v));
                     }
                     return (uint8_t)Randomizer::gaussian(gen, p2, -3.0f, 3.0f, true);
                 };
-            }*/ else {
+            } else {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> uint8_t {
                     auto stave = pt.get<int>("stave");
@@ -361,9 +361,11 @@ namespace autoplay {
             } else if(algo == "brownian-motion") {
                 return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                               pt::ptree& pt) -> float { return rhythmBrownianMotion(gen, prev, conc, pt); };
+            } else if(algo == "1/f-noise") {
+                return [this](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
+                              pt::ptree& pt) -> float { return rhythm1FNoise(gen, pt); };
             } else if(algo == "markov-chain") {
-                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
-                              pt::ptree& pt) -> float {
+                return [](RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc, pt::ptree& pt) -> float {
                     static std::shared_ptr<markov::MarkovChain> mc;
                     if(!mc) {
                         mc = std::make_shared<markov::MarkovChain>(pt.get<std::string>("rhythm.chain"), gen);
@@ -581,7 +583,8 @@ namespace autoplay {
 
                 /// Don't test if the pitch is out of range!
                 /// It shouldn't be, but the chord does not take the pitches into a count.
-                /// TODO: chord algorithm should take pitches into a count.
+                // TODO: chord algorithm should take pitches into a count.
+
                 // if(it == pitches.end()) {
                 //     throw std::invalid_argument("Note '" + std::to_string(pitch) + "' not in scale!");
                 // }
@@ -755,6 +758,54 @@ namespace autoplay {
             } else {
                 return (float)std::pow(2.0f, Randomizer::pick_uniform(gen, smallest, largest) - 8);
             }
+        }
+
+        float Generator::rhythm1FNoise(autoplay::util::RNEngine& gen, const pt::ptree& pt) const {
+            // Constants through function
+            uint8_t num_dice   = 3;
+            auto    num_states = (uint8_t)std::pow((int)2, (int)num_dice);
+
+            auto smallest = (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.smallest", "256th")));
+            auto largest  = (int)std::log2(music::Note::DURATION.at(pt.get<std::string>("rhythm.largest", "long")));
+
+            // (Re)init table
+            static uint8_t state = 0;
+            static std::vector<std::pair<int, int>> dice{num_dice, {0, 0}};
+
+            if(pt.get<bool>("_reinit", false)) {
+                state = 0;
+                dice.assign(num_dice, {0, 0});
+
+                // Fill dice_ranges uniformly
+                int all = (largest - smallest) / num_dice;
+                for(auto& die : dice) {
+                    die.second = all;
+                }
+                all = (largest - smallest) - (all * num_dice);
+                for(unsigned int i = 0; i < (unsigned)all; ++i) {
+                    dice.at(i % num_dice).second += 1;
+                }
+            }
+
+            // Roll dice (depending on the state)
+            int sum = 0;
+            for(unsigned int i = 0; i < dice.size(); ++i) {
+                if(state == 0) {
+                    dice.at(i).first = Randomizer::pick_uniform(gen, 0, dice.at(i).second + 1);
+                    sum += dice.at(i).first;
+                } else {
+                    std::bitset<16> bs{(unsigned long long)((state - 1) ^ state)};
+                    if(bs.test(i)) {
+                        dice.at(i).first = Randomizer::pick_uniform(gen, 0, dice.at(i).second + 1);
+                        sum += dice.at(i).first;
+                    }
+                }
+            }
+
+            state = (uint8_t)((state + 1) % num_states);
+
+            auto r = (float)std::pow(2.0f, smallest + sum);
+            return r;
         }
     }
 }

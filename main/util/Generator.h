@@ -114,7 +114,7 @@ namespace autoplay {
              * A pitch generation algorithm, based upon the 1/f relationship, occuring in the strangest places of
              * nature.
              * @param gen       The generator object.
-             * @param pt        A ptree with additional options. 'stave' is the stave index. "_p1fn._reinit" must be
+             * @param pt        A ptree with additional options. 'stave' is the stave index. "_reinit" must be
              *                  set to (re)initialize the algorithm.
              * @return A new pitch.
              */
@@ -146,6 +146,16 @@ namespace autoplay {
              */
             float rhythmBrownianMotion(RNEngine& gen, music::Chord* prev, std::vector<music::Chord*>& conc,
                                        const pt::ptree& pt) const;
+
+            /**
+             * A rhythm generation algorithm, based upon the 1/f relationship, occuring in the strangest places of
+             * nature.
+             * @param gen       The generator object.
+             * @param pt        A ptree with additional options. 'stave' is the stave index. "_reinit" must be
+             *                  set to (re)initialize the algorithm.
+             * @return A new rhythm.
+             */
+            float rhythm1FNoise(RNEngine& gen, const pt::ptree& pt) const;
 
         private:
             Config             m_config;   ///< The Config of the system

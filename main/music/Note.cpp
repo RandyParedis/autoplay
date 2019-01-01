@@ -88,7 +88,7 @@ namespace autoplay {
 
             // Find octave
             auto pitch = (uint8_t)(sp.second + 1);
-            assert(pitch < 10);
+            assert((pitch < 10) || (pitch == 10 && (it - notes.begin()) < 5));
             pitch = (uint8_t)(pitch * 12);
 
             // Find tone
