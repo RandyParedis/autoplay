@@ -82,6 +82,7 @@ before_install:
 script:
   - cd $TRAVIS_BUILD_DIR
   - export GTEST_LOC=$HOME/deps
+  - export GTEST_ROOT=/usr/local
   - export BOOST_ROOT=$HOME/deps/boost_1_66_0
   - export TRNG_LOC=$HOME/deps/trng
   - ./install.sh

@@ -41,8 +41,10 @@ install.sh
 Please be aware that this will install all dependencies! If you already have some
 dependencies and thus don't want to reinstall them, please export the following
 paths to the location where these dependencies are located.
-- `GTEST_LOC`: The location where the `gtest` installation is to be executed.
-It defaults to `/tmp/gtest`. 
+- `GTEST_LOC`: The location where `gtest` is to be installed. It defaults to
+`/usr`. 
+- `GTEST_ROOT`: The location where `gtest` is to be installed from. It defaults to
+`/tmp`. 
 - `BOOST_ROOT`: The location where `boost` is installed. It defaults to
 `/usr/include/boost`.
 - `TRNG_LOC`: The location where `trng` is installed. It defaults to

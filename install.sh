@@ -37,25 +37,24 @@ echo ""
 
 # -- GTEST
 if [[ "${GTEST_LOC}" == "" ]]; then
+    GTEST_LOC=/usr
+fi
+if [[ "${GTEST_ROOT}" == "" ]]; then
     GTEST_LOC=/tmp
 fi
-if [[ -f /usr/lib/libgtest.a ]]; then
+if [[ -f ${GTEST_LOC}/lib/libgtest.a ]]; then
     echo "  - ${b}GTest 1.8.0${n} dependency found."
 else
     echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}..."
-    cd ${GTEST_LOC}
+    cd ${GTEST_ROOT}
     sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
     sudo tar xf release-1.8.0.tar.gz
     cd googletest-release-1.8.0/googletest
     sudo mkdir -p bld; cd bld
-
-    set +e
     sudo cmake ..
     sudo make
-    sudo cp -a ../include/gtest /usr/include
-    sudo cp -a *.a /usr/lib/
-    set -e
-    
+    sudo cp -a ../include/gtest ${GTEST_LOC}/include
+    sudo cp -a *.a ${GTEST_LOC}/lib/
     cd ${root}
     echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}."
 fi
