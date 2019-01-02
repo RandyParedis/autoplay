@@ -39,7 +39,7 @@ echo ""
 if [[ "${GTEST_LOC}" == "" ]]; then
     GTEST_LOC=/tmp
 fi
-if [[ -d ${GTEST_LOC}/googletest-release-1.bg.0 ]]; then
+if [[ -f /usr/lib/libgtest.a ]]; then
     echo "  - ${b}GTest 1.8.0${n} dependency found."
 else
     echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}..."
@@ -50,8 +50,8 @@ else
     sudo mkdir -p bld; cd bld
     sudo cmake ..
     sudo make
-    sudo cp -a ../include/gtest /usr/local/include
-    sudo cp -a *.a /usr/local/lib/
+    sudo cp -a ../include/gtest /usr/include
+    sudo cp -a *.a /usr/lib/
     cd ${root}
     echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}."
 fi

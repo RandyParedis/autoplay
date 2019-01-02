@@ -78,47 +78,6 @@ before_install:
       sudo apt-get -qq update
       sudo apt-get install -y libgtest-dev cmake
     fi
-#    sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-#    sudo tar xf release-1.8.0.tar.gz
-#    cd googletest-release-1.8.0/googletest
-#    sudo mkdir bld; cd bld
-#    sudo cmake ..
-#    sudo make
-#    sudo cp -a ../include/gtest /usr/local/include
-#    sudo cp -a *.a /usr/local/lib/
-
-install:
-#  #--------- Boost
-#  - |
-#    export BOOST_ROOT=$HOME/deps/boost_1_66_0
-#    export BOOST_NO_SYSTEM_PATHS=ON
-#    if [[ -z "$(ls -A $BOOST_ROOT)" ]]; then
-#      cd /tmp/
-#      wget https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz -q
-#      tar xf boost_1_66_0.tar.gz > /dev/null 2>&1
-#      cd boost_1_66_0/
-#      ./bootstrap.sh --prefix=$BOOST_ROOT --with-libraries=chrono,date_time,filesystem,iostreams,locale,regex,system,thread
-#      ./b2 -q -a -j2 -d0 --disable-filesystem2 cxxflags="-v -std=c++11" threading=multi install
-#      cd $TRAVIS_BUILD_DIR;
-#    else
-#      echo "Already have boost cache"
-#    fi
-#    export LD_LIBRARY_PATH=$BOOST_ROOT/lib:$LD_LIBRARY_PATH
-#    sudo rm -f /usr/local/lib/libboost*.dylib*
-#    sudo ln -s $BOOST_ROOT/lib/*.{so,dylib}* /usr/local/lib
-#
-#  #-------- TRNG
-#  - |
-#    cd $TRAVIS_BUILD_DIR/dependencies/trng
-#    autoreconf --force --install
-#    sudo ./configure --prefix=$HOME/deps/trng
-#    sudo make && sudo make install
-#
-#  #------- RtMidi Deps
-#  - |
-#    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-#      sudo apt-get install -y libasound-dev alsa-base alsa-oss
-#    fi
 
 script:
   - cd $TRAVIS_BUILD_DIR
