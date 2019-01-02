@@ -53,8 +53,7 @@ else
     sudo mkdir -p bld; cd bld
     sudo cmake ..
     sudo make
-    ls -R ../include
-    sudo cp -a ../include/gtest ${GTEST_LOC}/include
+    sudo cp -a ../include/gtest/* ${GTEST_LOC}/include
     sudo cp -a *.a ${GTEST_LOC}/lib/
     cd ${root}
     echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}."
