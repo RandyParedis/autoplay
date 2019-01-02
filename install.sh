@@ -47,7 +47,7 @@ else
     sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
     sudo tar xf release-1.8.0.tar.gz
     cd googletest-release-1.8.0/googletest
-    sudo mkdir bld; cd bld
+    sudo mkdir -p bld; cd bld
     sudo cmake ..
     sudo make
     sudo cp -a ../include/gtest /usr/local/include
