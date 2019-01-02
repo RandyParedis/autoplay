@@ -85,7 +85,7 @@ if [[ -d ${boost_dir} ]]; then
     echo "  - ${b}Boost 1.66.0${n} dependency found. (To reinstall, please remove the ${b}${boost_dir}${n} directory)"
 else
     echo "  - Installing ${b}Boost 1.66.0${n} in ${b}${boost_dir}${n}..."
-    mkdir -p ${boost_dir}
+#    mkdir -p ${boost_dir}
     export BOOST_NO_SYSTEM_PATHS=ON
     if [[ -z "$(ls -A ${BOOST_ROOT})" ]]; then
         cd ${boost_install_dir}
