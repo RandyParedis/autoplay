@@ -36,31 +36,65 @@ echo ""
 
 
 # -- GTEST
-gtest_dir=/usr/include/gtest
-gtest_install_dir=${gtest_dir}-install
-
-if [[ -d ${gtest_dir} ]]; then
-    echo "  - ${b}GTest 1.8.0${n} dependency found. (To reinstall, please remove the ${b}${gtest_dir}${n} directory)"
-else
-    echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}..."
-    sudo mkdir ${gtest_install_dir}
-    sudo mkdir ${gtest_dir}
-    cd ${gtest_install_dir}
-    if [[ "${os}" == "Linux" ]]; then
-        sudo apt-get install libgtest-dev cmake
+if [[ "${os}" == "Linux" ]]; then
+    pack=libgtest-dev
+    PKG_OK=$(dpkg-query -W --showformat='${Status}\n' ${pack}|grep "install ok installed")
+    if [[ "" == "$PKG_OK" ]]; then
+        echo "  - Installing ${b}GTest 1.8.0${n}..."
+        sudo apt-get install libgtest-dev
         cd /usr/src/gtest
         sudo cmake CMakeLists.txt
         sudo make
         sudo cp *.a /usr/lib
-    elif [[ "${os}" == "Mac OSX" ]]; then
+        echo "  - Installed ${b}GTest 1.8.0${n}."
+    else
+        echo "  - ${b}GTest 1.8.0${n} dependency found."
+    fi
+elif [[ "${os}" == "Mac OSX" ]]; then
+    if [[ "${GTEST_LOC}" == "" ]]; then
+        GTEST_LOC=/tmp/gtest
+    fi
+    if [[ -d ${GTEST_LOC} ]]; then
+        echo "  - ${b}GTest 1.8.0${n} dependency found. (To reinstall, please remove the ${b}${GTEST_LOC}${n} directory)"
+    else
+        echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}..."
+        sudo mkdir -p ${GTEST_LOC}
+        cd ${GTEST_LOC}
         sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
         sudo tar xf release-1.7.0.tar.gz
         cd googletest-release-1.7.0
-        sudo cmake -DBUILD_SHARED_LIBS=ON .
+        sudo mkdir bld; cd bld
+        sudo cmake -DBUILD_SHARED_LIBS=ON ..
         sudo make
-        sudo cp -a include/gtest /usr/include
+        sudo cp -a ../include/gtest /usr/include
         sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+        echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}."
     fi
+fi
+cd ${root}
+
+#if [[ -d ${gtest_dir} ]]; then
+#    echo "  - ${b}GTest 1.8.0${n} dependency found. (To reinstall, please remove the ${b}${gtest_dir}${n} directory)"
+#else
+#    echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}..."
+#    sudo mkdir ${gtest_install_dir}
+#    sudo mkdir ${gtest_dir}
+#    cd ${gtest_install_dir}
+#    if [[ "${os}" == "Linux" ]]; then
+#        sudo apt-get install libgtest-dev cmake
+#        cd /usr/src/gtest
+#        sudo cmake CMakeLists.txt
+#        sudo make
+#        sudo cp *.a /usr/lib
+#    elif [[ "${os}" == "Mac OSX" ]]; then
+#        sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+#        sudo tar xf release-1.7.0.tar.gz
+#        cd googletest-release-1.7.0
+#        sudo cmake -DBUILD_SHARED_LIBS=ON .
+#        sudo make
+#        sudo cp -a include/gtest /usr/include
+#        sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+#    fi
 #    sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
 #    sudo tar xf release-1.8.0.tar.gz
 #    cd googletest-release-1.8.0/googletest
@@ -69,9 +103,9 @@ else
 #    sudo make
 #    sudo cp -a ../include/gtest ${gtest_dir}
 #    sudo cp -a *.a /usr/lib/
-    cd ${root}
-    echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}..."
-fi
+#    cd ${root}
+#    echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}..."
+#fi
 
 
 # -- BOOST
@@ -101,7 +135,7 @@ else
     export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:${LD_LIBRARY_PATH}
     sudo rm -f /usr/local/lib/libboost*.dylib*
     sudo ln -s ${BOOST_ROOT}/lib/*.{so,dylib}* /usr/local/lib
-    echo "  - Installed ${b}Boost 1.66.0${n} in ${b}${boost_dir}${n}..."
+    echo "  - Installed ${b}Boost 1.66.0${n} in ${b}${boost_dir}${n}."
 fi
 
 
@@ -122,7 +156,7 @@ else
     sudo ./configure --prefix=${trng_dir}
     sudo make && sudo make install
     cd ${root}
-    echo "  - Installed ${b}TRNG${n} in ${b}${trng_dir}${n}..."
+    echo "  - Installed ${b}TRNG${n} in ${b}${trng_dir}${n}."
 fi
 
 

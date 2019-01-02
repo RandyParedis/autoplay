@@ -41,10 +41,15 @@ install.sh
 Please be aware that this will install all dependencies! If you already have some
 dependencies and thus don't want to reinstall them, please export the following
 paths to the location where these dependencies are located.
+- `GTEST_LOC`: The location where the `gtest` installation is to be executed.
+It defaults to `/tmp/gtest`. 
 - `BOOST_ROOT`: The location where `boost` is installed. It defaults to
 `/usr/include/boost`.
 - `TRNG_LOC`: The location where `trng` is installed. It defaults to
 `deps/trng`.
+
+_**Note:** This can also be used to determine where you want to install these
+dependencies_ 
 
 So, on my system, I have to run the following set of commands to install, because
 `trng` is installed in `/opt/trng`:

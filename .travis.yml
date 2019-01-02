@@ -122,6 +122,7 @@ install:
 
 script:
   - cd $TRAVIS_BUILD_DIR
+  - export GTEST_LOC=$HOME/deps
   - export BOOST_ROOT=$HOME/deps/boost_1_66_0
   - export TRNG_LOC=$HOME/deps/trng
   - ./install.sh
