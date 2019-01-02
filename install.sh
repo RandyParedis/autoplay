@@ -7,10 +7,6 @@ root=$(pwd)
 # Load .config.ini
 . ./.config.ini
 
-if [[ "${TRNG_LOC}" == "" ]]; then
-    TRNG_LOC=${root}/deps/trng
-fi
-
 # Get OS
 os="Unknown"
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -93,6 +89,9 @@ fi
 
 
 # -- TRNG (Tina's Random Number Generator)
+if [[ "${TRNG_LOC}" == "" ]]; then
+    TRNG_LOC=${root}/deps/trng
+fi
 trng_dir=${TRNG_LOC}
 trng_install_dir=${root}/dependencies/trng
 
