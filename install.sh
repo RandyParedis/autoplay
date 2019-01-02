@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 b=$(tput bold)
 n=$(tput sgr0)
 root=$(pwd)
@@ -11,7 +13,7 @@ root=$(pwd)
 os="Unknown"
 if [[ "$(uname)" == "Darwin" ]]; then
     # Do something under Mac OS X platform
-    os="Darwin"
+    os="Mac OSX"
 elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
     # Do something under GNU/Linux platform
     os="Linux"
@@ -44,14 +46,29 @@ else
     sudo mkdir ${gtest_install_dir}
     sudo mkdir ${gtest_dir}
     cd ${gtest_install_dir}
-    sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-    sudo tar xf release-1.8.0.tar.gz
-    cd googletest-release-1.8.0/googletest
-    sudo mkdir bld; cd bld
-    sudo cmake ..
-    sudo make
-    sudo cp -a ../include/gtest ${gtest_dir}
-    sudo cp -a *.a /usr/lib/
+    if [[ "${os}" == "Linux" ]]; then
+        sudo apt-get install libgtest-dev cmake
+        cd /usr/src/gtest
+        sudo cmake CMakeLists.txt
+        sudo make
+        sudo cp *.a /usr/lib
+    else if [[ "${os}" == "Mac OSX" ]]; then
+        sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+        sudo tar xf release-1.7.0.tar.gz
+        cd googletest-release-1.7.0
+        sudo cmake -DBUILD_SHARED_LIBS=ON .
+        sudo make
+        sudo cp -a include/gtest /usr/include
+        sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+    fi
+#    sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+#    sudo tar xf release-1.8.0.tar.gz
+#    cd googletest-release-1.8.0/googletest
+#    sudo mkdir bld; cd bld
+#    sudo cmake ..
+#    sudo make
+#    sudo cp -a ../include/gtest ${gtest_dir}
+#    sudo cp -a *.a /usr/lib/
     cd ${root}
     echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}..."
 fi
