@@ -63,6 +63,9 @@ fi
 
 # -- BOOST
 boost_dir=/usr/include/boost
+if [[ "${BOOST_ROOT}" == "" ]]; then
+    BOOST_ROOT=${boost_dir}
+fi
 boost_install_dir=${boost_dir}-install
 
 if [[ -d ${boost_dir} ]]; then
@@ -70,7 +73,6 @@ if [[ -d ${boost_dir} ]]; then
 else
     echo "  - Installing ${b}Boost 1.66.0${n} in ${b}${boost_dir}${n}..."
     mkdir -p ${boost_dir}
-    export BOOST_ROOT=${boost_dir}
     export BOOST_NO_SYSTEM_PATHS=ON
     if [[ -z "$(ls -A ${BOOST_ROOT})" ]]; then
         cd ${boost_install_dir}
@@ -119,4 +121,5 @@ echo "  - Installing ${b}autoplay${n}..."
 mkdir build; cd build
 cmake -DTRNG_LOCATION=${trng_dir} ..
 make install
+cd ${root}
 echo "  - Installed ${b}autoplay${n}..."

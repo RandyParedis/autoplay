@@ -121,7 +121,8 @@ install:
 #    fi
 
 script:
-  - |
-    cd $TRAVIS_BUILD_DIR
-    ./install.sh
-    cd installed/bin && ./tests
+  - cd $TRAVIS_BUILD_DIR
+  - export BOOST_ROOT=$HOME/deps/boost_1_66_0
+  - export TRNG_LOC=$HOME/deps/trng
+  - ./install.sh
+  - cd installed/bin && ./tests
