@@ -39,11 +39,10 @@ echo ""
 if [[ "${GTEST_LOC}" == "" ]]; then
     GTEST_LOC=/tmp
 fi
-if [[ -d ${GTEST_LOC}/googletest-release-1.8.0 ]]; then
+if [[ -d ${GTEST_LOC}/googletest-release-1.bg.0 ]]; then
     echo "  - ${b}GTest 1.8.0${n} dependency found."
 else
     echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}..."
-    sudo mkdir -p ${GTEST_LOC}
     cd ${GTEST_LOC}
     sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
     sudo tar xf release-1.8.0.tar.gz
@@ -53,88 +52,9 @@ else
     sudo make
     sudo cp -a ../include/gtest /usr/local/include
     sudo cp -a *.a /usr/local/lib/
-#    sudo mkdir -p ${GTEST_LOC}
-#    cd ${GTEST_LOC}
-#    sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
-#    sudo tar xf release-1.7.0.tar.gz
-#    cd googletest-release-1.7.0
-#    sudo mkdir bld; cd bld
-#    sudo cmake -DBUILD_SHARED_LIBS=ON ..
-#    sudo make
-#    sudo cp -a ../include/gtest /usr/include
-#    sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+    cd ${root}
     echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}."
 fi
-#if [[ "${os}" == "Linux" ]]; then
-#    pack=libgtest-dev
-#    PKG_OK=$(dpkg-query -W --showformat='${Status}\n' ${pack}|grep "install ok installed")
-#    if [[ "" == "$PKG_OK" ]]; then
-#        echo "  - Installing ${b}GTest 1.8.0${n}..."
-#        sudo apt-get install libgtest-dev
-#        cd /usr/src/gtest
-#        sudo cmake CMakeLists.txt
-#        sudo make
-#        sudo cp *.a /usr/lib
-#        echo "  - Installed ${b}GTest 1.8.0${n}."
-#    else
-#        echo "  - ${b}GTest 1.8.0${n} dependency found."
-#    fi
-#elif [[ "${os}" == "Mac OSX" ]]; then
-#    if [[ "${GTEST_LOC}" == "" ]]; then
-#        GTEST_LOC=/tmp
-#    fi
-#    if [[ -d ${GTEST_LOC}/gtest ]]; then
-#        echo "  - ${b}GTest 1.8.0${n} dependency found."
-#    else
-#        echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}..."
-#        sudo mkdir -p ${GTEST_LOC}
-#        cd ${GTEST_LOC}
-#        sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
-#        sudo tar xf release-1.7.0.tar.gz
-#        cd googletest-release-1.7.0
-#        sudo mkdir bld; cd bld
-#        sudo cmake -DBUILD_SHARED_LIBS=ON ..
-#        sudo make
-#        sudo cp -a ../include/gtest /usr/include
-#        sudo cp -a libgtest_main.so libgtest.so /usr/lib/
-#        echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}."
-#    fi
-#fi
-cd ${root}
-
-#if [[ -d ${gtest_dir} ]]; then
-#    echo "  - ${b}GTest 1.8.0${n} dependency found. (To reinstall, please remove the ${b}${gtest_dir}${n} directory)"
-#else
-#    echo "  - Installing ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}..."
-#    sudo mkdir ${gtest_install_dir}
-#    sudo mkdir ${gtest_dir}
-#    cd ${gtest_install_dir}
-#    if [[ "${os}" == "Linux" ]]; then
-#        sudo apt-get install libgtest-dev cmake
-#        cd /usr/src/gtest
-#        sudo cmake CMakeLists.txt
-#        sudo make
-#        sudo cp *.a /usr/lib
-#    elif [[ "${os}" == "Mac OSX" ]]; then
-#        sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
-#        sudo tar xf release-1.7.0.tar.gz
-#        cd googletest-release-1.7.0
-#        sudo cmake -DBUILD_SHARED_LIBS=ON .
-#        sudo make
-#        sudo cp -a include/gtest /usr/include
-#        sudo cp -a libgtest_main.so libgtest.so /usr/lib/
-#    fi
-#    sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-#    sudo tar xf release-1.8.0.tar.gz
-#    cd googletest-release-1.8.0/googletest
-#    sudo mkdir bld; cd bld
-#    sudo cmake ..
-#    sudo make
-#    sudo cp -a ../include/gtest ${gtest_dir}
-#    sudo cp -a *.a /usr/lib/
-#    cd ${root}
-#    echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${gtest_dir}${n}..."
-#fi
 
 
 # -- BOOST
@@ -148,7 +68,6 @@ if [[ -d ${boost_dir} ]]; then
     echo "  - ${b}Boost 1.66.0${n} dependency found. (To reinstall, please remove the ${b}${boost_dir}${n} directory)"
 else
     echo "  - Installing ${b}Boost 1.66.0${n} in ${b}${boost_dir}${n}..."
-#    mkdir -p ${boost_dir}
     export BOOST_NO_SYSTEM_PATHS=ON
     if [[ -z "$(ls -A ${BOOST_ROOT})" ]]; then
         cd ${boost_install_dir}
