@@ -53,7 +53,7 @@ else
     sudo mkdir -p bld; cd bld
     sudo cmake ..
     sudo make
-    ll ../include
+    ls -R ../include
     sudo cp -a ../include/gtest ${GTEST_LOC}/include
     sudo cp -a *.a ${GTEST_LOC}/lib/
     cd ${root}
