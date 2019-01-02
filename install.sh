@@ -52,7 +52,7 @@ else
         sudo cmake CMakeLists.txt
         sudo make
         sudo cp *.a /usr/lib
-    else if [[ "${os}" == "Mac OSX" ]]; then
+    elif [[ "${os}" == "Mac OSX" ]]; then
         sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
         sudo tar xf release-1.7.0.tar.gz
         cd googletest-release-1.7.0

@@ -125,5 +125,4 @@ script:
   - export BOOST_ROOT=$HOME/deps/boost_1_66_0
   - export TRNG_LOC=$HOME/deps/trng
   - ./install.sh
-  - ls $TRAVIS_BUILD_DIR/build
-  - cd $TRAVIS_BUILD_DIR/build/installed/bin && ./tests
+  - cd build/installed/bin && ./tests
