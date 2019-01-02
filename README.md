@@ -30,9 +30,28 @@ info, please execute `autoplayer` with the flag `-h` or `--help`, or take a look
 at the `Configuration` wiki.
 
 ## Installation
-The installation of the project is rather simple. Just clone this repository and compile
-via `cmake`. That's all there is to it. Oh, don't forget to clone the dependencies
-(submodules) as well.
+The installation of the project was never this simple! You just have to run the
+following commands and you're done.
+```bash
+git clone https://github.com/RandyParedis/autoplay.git
+git submodule update --init --recursive
+install.sh
+```
+
+Please be aware that this will install all dependencies! If you already have some
+dependencies and thus don't want to reinstall them, please export the following
+paths to the location where these dependencies are located.
+- `BOOST_ROOT`: The location where `boost` is installed. It defaults to
+`/usr/include/boost`.
+- `TRNG_LOC`: The location where `trng` is installed. It defaults to
+`deps/trng`.
+
+So, on my system, I have to run the following set of commands to install, because
+`trng` is installed in `/opt/trng`:
+```bash
+export TRNG_LOC=/opt/trng
+install.sh
+```
 
 ## Dependencies
 #### RtMidi 3.0.0
@@ -48,18 +67,18 @@ The necessary files will be linked automatically during compilation.
 RtMidi itself comes with a few dependencies, as can be found
 [here](https://www.music.mcgill.ca/~gary/rtmidi/index.html#compiling).
 
-#### Boost
-Boost is definitely a powerful library that can handle a lot of different things. In the
-scope of this project, `Boost` is used for easy `JSON` and `XML` parsing and generation.
+The installation of these should happen automatically on Linux systems when running
+the `install.sh` script. On OSX systems, everything should be in order by default.
 
-You must have `Boost` installed on your system for this to work.
+#### Boost
+Boost is definitely a powerful library that can handle a lot of different things.
+In the scope of this project, `Boost` is used for easy `JSON` and `XML` parsing
+and generation.
 
 #### Google Test
 The Google Testing Framework is a useful tool for writing and testing unit tests.
 Of course randomization is difficult to test, but a series of algorithms can be
 tested anyways.
-
-You must have `gtest` installed.
 
 ###### GTest Installation (Ubuntu 18.04 LTS)
 ```
@@ -82,28 +101,11 @@ sudo cp -a libgtest_main.so libgtest.so /usr/lib/
 ```
 
 #### TRNG (Tina's Random Number Generator)
-Due to the random nature of the results of `autoplay`, `trng` was added. This library will
-handle all random actions that happen during the music generation.
+Due to the random nature of the results of `autoplay`, `trng` was added. This
+library will handle all random actions that happen during the music generation.
 
-After painstakingly trying to install `trng` similarly to how `RtMidi` was installed,
-the decision was made to keep it as a submodule, but describe how to install the library
-into the `opt` folder.
-
-###### TRNG Installation (Ubuntu 18.04 LTS)
-For a detailed description, please read the `trng.pdf` in the `trng/doc` folder (page 96).
-1. Install and Update the submodule
-2. Make sure `autoconf`, `automake` and `libtool` are installed. This can be done
-with `sudo apt-get install autotools-dev autoconf libtool-bin`.
-3. Run `autoreconf` on the `trng` folder to make sure everything works as desired.
-4. Configure `trng` in the `opt` directory with your preferred compiler (e.g. GNU C++ 7)
-using the following command: `sudo CXX=g++-7 ./configure --prefix=/opt/trng`.
-5. Run `sudo make` and `sudo make install`.
-
-If you don't want to use `/opt/trng` as the folder for `trng`, you can do so, but must
-compile `cmake` of this project with the flag `-DTRNG_LOC` set to your home directory of
-`trng`.
-
-**TODO:** Add scripts for this, so it will work easily on travis and possibly other OS.
+After painstakingly trying to install `trng` similarly to how `RtMidi` was
+installed, the decision was made to keep it as a submodule.
 
 ## Progress Log
 | Date | Update
