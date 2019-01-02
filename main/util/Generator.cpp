@@ -21,7 +21,6 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 #include <bitset>
 #include <sstream>
@@ -32,7 +31,7 @@ namespace autoplay {
             : m_config(config), m_logger(logger) {
             // Set engine
             auto engine_name = m_config.conf<std::string>("engine");
-            auto seed        = m_config.conf<unsigned long>("seed");
+            auto seed        = m_config.conf<unsigned long>("seed", 0);
             m_rnengine(engine_name, seed);
         }
 
@@ -52,7 +51,7 @@ namespace autoplay {
             std::vector<std::string> chord_progression;
             auto chord_progression_string = m_config.conf<std::string>("style.chord-progression", "");
             if(!chord_progression_string.empty()) {
-                boost::split(chord_progression, chord_progression_string, boost::is_any_of("-"));
+                chord_progression = markov::split_on(chord_progression_string, '-');
             }
 
             music::Score score{m_config.conf_child("export")};

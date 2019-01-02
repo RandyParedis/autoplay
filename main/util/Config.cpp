@@ -186,6 +186,13 @@ namespace autoplay {
             return pt.empty();
         }
 
+        bool Config::hasPath(const std::string& path) const {
+            try {
+                m_ptree.get_child(path);
+                return true;
+            } catch(std::exception& e) { return false; }
+        }
+
         void Config::loadInstruments(const std::string& filename) {
             FileHandler fileHandler;
             try {
@@ -241,8 +248,8 @@ namespace autoplay {
             }
 
             // Set current style
-            if(m_ptree.get_child("style").empty()) {
-                auto style_name = m_ptree.get<std::string>("style");
+            if(m_ptree.count("style") == 0 || m_ptree.get_child("style").empty()) {
+                auto style_name = m_ptree.get<std::string>("style", "default");
                 if(m_styles.get_child("styles").count(style_name) == 0) {
                     m_logger->warn("Invalid style '{}'. Using 'default' instead.", style_name);
                     style_name = "default";
@@ -321,16 +328,18 @@ namespace autoplay {
                 exit(EXIT_FAILURE);
             }
 
-            auto& parts = m_ptree.get_child("parts");
-            for(size_t i = 0; i < parts.size(); ++i) {
-                pt::ptree   clef;
-                auto&       part = ptree_at_ref(parts, i);
-                music::Clef c    = getClef(part.get<std::string>("clef", "Treble"));
+            if(m_ptree.count("parts") == 1) {
+                auto& parts = m_ptree.get_child("parts");
+                for(size_t i = 0; i < parts.size(); ++i) {
+                    pt::ptree   clef;
+                    auto&       part = ptree_at_ref(parts, i);
+                    music::Clef c    = getClef(part.get<std::string>("clef", "Treble"));
 
-                clef.put("sign", (char)c.getSign());
-                clef.put("line", (int)c.getLine());
-                clef.put("octave-change", c.getOctaveChange());
-                part.put_child("clef", clef);
+                    clef.put("sign", (char)c.getSign());
+                    clef.put("line", (int)c.getLine());
+                    clef.put("octave-change", c.getOctaveChange());
+                    part.put_child("clef", clef);
+                }
             }
         }
 

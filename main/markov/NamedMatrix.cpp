@@ -166,7 +166,7 @@ namespace autoplay {
                     row.erase(row.begin() + colidx);
                 }
                 m_colmap.erase(column);
-                for(auto& col: m_colmap) {
+                for(auto& col : m_colmap) {
                     // Update all indexes
                     if(col.second > colidx) {
                         --col.second;
@@ -181,7 +181,7 @@ namespace autoplay {
                 auto rowidx = m_rowmap.at(row);
                 m_matrix.erase(m_matrix.begin() + rowidx);
                 m_rowmap.erase(row);
-                for(auto& r: m_rowmap) {
+                for(auto& r : m_rowmap) {
                     // Update all indexes
                     if(r.second > rowidx) {
                         --r.second;

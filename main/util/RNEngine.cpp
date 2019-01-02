@@ -83,7 +83,7 @@ namespace autoplay {
             } else if(type == "yarn5s") {
                 m_engine = trng::yarn5s{seed};
             } else {
-                throw std::invalid_argument("No such type!");
+                throw std::invalid_argument("No such Random Number Engine type!");
             }
         }
 

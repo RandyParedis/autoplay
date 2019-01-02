@@ -92,6 +92,13 @@ namespace autoplay {
              */
             bool isLeaf(const std::string& path) const;
 
+            /**
+             * Check if the config has a certain path.
+             * @param path The path to check
+             * @return True if it has such path.
+             */
+            bool hasPath(const std::string& path) const;
+
         private:
             /**
              * Load the instruments into this Config.
