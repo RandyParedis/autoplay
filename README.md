@@ -148,3 +148,5 @@ installed, the decision was made to keep it as a submodule.
 | 02-12-2018 | Added **Accompaniment** as a pitch algorithm.
 | 02-12-2018 | Started work on **Markov Chains**.
 | 08-12-2018 | Made `autoplay` run from anywhere; e.g. got rid of execution folder requirement.
+| 01-01-2019 | **Markov Chains** now work.
+| 02-01-2019 | Made `install.sh` (installation script).
