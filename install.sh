@@ -48,10 +48,17 @@ else
     sudo tar xf release-1.8.0.tar.gz
     cd googletest-release-1.8.0/googletest
     sudo mkdir -p bld; cd bld
-    sudo cmake ..
-    sudo make
-    sudo cp -a ../include/gtest /usr/include
-    sudo cp -a *.a /usr/lib/
+    if [[ "${os}" == "Linux" ]]; then
+        sudo cmake ..
+        sudo make
+        sudo cp -a ../include/gtest /usr/include
+        sudo cp -a *.a /usr/lib/
+    elif [[ "${os}" == "OSX" ]]; then
+        sudo cmake -DBUILD_SHARED_LIBS=ON ..
+        sudo make
+        sudo cp -a ../include/gtest /usr/include
+        sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+    fi
     cd ${root}
     echo "  - Installed ${b}GTest 1.8.0${n} in ${b}${GTEST_LOC}${n}."
 fi
