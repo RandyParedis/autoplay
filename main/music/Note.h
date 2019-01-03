@@ -525,6 +525,13 @@ namespace autoplay {
             std::shared_ptr<Note> bottom() const;
 
             /**
+             * Determine the name of a chord, based upon the theory described in
+             *  https://pdfs.semanticscholar.org/f9ae/49807f4ce7a8e966f06a7ef171aa278f6278.pdf
+             * @return The chord name
+             */
+            std::string getName() const;
+
+            /**
              * Split the Chord in a series of linked notes, w.r.t. the divisions
              * @param divisions     The amount of divisions to take into a count.
              * @param generatedots  When true, dots must be used whenever possible.

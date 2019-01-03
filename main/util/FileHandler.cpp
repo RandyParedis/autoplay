@@ -138,9 +138,11 @@ namespace autoplay {
                 for(const auto& measure : part->getMeasures()) {
                     ++measure_idx;
                     pt::ptree measure_tree;
+                    bool set_clef = false;
 
                     if(prev == nullptr) {
                         prev = std::make_shared<music::Measure>();
+                        set_clef = true;
                     }
 
                     // Set attributes if required
@@ -177,7 +179,7 @@ namespace autoplay {
                         }
 
                         auto clef = measure->getClef();
-                        if(clef.getLine() != prev->getClef().getLine() || clef.getSign() != prev->getClef().getSign() ||
+                        if(set_clef || clef.getLine() != prev->getClef().getLine() || clef.getSign() != prev->getClef().getSign() ||
                            clef.isPercussion() != prev->getClef().isPercussion()) {
                             prev->setClef(clef);
 
@@ -185,8 +187,10 @@ namespace autoplay {
                                 measure_tree.put("attributes.clef.sign", "percussion");
                                 measure_tree.put("attributes.clef.line", 2);
                             } else {
-                                measure_tree.put("attributes.clef.sign", (char)clef.getSign());
-                                measure_tree.put("attributes.clef.line", clef.getLine());
+                                std::string sign;
+                                sign += (char)clef.getSign();
+                                measure_tree.put("attributes.clef.sign", sign);
+                                measure_tree.put("attributes.clef.line", (int)clef.getLine());
                             }
                         }
 

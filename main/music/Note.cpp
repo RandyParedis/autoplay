@@ -371,8 +371,8 @@ namespace autoplay {
             if(ref.size() > 1 && generatedots) {
                 uint8_t max_dots = 2;
                 uint8_t dots     = 0;
-                for(auto i = ref.size() - 1; i > 0; --i) {
-                    if(dots < max_dots && ref.at(i).getDuration() * 2 == ref.at(i - 1).getDuration()) {
+                for(int i = (int)ref.size() - 1; i >= 0; --i) {
+                    if(i != 0 && dots < max_dots && ref.at(i).getDuration() * 2 == ref.at(i - 1).getDuration()) {
                         ++dots;
                         ref.erase(ref.begin() + i);
                     } else {
@@ -405,6 +405,67 @@ namespace autoplay {
                 }
             }
             return m_notes.at(idx);
+        }
+
+        std::string Chord::getName() const {
+            if(m_notes.size() < 2) {
+                auto        note = m_notes.front();
+                std::string n    = Note::pitchRepr(note->getPitch());
+                n                = n.substr(0, n.length() - 1);
+                return n;
+            }
+            // Apply assumptions
+            std::vector<std::string> notes;
+
+            for(const auto& note : m_notes) {
+                // Enharmonic Equivalence
+                std::string n = Note::pitchRepr(note->getPitch());
+                // Ignore Octaves
+                n = n.substr(0, n.length() - 1);
+                // Ignore Duplicates
+                if(std::find(notes.begin(), notes.end(), n) == notes.end()) {
+                    notes.emplace_back(n);
+                }
+            }
+            // Discard pitch names
+            std::vector<unsigned int> remapping;
+            std::string               root;
+            unsigned int              d = std::numeric_limits<unsigned int>::max();
+            for(const auto& a : notes) {
+                remapping = {0};
+                auto ap   = (unsigned int)Note::pitch(a + "-1");
+                int octave = -1;
+
+                while(remapping.size() < notes.size()) {
+                    unsigned int distance = std::numeric_limits<unsigned int>::max();
+                    for(const auto& b : notes) {
+                        if(a == b) {
+                            continue;
+                        }
+                        auto ab = (unsigned int)Note::pitch(b + std::to_string(octave));
+                        while(ab < ap) {
+                            ++octave;
+                            ab = (unsigned int)Note::pitch(b + std::to_string(octave));
+                        }
+                        if(ab - ap > 2 && ab - ap < distance &&
+                           std::find(remapping.begin(), remapping.end(), ab - ap) == remapping.end()) {
+                            distance = ab - ap;
+                        }
+                    }
+                    remapping.emplace_back(distance);
+                }
+
+                // TODO: What if remapping.back() == d ?
+                //  -> Currently, it takes the first result!
+                if(remapping.back() < d) {
+                    root = a;
+                    if(remapping.at(1) == 3) {
+                        root += "m";
+                    }
+                    d = remapping.back();
+                }
+            }
+            return root;
         }
     }
 }
