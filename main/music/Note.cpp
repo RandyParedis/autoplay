@@ -432,9 +432,9 @@ namespace autoplay {
             std::string               root;
             unsigned int              d = std::numeric_limits<unsigned int>::max();
             for(const auto& a : notes) {
-                remapping = {0};
-                auto ap   = (unsigned int)Note::pitch(a + "-1");
-                int octave = -1;
+                remapping   = {0};
+                auto ap     = (unsigned int)Note::pitch(a + "-1");
+                int  octave = -1;
 
                 while(remapping.size() < notes.size()) {
                     unsigned int distance = std::numeric_limits<unsigned int>::max();

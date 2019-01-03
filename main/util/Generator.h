@@ -133,7 +133,7 @@ namespace autoplay {
              */
             uint8_t pitchAccompanimentSchematic(const std::string& schematic, std::string chordname,
                                                 unsigned int timestep, unsigned int measure_length,
-                                                const std::pair<uint8_t, uint8_t>&  range, int stave) const;
+                                                const std::pair<uint8_t, uint8_t>& range, int stave) const;
 
             /**
              * A rhythm generation algorithm, based upon the movements of small particles that are randomly bombarded by

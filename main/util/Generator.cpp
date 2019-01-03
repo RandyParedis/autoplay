@@ -700,7 +700,7 @@ namespace autoplay {
 
         uint8_t Generator::pitchAccompanimentSchematic(const std::string& schematic, std::string chordname,
                                                        unsigned int timestep, unsigned int measure_length,
-                                                       const std::pair<uint8_t, uint8_t>&  range, int stave) const {
+                                                       const std::pair<uint8_t, uint8_t>& range, int stave) const {
             bool minor = false;
             if(chordname.at(chordname.length() - 1) == 'm') {
                 minor     = true;
@@ -723,9 +723,9 @@ namespace autoplay {
 
             auto pitches = getPitches(range.first, range.second, stave);
 
-            uint8_t min = pitches.at(0);
-            bool found = false;
-            for(const auto& p: pitches) {
+            uint8_t min   = pitches.at(0);
+            bool    found = false;
+            for(const auto& p : pitches) {
                 music::Note::Semitone s;
 
                 std::string repr;
@@ -738,7 +738,7 @@ namespace autoplay {
 
                 // Cast to a pitch in the first octave to check comparison between flats and sharps
                 if(music::Note::pitch(repr + std::to_string(1)) == music::Note::pitch(chordname + std::to_string(1))) {
-                    min = p;
+                    min   = p;
                     found = true;
                     break;
                 }
@@ -747,8 +747,8 @@ namespace autoplay {
                 throw std::invalid_argument("Impossible to find the chord " + chordname + " in the range.");
             }
 
-            char letter = schematic.at(idx);
-            uint8_t nxt = min;
+            char    letter = schematic.at(idx);
+            uint8_t nxt    = min;
             switch(letter) {
             case 'A': return min;
 
@@ -759,7 +759,8 @@ namespace autoplay {
                     nxt += (uint8_t)4;
                 }
                 if(std::find(pitches.begin(), pitches.end(), nxt) == pitches.end()) {
-                    std::string err = "The letter 'B' in the schematic falls outside of the possibilities. Returning as 'A' in '";
+                    std::string err =
+                        "The letter 'B' in the schematic falls outside of the possibilities. Returning as 'A' in '";
                     err += chordname;
                     if(minor) {
                         err += "m";
@@ -773,7 +774,8 @@ namespace autoplay {
             case 'C':
                 nxt += (uint8_t)7;
                 if(std::find(pitches.begin(), pitches.end(), nxt) == pitches.end()) {
-                    std::string err = "The letter 'C' in the schematic falls outside of the possibilities. Returning as 'A' in '";
+                    std::string err =
+                        "The letter 'C' in the schematic falls outside of the possibilities. Returning as 'A' in '";
                     err += chordname;
                     if(minor) {
                         err += "m";

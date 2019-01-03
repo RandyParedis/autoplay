@@ -138,10 +138,10 @@ namespace autoplay {
                 for(const auto& measure : part->getMeasures()) {
                     ++measure_idx;
                     pt::ptree measure_tree;
-                    bool set_clef = false;
+                    bool      set_clef = false;
 
                     if(prev == nullptr) {
-                        prev = std::make_shared<music::Measure>();
+                        prev     = std::make_shared<music::Measure>();
                         set_clef = true;
                     }
 
@@ -179,7 +179,8 @@ namespace autoplay {
                         }
 
                         auto clef = measure->getClef();
-                        if(set_clef || clef.getLine() != prev->getClef().getLine() || clef.getSign() != prev->getClef().getSign() ||
+                        if(set_clef || clef.getLine() != prev->getClef().getLine() ||
+                           clef.getSign() != prev->getClef().getSign() ||
                            clef.isPercussion() != prev->getClef().isPercussion()) {
                             prev->setClef(clef);
 
