@@ -1,0 +1,30 @@
+{
+  "verbose": false,
+  "play": false,
+  "engine": "yarn4",
+  "seed": 23,
+  "length": 25,
+
+  "generation": {
+    "pitch": "random-piano",
+    "rhythm": "random",
+    "chord": "random",
+    "rest-ratio": 0.01
+  },
+  "export": {
+    "filename": "random.xml",
+    "title": "Randomized",
+    "composer": "autoplay v@VERSION@",
+    "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
+  },
+  "style": {
+    "from": "F-major",
+    "bpm": 160
+  },
+  "parts": [
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Treble"
+    }
+  ]
+}

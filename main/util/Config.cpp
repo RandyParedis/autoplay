@@ -114,7 +114,7 @@ namespace autoplay {
                     try {
                         fh.readConfig(filename);
                         auto mpt = *fh.getRoot();
-                        merge(m_ptree, mpt);
+                        merge(m_ptree, mpt, true);
                     } catch(std::invalid_argument& e) { m_logger->error(e.what()); }
                 }
 
@@ -280,7 +280,7 @@ namespace autoplay {
 
                 // For loop to prevent circular dependencies to link to one another
                 for(unsigned int i = 0; i < m_styles.get_child("styles").size() && from != "default"; ++i) {
-                    merge(sty, m_styles.get_child("styles." + from), true);
+                    merge(sty, m_styles.get_child("styles." + from));
                     from = m_styles.get_child("styles." + from).get<std::string>("from", "default");
 
                     if(i == m_styles.get_child("styles").size() - 1) {
@@ -288,7 +288,7 @@ namespace autoplay {
                                        sty.get<std::string>("from", ""));
                     }
                 }
-                merge(sty, m_styles.get_child("styles.default"), true);
+                merge(sty, m_styles.get_child("styles.default"));
                 auto g = sty.get<std::string>("scale", "chromatic");
                 if(!check_binary(g)) {
                     sty.put("scale", m_styles.get<std::string>("types." + g, "111111111111"));
@@ -374,7 +374,7 @@ namespace autoplay {
             BOOST_FOREACH(auto& update, updates) {
                 if(update.second.empty()) {
                     if(!update.first.empty()) {                                          // if leaf
-                        if(overwrite && pt.get<std::string>(update.first, "").empty()) { // if must add
+                        if(overwrite || pt.get<std::string>(update.first, "").empty()) { // if must add
                             pt.put(update.first, updates.get<std::string>(update.first));
                         }
                     }

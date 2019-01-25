@@ -1,0 +1,36 @@
+{
+  "verbose": false,
+  "play": false,
+  "engine": "yarn2",
+  "seed": 37,
+  "length": 25,
+
+  "generation": {
+    "pitch": "gaussian-voicing",
+    "rhythm": "1/f-noise",
+    "chord": "weighted",
+    "options": {
+      "chord": {
+        "2": 0.2,
+        "3": 0.1
+      }
+    },
+    "rest-ratio": 0.01
+  },
+  "export": {
+    "filename": "voicing.xml",
+    "title": "Gaussian Voicing",
+    "composer": "autoplay v@VERSION@",
+    "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
+  },
+  "style": {
+    "from": "G-major",
+    "bpm": 160
+  },
+  "parts": [
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Treble"
+    }
+  ]
+}

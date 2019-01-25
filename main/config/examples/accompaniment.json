@@ -1,0 +1,61 @@
+{
+  "verbose": false,
+  "play": false,
+  "engine": "lcg64",
+  "seed": 10,
+  "length": 25,
+
+  "generation": {
+    "pitch": "brownian-motion",
+    "rhythm": "1/f-noise",
+    "chord": "weighted",
+    "options": {
+      "pitch": {
+        "chain": "/home/red/git/autoplay/learning/pitch.csv"
+      },
+      "rhythm": {
+        "smallest": "eighth",
+        "largest": "half"
+      },
+      "chord": {
+        "2": 0.2,
+        "3": 0.1
+      }
+    },
+    "rest-ratio": 0.01
+  },
+  "export": {
+    "filename": "accompaniment.xml",
+    "title": "Accompaniment",
+    "composer": "autoplay v@VERSION@",
+    "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
+  },
+  "style": {
+    "from": "C-major",
+    "bpm": 160,
+    "chord-progression": "C-F-C-G-F-C"
+  },
+  "parts": [
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Treble"
+    },
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Bass",
+      "generation": {
+        "pitch": "accompaniment",
+        "rhythm": "constant",
+        "options": {
+          "pitch": {
+            "schematic": "ABCBABCB"
+          },
+          "rhythm": {
+            "duration": "eighth"
+          }
+        },
+        "rest-ratio": 0
+      }
+    }
+  ]
+}

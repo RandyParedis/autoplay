@@ -1,0 +1,40 @@
+{
+  "verbose": false,
+  "play": false,
+  "engine": "yarn4",
+  "seed": 23,
+  "length": 25,
+
+  "generation": {
+    "pitch": "brownian-motion",
+    "rhythm": "brownian-motion",
+    "chord": "weighted",
+    "options": {
+      "pitch": {
+        "min": -4,
+        "max": 4
+      },
+      "chord": {
+        "2": 0.2,
+        "3": 0.1
+      }
+    },
+    "rest-ratio": 0.01
+  },
+  "export": {
+    "filename": "brownian.xml",
+    "title": "Brownian Motion",
+    "composer": "autoplay v@VERSION@",
+    "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
+  },
+  "style": {
+    "from": "G-major",
+    "bpm": 160
+  },
+  "parts": [
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Treble"
+    }
+  ]
+}

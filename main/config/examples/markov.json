@@ -1,0 +1,57 @@
+{
+  "verbose": false,
+  "play": false,
+  "engine": "lcg64",
+  "seed": 11,
+  "length": 25,
+
+  "generation": {
+    "pitch": "markov-chain",
+    "rhythm": "markov-chain",
+    "chord": "markov-chain",
+    "options": {
+      "pitch": {
+        "chain": "/home/red/git/autoplay/learning/pitch.csv"
+      },
+      "rhythm": {
+        "chain": "/home/red/git/autoplay/learning/rhythm.csv",
+        "smallest": "eighth",
+        "largest": "half"
+      },
+      "chord": {
+        "chain": "/home/red/git/autoplay/learning/chord.csv"
+      }
+    },
+    "rest-ratio": 0.01
+  },
+  "export": {
+    "filename": "markov.xml",
+    "title": "Markov Chain",
+    "composer": "autoplay v@VERSION@",
+    "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
+  },
+  "style": {
+    "from": "E-minor",
+    "bpm": 160
+  },
+  "parts": [
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Treble"
+    },
+    {
+      "instrument": "Acoustic Grand Piano",
+      "clef": "Bass",
+      "generation": {
+        "pitch": "accompaniment",
+        "chord": "weighted",
+        "options": {
+          "chord": {
+            "2": 0.1,
+            "3": 0.2
+          }
+        }
+      }
+    }
+  ]
+}

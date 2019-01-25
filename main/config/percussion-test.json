@@ -7,8 +7,8 @@
     "pitch": "contain-stave"
   },
   "export": {
-    "filename": "music.xml",
-    "title": "My Score",
+    "filename": "percussion.xml",
+    "title": "Percussion Test",
     "composer": "autoplay v@VERSION@",
     "rights": "Copyright \u00A9 2018 autoplay v@VERSION@, created by Randy Paredis"
   },

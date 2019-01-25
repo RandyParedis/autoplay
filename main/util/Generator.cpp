@@ -60,7 +60,7 @@ namespace autoplay {
                 if(pt_part.count("generation") == 0) {
                     pt_part.put_child("generation", m_config.conf_child("generation"));
                 } else {
-                    merge(pt_part.get_child("generation"), m_config.conf_child("generation"), true);
+                    merge(pt_part.get_child("generation"), m_config.conf_child("generation"));
                 }
 
                 pt::ptree options;
